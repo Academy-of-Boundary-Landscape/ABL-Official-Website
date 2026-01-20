@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+// 这个js大概已经作废了，前端现在用的是strapi.js
+
 // 创建axios实例
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
