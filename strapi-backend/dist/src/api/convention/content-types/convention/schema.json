@@ -1,0 +1,31 @@
+{
+    "kind": "collectionType",
+    "collectionName": "conventions",
+    "info": {
+        "singularName": "convention",
+        "pluralName": "conventions",
+        "displayName": "convention"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "name": {
+            "type": "string",
+            "required": true
+        },
+        "date": {
+            "type": "date",
+            "required": false
+        },
+        "attend": {
+            "type": "boolean",
+            "required": true,
+            "default": true
+        },
+        "qqgroup": {
+            "type": "string"
+        }
+    }
+}

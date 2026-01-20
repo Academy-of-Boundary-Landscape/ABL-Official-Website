@@ -1,0 +1,22 @@
+{
+    "collectionName": "components_embedding_pdf_embeds",
+    "info": {
+        "displayName": "pdfEmbed",
+        "icon": "book"
+    },
+    "options": {},
+    "attributes": {
+        "pdfFile": {
+            "type": "media",
+            "multiple": true,
+            "required": true,
+            "allowedTypes": [
+                "files"
+            ]
+        },
+        "pdfName": {
+            "type": "string"
+        }
+    },
+    "config": {}
+}

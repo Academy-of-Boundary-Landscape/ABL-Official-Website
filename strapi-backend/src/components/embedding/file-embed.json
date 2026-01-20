@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_embedding_file_embeds",
+  "info": {
+    "displayName": "FileEmbed",
+    "icon": "stack"
+  },
+  "options": {},
+  "attributes": {
+    "File": {
+      "type": "media",
+      "multiple": true,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "FileName": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "config": {}
+}

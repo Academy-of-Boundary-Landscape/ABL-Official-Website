@@ -1,0 +1,19 @@
+{
+    "collectionName": "components_embedding_iframe_embeds",
+    "info": {
+        "displayName": "iframeEmbed",
+        "icon": "attachment"
+    },
+    "options": {},
+    "attributes": {
+        "iframeTitle": {
+            "type": "string",
+            "required": true
+        },
+        "iframeCode": {
+            "type": "text",
+            "required": true
+        }
+    },
+    "config": {}
+}

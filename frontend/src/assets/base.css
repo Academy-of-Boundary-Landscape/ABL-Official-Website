@@ -1,0 +1,96 @@
+:root {
+  --color-background: #2F333D;      /* SCP风格的深蓝灰色 */
+  --color-text: #EAEAEA;            /* SCP风格的灰白色 */
+  --color-heading: #FFFFFF;         /* 标题使用纯白色，更突出 */
+  --color-accent: #1EB5E8;          /* SCP风格的亮蓝色 (rgb(30, 181, 232)) */
+  --color-border: #444444;          /* 用于边框的深灰色 */
+  --color-border-hover: #1EB5E8;    /* 鼠标悬停时边框变为亮蓝色 */
+  --color-box: #21252E;
+  
+
+  /* 字体更新为更通用的无衬线字体 */
+  --font-family-body: 'Helvetica Neue', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', 'Microsoft YaHei', sans-serif;
+  --font-family-heading: 'Helvetica Neue', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', 'Microsoft YaHei', sans-serif;
+}
+/* ... existing code ... */
+
+/* 恢复 strong 标签的加粗效果 */
+strong {
+  font-weight: bold;
+}
+
+/* ... existing code ... */
+
+/* --- 全局重置和基础样式 --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+}
+
+/* --- 核心：修改后的背景和字体样式 --- */
+body {
+  min-height: 100vh;
+  color: var(--color-text);
+  
+  /* --- 核心修改部分 --- */
+  /* 1. 设置背景颜色为SCP主题的深灰色 */
+  background-color: var(--color-background);
+
+  /* 2. 移除了原有的背景纹理图片和渐变 */
+  /* background-image: ... (已移除) */
+  
+  /* --- 其他原有样式 --- */
+  font-family: var(--font-family-body);
+  font-size: 16px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* --- 移除了扫描线动画 --- */
+/* 
+body::before { ... }
+@keyframes scanlines { ... }
+*/
+/* 上述代码块已被完全移除，以实现干净的背景 */
+
+
+/* --- 统一链接样式 (已更新为SCP风格) --- */
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color 0.3s ease; /* 简化过渡效果 */
+  /* text-shadow: ... (已移除辉光效果) */
+}
+
+a:hover {
+  color: #fff; /* 鼠标悬停时变为白色 */
+  /* text-shadow: ... (已移除辉光效果) */
+}
+
+/* --- 统一标题样式 (已更新为SCP风格) --- */
+h1, h2, h3 {
+  font-family: var(--font-family-heading);
+  color: var(--color-accent);
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(30, 181, 232, 0.25), 0 0 2px #1EB5E8;
+}
+
+/* --- 建议添加的样式 --- */
+/* 您可以为特定的标题添加下划线，以更贴近原图效果 */
+
+.main-title {
+    border-bottom: 2px solid var(--color-accent);
+    padding-bottom: 10px;
+    display: inline-block;
+}
+.divider {
+  border: 0;                      /* 重置 <hr> 标签可能存在的默认边框 */
+  height: 1px;                    /* 设置分割线的高度，即其“厚度” */
+  background-color: var(--color-accent); /* 使用您在 :root 中定义的主题亮蓝色 */
+  margin: 2.5rem 0;               /* 设置上下外边距，用于创建与内容的垂直间距 */
+}

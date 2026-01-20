@@ -1,0 +1,16 @@
+{
+    "collectionName": "components_embedding_product_embeds",
+    "info": {
+        "displayName": "productEmbed",
+        "icon": "shoppingCart"
+    },
+    "options": {},
+    "attributes": {
+        "products": {
+            "type": "relation",
+            "relation": "oneToMany",
+            "target": "api::product.product"
+        }
+    },
+    "config": {}
+}

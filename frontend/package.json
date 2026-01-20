@@ -1,0 +1,43 @@
+{
+  "name": "frontend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --fix",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "@bytemd/plugin-gfm": "^1.22.0",
+    "@bytemd/plugin-highlight": "^1.22.0",
+    "@bytemd/plugin-math": "^1.22.0",
+    "@bytemd/plugin-mermaid": "^1.22.0",
+    "@bytemd/vue-next": "^1.22.0",
+    "@vueuse/core": "^13.8.0",
+    "axios": "^1.11.0",
+    "bytemd": "^1.22.0",
+    "element-plus": "^2.11.1",
+    "marked": "^16.2.1",
+    "swiper": "^11.2.10",
+    "vue": "^3.5.18",
+    "vue-router": "^4.5.1",
+    "vue3-markdown-it": "^1.0.10"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.31.0",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "eslint": "^9.31.0",
+    "eslint-plugin-vue": "~10.3.0",
+    "globals": "^16.3.0",
+    "prettier": "3.6.2",
+    "vite": "^7.0.6",
+    "vite-plugin-vue-devtools": "^8.0.0"
+  }
+}

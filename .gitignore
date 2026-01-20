@@ -1,0 +1,57 @@
+######################
+# 通用 / 根目录
+######################
+.DS_Store
+node_modules/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vscode/
+.idea/
+
+# Legacy backend (unused)
+backend/
+
+######################
+# Frontend (Vue)
+######################
+# Vue 构建输出
+frontend/dist/
+frontend/dist-ssr/
+
+# 本地环境变量
+frontend/.env.local
+frontend/.env.*.local
+
+# 测试覆盖率
+frontend/coverage/
+
+######################
+# Backend (Strapi)
+######################
+# Strapi 系统生成文件
+strapi-backend/.tmp/
+strapi-backend/.cache/
+strapi-backend/build/
+
+# Strapi 环境变量 (非常重要！)
+strapi-backend/.env
+
+# Strapi 上传的媒体文件 (建议忽略，改用云存储，详见下文)
+strapi-backend/public/uploads/
+# 保留 .gitkeep 以防止文件夹丢失，但忽略里面的内容
+!strapi-backend/public/uploads/.gitkeep
+
+# 数据库文件 (如果你在开发环境使用 SQLite)
+strapi-backend/database/.tmp/
+strapi-backend/database/*.db
+strapi-backend/database/*.db-journal
+
+# Strapi 生成的 TypeScript 类型 (可选，建议忽略，让协作者本地生成)
+# 如果团队强制要求类型同步，可以不忽略
+# strapi-backend/types/generated/
+
+
+# 没用的设计素材
+design_reference/

@@ -1,0 +1,14 @@
+{
+    "collectionName": "components_content_block_content_blocks",
+    "info": {
+        "displayName": "contentBlock",
+        "icon": "book"
+    },
+    "options": {},
+    "attributes": {
+        "contentMd": {
+            "type": "richtext"
+        }
+    },
+    "config": {}
+}

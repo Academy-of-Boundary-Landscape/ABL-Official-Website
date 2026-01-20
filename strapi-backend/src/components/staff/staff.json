@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_staff_staff",
+  "info": {
+    "displayName": "staff",
+    "icon": "emotionHappy"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,144 @@
+/* src/assets/main.css */
+
+/* --- 1. 核心布局容器 --- */
+/*
+  这个 .container 类可以用于所有页面的主内容区域，
+  它能确保内容不会紧贴屏幕边缘，并在大屏幕上居中显示。
+*/
+.container {
+  width: 100%;
+  max-width: min(1600px, 100vw); /* 最大宽度不超过屏幕宽度 */
+  margin: 0 auto;
+  padding-left: max(2rem, env(safe-area-inset-left));
+  padding-right: max(2rem, env(safe-area-inset-right));
+  box-sizing: border-box;
+}
+
+.product-list-view.container {
+  max-width: 1800px; /* 或更大，根据需要调整 */
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+/* --- 2. 页面头部样式 --- */
+/*
+  适用于所有页面的主标题区域，如“境界景观学会”或“// 社团制品一览”。
+*/
+.page-header {
+  text-align: center;
+  margin: 40px 0 80px;
+}
+
+.page-header .title {
+  font-size: 3rem;
+  color: var(--color-heading);
+  text-shadow: 0 2px 8px #00000080;
+}
+
+.page-header .subtitle {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  color: var(--color-text);
+  letter-spacing: 1px;
+}
+
+/* 可以在特定页面微调标题大小 */
+.page-header .title-main {
+  font-size: 3.5rem;
+}
+
+.main-content {
+  flex: 1;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 2rem 60px; /* 顶部padding设为0，底部保持60px */
+}
+.section-title {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: var(--color-heading);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.5rem;
+}
+.section-title::before {
+  content: "// ";
+  color: var(--color-accent);
+}
+
+/* --- 3. 科技感内容框 (最关键的复用样式) --- */
+/*
+  这就是您在主页和制品列表页都用到的那个带边框的盒子。
+  我们将其命名为 .tech-box。
+*/
+.tech-box {
+  /* 基础样式：左右蓝色边框 */
+  border-left: 3px solid var(--color-accent);
+  border-right: 3px solid var(--color-accent);
+  
+  padding: 1.5rem 2rem;
+  background-color: var(--color-box);
+  
+  border-top: none;
+  border-bottom: none;
+
+  position: relative;
+  margin-bottom: 2rem;
+
+  /* 关键：为即将添加的hover效果设置平滑过渡 */
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* 关键：当鼠标悬停时应用以下效果 */
+.tech-box:hover {
+  /* 1. 浮现一个半透明的背景色，使内容框“凸显”出来 */
+  background-color: var(--color-box); /* 一个非常微妙的半透明深色 */
+
+  /* 2. 添加一个与主题色匹配的“辉光”效果 */
+  box-shadow: 0 0 15px var(--color-accent); /* 使用你的亮蓝色 var(--color-accent) */
+}
+
+/* 
+  为 .tech-box 内的标题提供一个统一的样式。
+  这部分保持不变。
+*/
+.tech-box .box-title {
+  margin: 0 0 1.5rem 0;
+  display: block;
+  font-size: 1.5rem; 
+  color: var(--color-heading);
+}
+
+.tech-box .box-title::before {
+  content: ""; /* 确保这里为空，以移除 "// " 前缀 */
+}
+
+/* --- (可选) 为 lightbox 添加一个修饰符类 --- */
+/*
+  这部分保持不变。
+*/
+.tech-box.light {
+  background-color: rgb(248, 248, 248);
+  color: #333;
+}
+
+.tech-box.light .box-title {
+  color: #111;
+}
+
+/* --- 4. 状态提示框 --- */
+/*
+  用于显示“加载中”或“错误”信息。
+*/
+.status-box {
+  text-align: center;
+  margin: 4rem 0;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: var(--color-accent);
+  border: 1px dashed var(--color-border);
+}
+
+.status-box.error {
+  color: #ff5252;
+  border-color: #ff5252;
+}
