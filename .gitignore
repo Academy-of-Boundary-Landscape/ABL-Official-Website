@@ -35,6 +35,9 @@ strapi-backend/.tmp/
 strapi-backend/.cache/
 strapi-backend/build/
 
+strapi-backend/node_modules/
+strapi-backend/dist/
+
 # Strapi 环境变量 (非常重要！)
 strapi-backend/.env
 
