@@ -1,20 +1,24 @@
 <!-- src/App.vue -->
 <template>
-  <div id="app-container">
-    <SiteHeader />
-    <main class="main-content">
-      <RouterView v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </RouterView>
-    </main>
-    <SiteFooter />
-  </div>
+  <n-config-provider :theme="theme" :theme-overrides="themeOverrides">
+    <div id="app-container">
+      <SiteHeader />
+      <main class="main-content">
+        <RouterView v-slot="{ Component }">
+          <transition name="fade" mode="out-in">
+            <component :is="Component" />
+          </transition>
+        </RouterView>
+      </main>
+      <SiteFooter />
+    </div>
+  </n-config-provider>
 </template>
 
 <script setup>
 import { RouterView } from 'vue-router'
+import { NConfigProvider } from 'naive-ui'
+import { theme, themeOverrides } from './config/theme.js'
 import SiteHeader from './components/SiteHeader.vue'
 import SiteFooter from './components/SiteFooter.vue'
 </script>

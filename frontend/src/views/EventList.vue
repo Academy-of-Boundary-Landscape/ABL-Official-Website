@@ -1,19 +1,18 @@
 <template>
   <div class="event-list-view container">
-
     <!-- 1. 页面头部，复用全局 .page-header 样式 -->
     <section class="page-header">
       <h1 class="title">// 社团动态与通知</h1>
-      <p class="subtitle"> >> Latest updates, announcements, and news from the club.</p>
+      <p class="subtitle">>> Latest updates, announcements, and news from the club.</p>
     </section>
     <div class="controls-wrapper tech-box">
       <div class="search-group">
-        <input 
+        <input
           type="text"
           v-model="searchTerm"
           placeholder="搜索事件标题..."
           class="search-input"
-        >
+        />
       </div>
     </div>
     <!-- 2. 加载与错误状态处理，复用全局 .status-box 样式 -->
@@ -26,70 +25,65 @@
 
     <!-- 3. 事件列表容器 -->
     <div v-if="events.length" class="event-list-container">
-      <!-- 
+      <!--
         循环使用 EventCard 组件。
         注意这里没有复杂的过滤或搜索，如果需要可以后续添加。
       -->
-      <EventCard 
-        v-for="event in events" 
-        :key="event.slug" 
-        :event="event" 
-      />
-    </div>
-    
-    <!-- 4. 无结果提示 -->
-    <div v-if="!loading && events.length === 0 && !error" class="status-box">
-        <p>>> 当前没有新的动态。</p>
+      <EventCard v-for="event in events" :key="event.slug" :event="event" />
     </div>
 
+    <!-- 4. 无结果提示 -->
+    <div v-if="!loading && events.length === 0 && !error" class="status-box">
+      <p>>> 当前没有新的动态。</p>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch} from 'vue';
-import { apiClient } from '@/composables/strapi';
-import EventCard from '@/components/EventCard.vue'; // 引入我们创建的 EventCard 组件
+import { ref, onMounted, watch } from 'vue'
+import { apiClient } from '@/composables/strapi'
+import EventCard from '@/components/EventCard.vue' // 引入我们创建的 EventCard 组件
 
 // --- 状态管理 ---
-const events = ref([]);
-const loading = ref(true);
-const error = ref(null);
-const searchTerm = ref('');
-const debounceTimer = ref(null);
+const events = ref([])
+const loading = ref(true)
+const error = ref(null)
+const searchTerm = ref('')
+const debounceTimer = ref(null)
 // --- 核心数据获取函数 ---
 const fetchEvents = async () => {
-  loading.value = true;
-  error.value = null;
+  loading.value = true
+  error.value = null
 
   try {
     const params = {
       populate: 'coverImage',
       sort: 'date:desc',
-      filters: { '$and': [] }
-    };
+      filters: { $and: [] },
+    }
     // 新增：搜索条件
     if (searchTerm.value.trim() !== '') {
-      params.filters['$and'].push({ title: { '$containsi': searchTerm.value.trim() } });
+      params.filters['$and'].push({ title: { $containsi: searchTerm.value.trim() } })
     }
-    const response = await apiClient.get('/events', { params });
-    events.value = response.data.data || response.data;
+    const response = await apiClient.get('/events', { params })
+    events.value = response.data.data || response.data
   } catch (e) {
-    error.value = '连接超时或服务器错误。';
-    console.error(e);
+    error.value = '连接超时或服务器错误。'
+    console.error(e)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 // 监听搜索关键词变化，防抖处理
 watch(searchTerm, () => {
-  clearTimeout(debounceTimer.value);
+  clearTimeout(debounceTimer.value)
   debounceTimer.value = setTimeout(() => {
-    fetchEvents();
-  }, 300);
-});
+    fetchEvents()
+  }, 300)
+})
 
-onMounted(fetchEvents);
+onMounted(fetchEvents)
 </script>
 
 <style scoped>
@@ -133,15 +127,26 @@ onMounted(fetchEvents);
 /* 事件卡片的垂直列表容器 */
 .event-list-container {
   display: grid;
-  gap: 0.5rem;
-  max-width: 1200px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 320px));
+  justify-content: center;
+  gap: 0.9rem;
+  max-width: 1120px;
   margin: 0 auto;
+}
+
+:deep(.event-list-container .event-card) {
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .event-list-container {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
 }
 
 /* 页面主体容器 */
 .event-list-view {
   padding-bottom: 30px; /* 底部留出一些空间 */
 }
-
-
 </style>

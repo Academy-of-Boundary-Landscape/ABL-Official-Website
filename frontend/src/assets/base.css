@@ -1,25 +1,37 @@
-:root {
-  --color-background: #2F333D;      /* SCP风格的深蓝灰色 */
-  --color-text: #EAEAEA;            /* SCP风格的灰白色 */
-  --color-heading: #FFFFFF;         /* 标题使用纯白色，更突出 */
-  --color-accent: #1EB5E8;          /* SCP风格的亮蓝色 (rgb(30, 181, 232)) */
-  --color-border: #444444;          /* 用于边框的深灰色 */
-  --color-border-hover: #1EB5E8;    /* 鼠标悬停时边框变为亮蓝色 */
-  --color-box: #21252E;
-  
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600&family=Space+Grotesk:wght@400;500;600&display=swap');
 
-  /* 字体更新为更通用的无衬线字体 */
-  --font-family-body: 'Helvetica Neue', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', 'Microsoft YaHei', sans-serif;
-  --font-family-heading: 'Helvetica Neue', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', 'Microsoft YaHei', sans-serif;
+:root {
+  /* 核心颜色方案：黑底 + 白框 + 亮蓝点缀 */
+  --color-background: #000000;
+  --color-text: #e0e0e0;
+  --color-heading: #ffffff;
+
+  /* 亮蓝色点缀 */
+  --color-accent: #00a8ff;
+  --color-accent-strong: #0077cc;
+  --color-accent-rgb: 0, 168, 255;
+  --color-accent-glow: rgba(0, 168, 255, 0.5);
+
+  /* 白色边框和辉光 */
+  --color-border: #ffffff;
+  --color-border-hover: #ffffff;
+  --color-border-glow: rgba(255, 255, 255, 0.6);
+
+  /* 盒子背景 */
+  --color-box: #050505;
+  --color-box-strong: #0a0a0a;
+  --color-box-glow: rgba(255, 255, 255, 0.08);
+
+  --font-family-body:
+    'Space Grotesk', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', 'Microsoft YaHei', sans-serif;
+  --font-family-heading:
+    'Orbitron', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', 'Microsoft YaHei', sans-serif;
 }
-/* ... existing code ... */
 
 /* 恢复 strong 标签的加粗效果 */
 strong {
   font-weight: bold;
 }
-
-/* ... existing code ... */
 
 /* --- 全局重置和基础样式 --- */
 *,
@@ -34,14 +46,11 @@ strong {
 body {
   min-height: 100vh;
   color: var(--color-text);
-  
+  position: relative;
+
   /* --- 核心修改部分 --- */
-  /* 1. 设置背景颜色为SCP主题的深灰色 */
   background-color: var(--color-background);
 
-  /* 2. 移除了原有的背景纹理图片和渐变 */
-  /* background-image: ... (已移除) */
-  
   /* --- 其他原有样式 --- */
   font-family: var(--font-family-body);
   font-size: 16px;
@@ -51,46 +60,114 @@ body {
   overflow-x: hidden;
 }
 
-/* --- 移除了扫描线动画 --- */
-/* 
-body::before { ... }
-@keyframes scanlines { ... }
-*/
-/* 上述代码块已被完全移除，以实现干净的背景 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background-image: url('./images/calabi-yau.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: min(92vw, 1280px) auto;
+  opacity: 0.16;
+  transform-origin: center;
+  animation: calabi-yau-breath 11s ease-in-out infinite;
+  will-change: transform, opacity;
+  z-index: -2;
+}
 
+@keyframes calabi-yau-breath {
+  0% {
+    transform: scale(0.96);
+    opacity: 0.13;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(0.97);
+    opacity: 0.14;
+  }
+}
 
-/* --- 统一链接样式 (已更新为SCP风格) --- */
+/* 添加未来感的角落装饰 */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+    linear-gradient(225deg, rgba(0, 168, 255, 0.03) 0%, transparent 50%);
+  z-index: -1;
+}
+
+/* --- 统一链接样式 (已更新为未来感风格) --- */
 a {
   color: var(--color-accent);
   text-decoration: none;
-  transition: color 0.3s ease; /* 简化过渡效果 */
-  /* text-shadow: ... (已移除辉光效果) */
+  transition:
+    color 0.2s ease,
+    text-shadow 0.2s ease;
+  position: relative;
 }
 
 a:hover {
-  color: #fff; /* 鼠标悬停时变为白色 */
-  /* text-shadow: ... (已移除辉光效果) */
+  color: var(--color-heading);
+  text-shadow: 0 0 8px rgba(0, 168, 255, 0.4);
 }
 
-/* --- 统一标题样式 (已更新为SCP风格) --- */
-h1, h2, h3 {
+/* 添加链接下划线动画效果 */
+a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-accent);
+  transition: width 0.2s ease;
+  box-shadow: 0 0 6px rgba(0, 168, 255, 0.6);
+}
+
+a:hover::after {
+  width: 100%;
+}
+
+/* --- 统一标题样式 (已更新为未来感风格) --- */
+h1,
+h2,
+h3 {
   font-family: var(--font-family-heading);
-  color: var(--color-accent);
-  letter-spacing: 1px;
-  text-shadow: 0 2px 8px rgba(30, 181, 232, 0.25), 0 0 2px #1EB5E8;
+  color: var(--color-heading);
+  letter-spacing: 2px;
+  text-shadow:
+    0 0 8px rgba(255, 255, 255, 0.25),
+    0 0 14px rgba(0, 168, 255, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 /* --- 建议添加的样式 --- */
 /* 您可以为特定的标题添加下划线，以更贴近原图效果 */
 
 .main-title {
-    border-bottom: 2px solid var(--color-accent);
-    padding-bottom: 10px;
-    display: inline-block;
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: 10px;
+  display: inline-block;
+  box-shadow: 0 4px 12px var(--color-border-glow);
 }
+
 .divider {
-  border: 0;                      /* 重置 <hr> 标签可能存在的默认边框 */
-  height: 1px;                    /* 设置分割线的高度，即其“厚度” */
-  background-color: var(--color-accent); /* 使用您在 :root 中定义的主题亮蓝色 */
-  margin: 2.5rem 0;               /* 设置上下外边距，用于创建与内容的垂直间距 */
+  border: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+  margin: 2.5rem 0;
+  box-shadow: 0 0 8px var(--color-border-glow);
 }

@@ -8,7 +8,6 @@
     </div>
 
     <article v-if="event">
-      
       <section class="page-header">
         <router-link to="/events" class="back-button">&lt; 返回动态列表</router-link>
         <h1 class="title">// {{ event.title }}</h1>
@@ -18,72 +17,78 @@
         </div>
       </section>
 
-      <!-- 
+      <!--
         ↓↓↓ 核心改动：移除两栏布局，改为单栏布局 ↓↓↓
       -->
       <div class="tech-box dynamic-content-area">
         <div v-for="(component, index) in event.mainContent" :key="index">
-          
           <!-- 渲染 Markdown 段落 -->
-          <div 
+          <div
             v-if="component.__component === 'content-block.content-block'"
             v-html="renderMarkdown(component.contentMd)"
             class="markdown-block"
           ></div>
 
-          <!-- 
+          <!--
             ↓↓↓ 核心改动：当遇到制品引用块时，在当前位置横向渲染所有关联制品 ↓↓↓
           -->
-          <div 
-            v-if="component.__component === 'embedding.product-embed' && component.products && component.products.length > 0"
+          <div
+            v-if="
+              component.__component === 'embedding.product-embed' &&
+              component.products &&
+              component.products.length > 0
+            "
             class="product-embed-block"
           >
             <div class="horizontal-scroll-wrapper">
               <!-- 循环渲染 ProductCard -->
-              <ProductCard 
-                v-for="product in component.products" 
-                :key="product.id" 
-                :product="product" 
+              <ProductCard
+                v-for="product in component.products"
+                :key="product.id"
+                :product="product"
                 class="embedded-product-card"
               />
             </div>
           </div>
 
           <!--考虑嵌入链接的情况-->
-          <div 
-            v-if="component.__component === 'embedding.link-embed'"
-            class="link-embed-block"
-          >
+          <div v-if="component.__component === 'embedding.link-embed'" class="link-embed-block">
             <a :href="component.linkContent" target="_blank" rel="noopener" class="external-link">
               {{ component.linkName || component.linkContent }}
             </a>
           </div>
-                    <!--考虑嵌入iframe的情况-->
-          <div 
-            v-if="component.__component === 'embedding.iframe-embed'"
-            class="iframe-embed-block"
-          >
-            <iframe 
-              :src="component.iframeContent" 
-              frameborder="0" 
+          <!--考虑嵌入iframe的情况-->
+          <div v-if="component.__component === 'embedding.iframe-embed'" class="iframe-embed-block">
+            <iframe
+              :src="component.iframeContent"
+              frameborder="0"
               class="embedded-iframe"
               allowfullscreen
             ></iframe>
           </div>
           <!--考虑嵌入一个可下载的文件和它的名称的情况-->
-            <div 
-              v-if="component.__component === 'embedding.file-embed' && component.File && component.File.length > 0"
-              class="file-embed-block"
+          <div
+            v-if="
+              component.__component === 'embedding.file-embed' &&
+              component.File &&
+              component.File.length > 0
+            "
+            class="file-embed-block"
+          >
+            <a
+              :href="getFileUrl(component.File[0])"
+              :download="component.FileName || component.File[0].name || '下载文件'"
+              class="external-link"
+              @click.prevent="
+                downloadFile(
+                  component.File[0],
+                  component.FileName || component.File[0].name || '下载文件',
+                )
+              "
             >
-              <a 
-                :href="getFileUrl(component.File[0])"
-                :download="component.FileName || component.File[0].name || '下载文件'"
-                class="external-link"
-                @click.prevent="downloadFile(component.File[0], component.FileName || component.File[0].name || '下载文件')"
-              >
-                {{ component.FileName || component.File[0].name || '下载文件' }}
-              </a>
-            </div>
+              {{ component.FileName || component.File[0].name || '下载文件' }}
+            </a>
+          </div>
         </div>
       </div>
     </article>
@@ -91,61 +96,61 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
-import { apiClient } from '@/composables/strapi';
-import { marked } from 'marked';
-import ProductCard from '@/components/ProductCard.vue';
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { apiClient } from '@/composables/strapi'
+import { marked } from 'marked'
+import ProductCard from '@/components/ProductCard.vue'
 
-const route = useRoute();
-const event = ref(null);
-const loading = ref(true);
-const error = ref(null);
+const route = useRoute()
+const event = ref(null)
+const loading = ref(true)
+const error = ref(null)
 import { getStrapiMedia } from '@/composables/strapi'
 //在获取可下载文件的url时，应该调用这个函数
 const getFileUrl = (file) => {
-  return getStrapiMedia(file);
+  return getStrapiMedia(file)
 }
 const downloadFile = (file, filename) => {
-  const url = getStrapiMedia(file);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
+  const url = getStrapiMedia(file)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
 
 // 渲染Markdown的辅助函数 (保持不变)
 const renderMarkdown = (markdownText) => {
-  return marked(markdownText || '');
-};
+  return marked(markdownText || '')
+}
 
 // 获取事件数据的主函数
 const fetchEventData = async (slug) => {
-  loading.value = true;
-  error.value = null;
+  loading.value = true
+  error.value = null
 
   try {
     // --- 步骤 1: 第一次请求，使用能正常工作的 populate: '*' ---
     const initialResponse = await apiClient.get(`/events?filters[slug][$eq]=${slug}`, {
       params: {
         populate: {
-          mainContent: { populate: '*' }
-        }
-      }
-    });
+          mainContent: { populate: '*' },
+        },
+      },
+    })
 
-    const initialData = initialResponse.data.data?.[0] || initialResponse.data?.[0];
-    if (!initialData) throw new Error('该事件不存在或已被删除');
+    const initialData = initialResponse.data.data?.[0] || initialResponse.data?.[0]
+    if (!initialData) throw new Error('该事件不存在或已被删除')
 
     // --- 步骤 2: 提取所有不完整的 Product ID ---
-    const productIdsToFetch = [];
+    const productIdsToFetch = []
     if (initialData.mainContent) {
       for (const component of initialData.mainContent) {
         if (component.__component === 'embedding.product-embed' && component.products) {
           for (const product of component.products) {
-            productIdsToFetch.push(product.id);
+            productIdsToFetch.push(product.id)
           }
         }
       }
@@ -157,77 +162,119 @@ const fetchEventData = async (slug) => {
       const productsResponse = await apiClient.get('/products', {
         params: {
           filters: {
-            id: { '$in': productIdsToFetch }
+            id: { $in: productIdsToFetch },
           },
-          populate: 'coverImage'
-        }
-      });
-      const fullProductsData = productsResponse.data.data || productsResponse.data;
-
-     
+          populate: 'coverImage',
+        },
+      })
+      const fullProductsData = productsResponse.data.data || productsResponse.data
 
       // --- 步骤 4: 数据合并 ---
       // 创建一个以ID为键的Map，方便快速查找
-      const fullProductsMap = new Map(fullProductsData.map(p => [p.id, p]));
+      const fullProductsMap = new Map(fullProductsData.map((p) => [p.id, p]))
 
       // 遍历原始数据，用完整数据替换掉不完整的数据
       for (const component of initialData.mainContent) {
         if (component.__component === 'embedding.product-embed' && component.products) {
-          component.products = component.products.map(p => fullProductsMap.get(p.id) || p);
+          component.products = component.products.map((p) => fullProductsMap.get(p.id) || p)
         }
       }
     }
 
     // 最后，将处理好的完整数据赋值给 ref
-    event.value = initialData;
-
+    event.value = initialData
   } catch (e) {
-    error.value = e.message;
+    error.value = e.message
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 // 路由监听 (保持不变)
 watch(
   () => route.params.slug,
   (newSlug) => {
     if (newSlug) {
-      fetchEventData(newSlug);
-      window.scrollTo(0, 0);
+      fetchEventData(newSlug)
+      window.scrollTo(0, 0)
     }
   },
-  { immediate: true }
-);
-
+  { immediate: true },
+)
 </script>
 
 <style scoped>
 /* --- 布局与通用样式 --- */
+.event-detail-view {
+  --md-surface: rgba(15, 24, 38, 0.78);
+  --md-surface-strong: rgba(18, 30, 48, 0.92);
+  --md-border: rgba(76, 201, 255, 0.24);
+  --md-glow: rgba(76, 201, 255, 0.18);
+  --md-code-bg: rgba(9, 14, 24, 0.92);
+}
+
+.u-tech-panel {
+  border: 1px solid var(--md-border);
+  background: var(--md-surface);
+  box-shadow:
+    inset 0 0 0 1px rgba(76, 201, 255, 0.06),
+    0 0 14px rgba(76, 201, 255, 0.08);
+  border-radius: 10px;
+}
+
+.u-tech-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--md-border);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 8px;
+  background: var(--md-surface);
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.u-tech-link:hover {
+  color: var(--color-heading);
+  background: var(--md-surface-strong);
+  box-shadow:
+    0 0 0 1px rgba(76, 201, 255, 0.24) inset,
+    0 0 14px var(--md-glow);
+  transform: translateY(-1px);
+}
+
 .dynamic-content-area {
   padding: 2.5rem;
   max-width: 1200px; /* 限制主内容区的最大宽度以保证可读性 */
-  margin: 0 auto;   /* 居中 */
+  margin: 0 auto; /* 居中 */
 }
 
 .markdown-block,
 .product-embed-block {
   margin-bottom: 2rem;
 }
+
+.markdown-block {
+  padding: 1.2rem 1.25rem;
+}
+
 .dynamic-content-area > div:last-child {
   margin-bottom: 0;
 }
 
 /* --- 嵌入制品块的核心样式 --- */
-.product-embed-block {
-  /* 为横向滚动区域提供一个容器 */
-}
-
 .horizontal-scroll-wrapper {
   display: flex;
   gap: 1.5rem;
   /* 关键：启用横向滚动 */
-  overflow-x: auto; 
+  overflow-x: auto;
   padding: 1rem 0.5rem; /* 为卡片上下和滚动条留出空间 */
   /* 美化滚动条 (适用于 Webkit 内核浏览器, 如 Chrome, Safari) */
   &::-webkit-scrollbar {
@@ -252,44 +299,166 @@ watch(
   width: 220px; /* 与 ProductList 中设置的宽度保持一致 */
 }
 
+/* --- Markdown 渲染样式（科技化 + 原子化） --- */
+:deep(.markdown-block) {
+  border: 1px solid var(--md-border);
+  background: linear-gradient(145deg, rgba(14, 23, 36, 0.82), rgba(10, 16, 26, 0.72));
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px rgba(76, 201, 255, 0.06);
+}
 
-/* --- Markdown 渲染样式 (保持不变) --- */
+:deep(.markdown-block > *:first-child) {
+  margin-top: 0;
+}
+
+:deep(.markdown-block > *:last-child) {
+  margin-bottom: 0;
+}
+
 :deep(.markdown-block p) {
-  line-height: 1.8;
-  margin-bottom: 1.5rem;
-}
-:deep(.markdown-block h2) {
-  margin-top: 2rem;
+  line-height: 1.85;
+  letter-spacing: 0.01em;
+  color: var(--color-text);
   margin-bottom: 1rem;
-  color: var(--color-heading);
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: 0.5rem;
 }
-/* ... 其他Markdown样式 ... */
-/*链接嵌入样式*/
-.link-embed-block .external-link {
-  display: inline-block;
-  padding: 0.5rem 1.2rem;
-  border: 2px solid var(--color-accent);
-  border-radius: 0 8px 8px 0;
-  background: var(--color-background);
+
+:deep(.markdown-block h1),
+:deep(.markdown-block h2),
+:deep(.markdown-block h3),
+:deep(.markdown-block h4) {
+  margin-top: 1.6rem;
+  margin-bottom: 0.8rem;
+  color: var(--color-heading);
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 10px rgba(76, 201, 255, 0.2);
+}
+
+:deep(.markdown-block h2),
+:deep(.markdown-block h3) {
+  border-left: 3px solid var(--color-accent);
+  padding-left: 0.7rem;
+}
+
+:deep(.markdown-block ul),
+:deep(.markdown-block ol) {
+  margin: 0.8rem 0 1rem 1.2rem;
+  padding-left: 0.3rem;
+}
+
+:deep(.markdown-block li) {
+  margin-bottom: 0.35rem;
+  line-height: 1.75;
+}
+
+:deep(.markdown-block blockquote) {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--color-accent);
+  border-radius: 6px;
+  color: #d8ecff;
+  background: rgba(76, 201, 255, 0.08);
+}
+
+:deep(.markdown-block hr) {
+  border: none;
+  height: 1px;
+  margin: 1.2rem 0;
+  background: linear-gradient(90deg, transparent, rgba(76, 201, 255, 0.55), transparent);
+}
+
+:deep(.markdown-block a) {
   color: var(--color-accent);
-  font-weight: 500;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+:deep(.markdown-block a:hover) {
+  color: var(--color-heading);
+}
+
+:deep(.markdown-block code) {
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: 0.9em;
+  border: 1px solid rgba(76, 201, 255, 0.28);
+  border-radius: 5px;
+  padding: 0.1rem 0.35rem;
+  color: #c8f0ff;
+  background: rgba(8, 14, 24, 0.78);
+}
+
+:deep(.markdown-block pre) {
+  margin: 1rem 0;
+  border-radius: 8px;
+  border: 1px solid var(--md-border);
+  background: var(--md-code-bg);
+  box-shadow: 0 0 0 1px rgba(76, 201, 255, 0.08) inset;
+  overflow-x: auto;
+}
+
+:deep(.markdown-block pre code) {
+  display: block;
+  border: none;
+  background: transparent;
+  padding: 0.8rem 0.9rem;
+}
+
+:deep(.markdown-block table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+:deep(.markdown-block th),
+:deep(.markdown-block td) {
+  border: 1px solid var(--md-border);
+  padding: 0.55rem 0.65rem;
+}
+
+:deep(.markdown-block th) {
+  color: var(--color-heading);
+  background: rgba(76, 201, 255, 0.12);
+}
+
+:deep(.markdown-block img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--md-border);
+  box-shadow: 0 0 14px rgba(76, 201, 255, 0.1);
+}
+
+/*链接嵌入样式*/
+.link-embed-block .external-link,
+.file-embed-block .external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--md-border);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 8px;
+  background: var(--md-surface);
+  color: var(--color-accent);
+  font-weight: 600;
   text-decoration: none;
-  transition: 
-    background 0.2s,
-    color 0.2s,
-    box-shadow 0.2s,
-    border-color 0.2s;
-  box-shadow: 2px 2px 0 var(--color-accent), 0 2px 8px rgba(0,0,0,0.04);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+  box-shadow: 0 0 0 1px rgba(76, 201, 255, 0.08) inset;
   cursor: pointer;
 }
-.link-embed-block .external-link:hover {
-  background: var(--color-accent);
-  color: #fff;
-  border-color: var(--color-accent);
-  box-shadow: 4px 4px 0 var(--color-accent), 0 4px 16px rgba(0,0,0,0.08);
-  transform: translateY(-2px) scale(1.03);
+
+.link-embed-block .external-link:hover,
+.file-embed-block .external-link:hover {
+  color: var(--color-heading);
+  background: var(--md-surface-strong);
+  box-shadow:
+    0 0 0 1px rgba(76, 201, 255, 0.24) inset,
+    0 0 14px var(--md-glow);
+  transform: translateY(-1px);
 }
 
 .iframe-embed-block .embedded-iframe {
@@ -297,39 +466,31 @@ watch(
   min-height: 300px;
   max-height: 60vh;
   aspect-ratio: 16 / 9;
-  border: 2px solid #fff;
+  border: 1px solid var(--md-border);
   border-radius: 8px;
-  background: #fff;
+  background: #0d1420;
   box-sizing: border-box;
-  transition: border-color 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   display: block;
 }
 .iframe-embed-block .embedded-iframe:hover {
   border-color: var(--color-accent);
+  box-shadow: 0 0 12px var(--md-glow);
 }
+
 .file-embed-block .external-link {
-  display: inline-block;
-  padding: 0.5rem 1.2rem;
-  border: 2px solid var(--color-accent);
-  border-radius: 0 8px 8px 0;
-  background: var(--color-background);
-  color: var(--color-accent);
-  font-weight: 500;
-  text-decoration: none;
-  transition: 
-    background 0.2s,
-    color 0.2s,
-    box-shadow 0.2s,
-    border-color 0.2s;
-  box-shadow: 2px 2px 0 var(--color-accent), 0 2px 8px rgba(0,0,0,0.04);
-  cursor: pointer;
   margin-top: 1rem;
 }
-.file-embed-block .external-link:hover {
-  background: var(--color-accent);
-  color: #fff;
-  border-color: var(--color-accent);
-  box-shadow: 4px 4px 0 var(--color-accent), 0 4px 16px rgba(0,0,0,0.08);
-  transform: translateY(-2px) scale(1.03);
+
+@media (max-width: 768px) {
+  .dynamic-content-area {
+    padding: 1rem;
+  }
+
+  .markdown-block {
+    padding: 0.9rem;
+  }
 }
 </style>
