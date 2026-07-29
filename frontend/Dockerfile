@@ -4,9 +4,8 @@ FROM node:20-bookworm-slim AS build
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-# Use npmmirror for faster installs in China
-RUN npm config set registry https://registry.npmmirror.com && npm ci
+COPY .npmrc package.json package-lock.json ./
+RUN npm ci
 
 COPY . .
 RUN npm run build
