@@ -32,24 +32,22 @@
       "type": "richtext",
       "required": true
     },
-    "slug": {
-      "type": "uid",
-      "targetField": "title"
-    },
     "projectStaff": {
       "type": "component",
       "component": "staff.staff",
       "repeatable": true
     },
-    "images": {
-      "type": "media",
-      "multiple": true,
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
+    "nowStatus": {
+      "type": "enumeration",
+      "enum": [
+        "preview",
+        "ongoing",
+        "ended",
+        "continuous"
       ]
+    },
+    "link": {
+      "type": "string"
     }
   }
 }

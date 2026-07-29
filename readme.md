@@ -1,11 +1,12 @@
 
 # 🏛️ 社团官网 | Project Documentation
 
-欢迎加入本项目！这是一个基于 **Vue 3 (前端)** 和 **Strapi v4 (后端)** 的全栈项目。
+欢迎加入本项目！这是一个基于 **Vue 3 (前端)** 和 **Strapi v5 (后端)** 的全栈项目。
 
 本项目采用 Monorepo 结构：
 - `/frontend`: Vue 3 + Vite 前端代码
-- `/backend`: Strapi v4 Headless CMS 后端代码
+- `/strapi-backend`: Strapi v5 Headless CMS 后端代码
+- `/backend`: 旧版遗留代码（已废弃，忽略）
 
 ---
 
@@ -19,7 +20,7 @@
 
 2.  **我们为什么用它？**
     *   **省事**：我们不需要手写 CRUD（增删改查）代码。只需在后台点击“创建文章模型”，Strapi 就会自动生成对应的数据库表和 REST API 接口。
-    *   **分离**：开发环境使用 **SQLite** (轻量，无需配置)，生产环境使用 **MySQL**。Strapi 帮我们屏蔽了数据库的差异。
+    *   **分离**：开发环境使用 **SQLite** (轻量，无需配置)，生产环境使用 **PostgreSQL** (Docker 容器)。Strapi 帮我们屏蔽了数据库的差异。
 
 3.  **核心概念**：
     *   **Collection Type**: 集合类型。比如“文章 (Article)”、“成员 (Member)”，可以有多条记录。
@@ -56,7 +57,7 @@
 ### 2. 后端启动 (Strapi)
 
 ```bash
-cd backend
+cd strapi-backend
 
 # 1. 安装依赖
 npm install
@@ -126,18 +127,48 @@ Strapi 会根据内容类型名称自动生成 REST API。
 
 ---
 
+## 🚀 生产环境部署
+
+生产服务器为单台 VPS，项目位于 `/home/deploy/abl_website/`，采用**混合架构**：
+
+| 组件 | 运行方式 | 说明 |
+|---|---|---|
+| **前端** | Docker (`abl-frontend`) | nginx:alpine 提供静态文件，`127.0.0.1:8080` |
+| **数据库** | Docker (`abl-postgres`) | PostgreSQL 16，`127.0.0.1:5433` |
+| **Strapi** | 宿主机 PM2 (`strapi-main`) | 直连 Docker PostgreSQL |
+| **Nginx** | 宿主机 system | SSL 终结 + 反向代理 |
+
+**为什么不把 Strapi 放进 Docker？** Strapi 本体太大（含 sharp 等原生模块），每次部署重新构建镜像太慢。跑在宿主机上通过 PM2 管理更快更简单。
+
+```bash
+# 日常部署（deploy 用户）
+cd /home/deploy/abl_website
+bash deploy.sh          # 构建前端 + 启动 Docker 服务
+docker compose restart frontend  # 仅重启前端
+
+# Strapi 管理（需要 root）
+pm2 restart strapi-main
+pm2 logs strapi-main
+```
+
+---
+
 ## 🤝 协作规范 (Git Workflow)
 
 1.  **不要提交的文件**：
     *   `node_modules`
     *   `dist` / `.cache` / `build`
     *   `.env` (严禁提交，含密钥)
-    *   `backend/public/uploads` (本地测试图片不要传)
-    *   `backend/database` (本地 SQLite 数据库不要传)
+    *   `strapi-backend/public/uploads` (本地测试图片不要传)
+    *   `strapi-backend/.tmp` (本地 SQLite 数据库不要传)
+    *   `.env` (Docker Compose 环境变量，含数据库密码)
 
 2.  **遇到冲突怎么办？**
     *   如果拉取代码后 Strapi 启动报错，通常是依赖或缓存问题。
     *   尝试：`rm -rf node_modules .cache build` 然后重新 `npm install && npm run develop`。
+    *   `strapi-backend` 目录路径问题：项目之前叫 `backend/`，现已重命名为 `strapi-backend/`。
+
+更详细的架构说明、Docker 配置、部署流程请参考 [CLAUDE.md](./CLAUDE.md)。
 
 ---
 

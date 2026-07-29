@@ -500,13 +500,13 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> & Schema.Attribute.Private
     date: Schema.Attribute.Date & Schema.Attribute.Required
-    images: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios', true>
+    link: Schema.Attribute.String
     locale: Schema.Attribute.String & Schema.Attribute.Private
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::project.project'> &
       Schema.Attribute.Private
+    nowStatus: Schema.Attribute.Enumeration<['preview', 'ongoing', 'ended', 'continuous']>
     projectStaff: Schema.Attribute.Component<'staff.staff', true>
     publishedAt: Schema.Attribute.DateTime
-    slug: Schema.Attribute.UID<'title'>
     title: Schema.Attribute.String & Schema.Attribute.Required
     updatedAt: Schema.Attribute.DateTime
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> & Schema.Attribute.Private
