@@ -30,6 +30,90 @@ No test suite is configured for either app.
 - `npm run start` — run without the autoreload/content-type-builder (production mode).
 - `npm run upgrade` / `npm run upgrade:dry` — run `@strapi/upgrade`.
 
+## Development Workflow (开发流程)
+
+### First-time setup
+
+```bash
+git clone git@github.com:Academy-of-Boundary-Landscape/ABL-Official-Website.git
+cd ABL-Official-Website
+
+# Backend
+cd strapi-backend
+cp .env.dev .env          # dev env uses SQLite, works out of the box
+npm install
+npm run develop            # Admin: http://localhost:1337/admin (register on first run)
+                           # API:   http://localhost:1337/api
+
+# Frontend (new terminal)
+cd frontend
+npm install
+npm run dev                # http://localhost:5173, HMR hot reload
+```
+
+### Daily iteration loop
+
+```
+┌─ 1. 改代码 ─────────────────────────────────────────────┐
+│                                                          │
+│  frontend/  →  npm run dev (HMR 即时生效，不用刷新)       │
+│  strapi-backend/ → npm run develop (改 Content-Type 用)  │
+│                                                          │
+├─ 2. 查数据类型 ──────────────────────────────────────────┤
+│                                                          │
+│  simpler_documentation.md    ← 最全，中文，推荐           │
+│  strapi-backend/src/api/*/content-types/*/schema.json   │
+│  strapi-backend/types/generated/contentTypes.d.ts       │
+│                                                          │
+├─ 3. 提交+部署 ───────────────────────────────────────────┤
+│                                                          │
+│  git add -A && git commit -m "..." && git push           │
+│  ssh deploy@server 'bash /home/deploy/abl_website/update.sh' │
+│                                                          │
+│  # 如果改了 Strapi Content-Type:                           │
+│  ssh root@server 'pm2 restart strapi-main'               │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
+```
+
+### What syncs and what doesn't
+
+| 改动 | Git 同步? | 部署方式 |
+|---|---|---|
+| 前端代码 (Vue/CSS/JS) | ✅ 同步 | `update.sh` (Docker rebuild, ~30s) |
+| Content-Type 结构 (增删字段) | ✅ 同步 (schema JSON) | `pm2 restart strapi-main` |
+| Content 数据 (文章/制品内容) | ❌ 不同步 | 生产 Admin 手动建，或 export → import |
+| 上传图片/文件 | ❌ 不同步 | 本地传测试图即可 |
+| Strapi 配置 (plugins/权限) | ⚠️ 部分同步 | 大部分是数据库配置，不走 git |
+
+### Changing Content-Types (important!)
+
+**只能在 `develop` 模式下改**（production 模式禁用了 Content-Type Builder）：
+
+```bash
+# 本地
+cd strapi-backend && npm run develop
+# → Admin 面板改 Content-Type
+# → git diff 看 schema.json 变了
+# → git commit + push
+
+# 服务器
+ssh root@server 'cd /home/deploy/abl_website/strapi-backend && git pull && pm2 restart strapi-main'
+# Strapi 启动时自动检测 schema 变更并迁移数据库
+```
+
+### Getting production data for local testing
+
+生产数据不在 git 里，需要手动导出：
+
+```bash
+# 生产 Strapi Admin → Settings → Config Sync → Export
+# 或命令行:
+ssh root@server 'cd /home/deploy/abl_website/strapi-backend && npx strapi export -f /tmp/export.tar.gz'
+scp root@server:/tmp/export.tar.gz .
+cd strapi-backend && npx strapi import -f export.tar.gz --force
+```
+
 ## Production Deployment (Hybrid Architecture)
 
 The project runs on a single VPS under `deploy` user at `/home/deploy/abl_website/`.
