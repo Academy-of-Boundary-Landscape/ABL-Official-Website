@@ -2377,3 +2377,164 @@ grep -c "@media" src/**/*.vue                      # 仅剩 (hover: hover) 一�
 4. `base.css` 的生成块与 `colorTokens` 同步
 
 有了它们，「三套调色板各自漂移」这件事无法复发。
+
+---
+
+# 阶段 5 补充：执行期新增的任务
+
+以下三个 Task 不在原计划中，是执行过程中产生的：Task 21、22 来自用户在批次 4 期间的决定，Task 23 来自 controller 发现的计划覆盖缺口。与 Task 19、20 同属阶段 5，在同一批次执行。
+
+## Task 21: AsyncBoundary 空状态改回终端风纯文本
+
+**背景：** 批次 3 的评审指出，`AsyncBoundary` 用 `n-empty` 渲染空态，而 `HomeView` 原本是 `<p class="empty-text">暂无新品发布</p>`、`EventList` 原本是 `.status-box` 里一行 `>> 当前没有新的动态。`。这不是「在原本没有状态的地方新增状态」，而是把**已经存在**的状态重新做了皮肤，与「不改观感」的前提冲突，且会在全部九个页面上复现。
+
+用户裁定：改回终端风纯文本。理由是 `n-empty` 的居中图标观感属于通用后台管理系统，与本站 `>>` 前缀的终端调性不符。
+
+**Files:**
+- Modify: `frontend/src/components/AsyncBoundary.vue`
+
+**Interfaces:**
+- Consumes: `emptyText` prop（默认值 `'>> 当前没有内容。'` 已自带 `>>` 前缀，不变）
+- Produces: 组件对外接口完全不变——props、emits 均不动，仅空态的内部渲染改变
+
+- [ ] **Step 1: 替换空态渲染**
+
+把空态分支从：
+
+```vue
+<div v-else-if="empty" class="status-box">
+  <n-empty :description="emptyText" />
+</div>
+```
+
+改为：
+
+```vue
+<div v-else-if="empty" class="status-box">
+  <p>{{ emptyText }}</p>
+</div>
+```
+
+这与 `EventList.vue` 改造前的空态结构完全一致（`.status-box` 包一个 `<p>`，文案自带 `>>` 前缀）。
+
+- [ ] **Step 2: 清理 NEmpty 引用**
+
+从 `<script setup>` 的 `naive-ui` import 中移除 `NEmpty`。若移除后该 import 语句为空，整行删除。
+
+- [ ] **Step 3: 确认 themeOverrides.Empty 是否还有用**
+
+Run: `cd frontend && grep -rn "n-empty\|NEmpty" src/`
+
+若无输出，说明 `src/config/theme.js` 里的 `Empty` 配置块已无消费者。**保留它**——它不产生错误，且日后若有页面用 `n-empty` 仍需要它。但在该配置块上方加一行注释说明当前无人使用，避免后人误以为它正在生效。
+
+这与 Timeline 那处的处理原则一致：宁可留一份带说明的配置，不留一份让人误判的配置。
+
+- [ ] **Step 4: 验证**
+
+Run: `cd frontend && npm run test && npm run build`
+Expected: 64/64 通过（本改动不涉及被测逻辑），构建成功。
+
+- [ ] **Step 5: 提交**
+
+```bash
+git add frontend/src/components/AsyncBoundary.vue frontend/src/config/theme.js
+git commit -m "refactor: :lipstick: AsyncBoundary 空态改回终端风纯文本"
+```
+
+---
+
+## Task 22: 删除 purchaseLinks 死代码
+
+**背景：** `ProductDetail.vue` 有一段「通贩地址」UI，读取 `product.purchaseLinks`。该字段在 Strapi 的 product schema 及所有 component 中**零命中**，全仓库搜不到任何定义——这段 UI 从未渲染过。用户确认：那是订购链接功能，现已不需要，整段删除，不保留 `v-if` 空壳。
+
+**Files:**
+- Modify: `frontend/src/views/ProductDetail.vue`
+
+- [ ] **Step 1: 删除模板块**
+
+删除整个 `<div v-if="product.purchaseLinks && product.purchaseLinks.length" class="purchase-section">` 元素及其全部子节点（含 `.purchase-title` 标题与 `v-for` 生成的 `.purchase-link` 链接），约 15 行。
+
+- [ ] **Step 2: 删除相关 CSS，注意共用选择器**
+
+删除以下规则：`.purchase-section`、`.purchase-link`、`.purchase-link:hover`、`.purchase-link.disabled`、`.purchase-link.disabled:hover`。
+
+**陷阱：** 还有一条规则是
+
+```css
+.purchase-title, .tracklist-title {
+  color: var(--color-heading);
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+```
+
+这是**共用选择器**。只能删掉 `.purchase-title` 这半边，改为：
+
+```css
+.tracklist-title {
+  color: var(--color-heading);
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+```
+
+`.tracklist-title`（曲目表标题）仍在使用。整条删除会让曲目表标题掉样式——而由于开发库为空，这个错误在本地跑不出来。
+
+- [ ] **Step 3: 确认删干净**
+
+Run: `cd frontend && grep -rn "purchase" src/`
+Expected: 无输出。
+
+- [ ] **Step 4: 验证**
+
+Run: `cd frontend && npm run test && npm run build && npm run lint`
+
+- [ ] **Step 5: 提交**
+
+```bash
+git add frontend/src/views/ProductDetail.vue
+git commit -m "chore: :fire: 删除从未渲染过的 purchaseLinks 通贩地址模块"
+```
+
+---
+
+## Task 23: 模板内联样式中的硬编码颜色改用 token
+
+**背景：** 本轮的颜色收敛只覆盖了 `<style>` 块——Task 15、16、20 的指令通篇写的是「scoped CSS 里的字面量」，漏掉了模板中 `style=""` 属性里的颜色。这是计划的覆盖缺口，不是实现者的疏漏。
+
+**Files:**
+- Modify: `frontend/src/views/ProductDetail.vue`
+- Modify: `frontend/src/views/projects/csd20.vue`
+
+- [ ] **Step 1: 列出全部内联颜色**
+
+Run: `cd frontend && grep -rnE 'style="[^"]*(#[0-9a-fA-F]{3,8}|rgba?\()' src/ --include=*.vue`
+
+- [ ] **Step 2: 替换 ProductDetail 的三个状态色**
+
+这三处是制品库存状态的语义色，正好对应已有 token（取值接近但不完全相同，属「向 token 看齐，允许微差」范围内）：
+
+| 位置 | 原值 | 改为 |
+|---|---|---|
+| 在售 | `color: #27ae60` | `color: var(--color-success)` |
+| 完售 | `color: #e74c3c` | `color: var(--color-error)` |
+| 未知 | `color: #f1c40f` | `color: var(--color-warning)` |
+
+- [ ] **Step 3: 处理 csd20 的内联样式**
+
+`csd20.vue` 的按钮内联样式含 `background:#4f8cff`——这个蓝色不在 token 表中，且与 `--color-accent`（`#00a8ff`）差异明显，直接归并会改变观感。
+
+处理方式：把该按钮的整段内联样式移入 `<style scoped>` 成为一条具名规则（内联样式本就不该这么长），`#4f8cff` 暂时保留为字面量并加注释说明它不属于当前 token 体系。同一文件中 `rgba(0, 0, 0, 0.08)` 一类的阴影一并随规则移入，同样保留字面量——它们是阴影叠加值，属 spec 2.4 明确留给 scoped CSS 的特效范畴。
+
+**不要**为了消灭字面量而把 `#4f8cff` 强行映射到 `--color-accent`：那会改变观感，违反本轮前提。
+
+- [ ] **Step 4: 验证**
+
+Run: `cd frontend && npm run test && npm run build && npm run lint`
+
+- [ ] **Step 5: 提交**
+
+```bash
+git add frontend/src/views/ProductDetail.vue frontend/src/views/projects/csd20.vue
+git commit -m "refactor: :art: 模板内联样式中的状态色改用 token"
+```
