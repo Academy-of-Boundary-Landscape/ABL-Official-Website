@@ -152,6 +152,7 @@
 .notice {
   margin-top: 1rem;
   font-size: 0.9rem;
-  color: var(--vt-c-white-soft);
+  /* var(--vt-c-white-soft) 是脚手架遗留变量，从未被定义过，一直是空转 */
+  color: var(--color-text-muted);
 }
 </style>
