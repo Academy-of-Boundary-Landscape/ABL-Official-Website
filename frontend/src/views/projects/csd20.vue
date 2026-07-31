@@ -43,8 +43,17 @@
             </aside>
 
             <!-- 右侧：制品卡片 -->
-            <div v-if="csd20Product" class="centered-product-card">
-                <ProductCard :product="csd20Product" />
+            <div class="centered-product-card">
+                <AsyncBoundary
+                    :loading="productLoading"
+                    :error="productError"
+                    :empty="productNotFound"
+                    skeleton="text"
+                    empty-text=">> 制品档案暂缺。"
+                    @retry="refreshProduct"
+                >
+                    <ProductCard v-if="csd20Product" :product="csd20Product" />
+                </AsyncBoundary>
             </div>
         </div>
 
@@ -185,6 +194,7 @@
 <script setup>
 import { ref } from 'vue';
 import ProductCard from '@/components/ProductCard.vue';
+import AsyncBoundary from '@/components/AsyncBoundary.vue';
 import { useProductByTitle } from '@/composables/useProducts';
 
 import coverImg from '@/assets/images/csd20related/csd_20_title.png';
@@ -202,5 +212,11 @@ const previews = ref([
 const showCoverModal = ref(false);
 
 // 临时方案：按标题硬匹配，见 useProducts.js 里 useProductByTitle 的注释
-const { data: csd20Product } = useProductByTitle('梦违科学世纪20周年合同志');
+const {
+    data: csd20Product,
+    loading: productLoading,
+    error: productError,
+    notFound: productNotFound,
+    refresh: refreshProduct,
+} = useProductByTitle('梦违科学世纪20周年合同志');
 </script>
