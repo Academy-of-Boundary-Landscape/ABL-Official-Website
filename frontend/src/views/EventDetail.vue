@@ -1,112 +1,139 @@
 <template>
   <div class="event-detail-view container">
-    <div v-if="loading" class="status-box">
-      <p>>> 正在加载事件详情...</p>
-    </div>
-    <div v-if="error" class="status-box error">
-      <p>>> [错误] 无法获取事件数据: {{ error }}</p>
-    </div>
+    <AsyncBoundary
+      :loading="loading"
+      :error="error"
+      :empty="notFound"
+      skeleton="text"
+      empty-text=">> 该事件不存在或已被删除。"
+      @retry="refresh"
+    >
+      <article>
+        <section class="page-header">
+          <router-link to="/events" class="back-button">&lt; 返回动态列表</router-link>
+          <h1 class="title">// {{ event.title }}</h1>
+          <div class="subtitle-wrapper">
+            <span class="category-badge">{{ event.category }}</span>
+            <p class="subtitle">>> 发布于: {{ event.date }}</p>
+          </div>
+        </section>
 
-    <article v-if="event">
-      <section class="page-header">
-        <router-link to="/events" class="back-button">&lt; 返回动态列表</router-link>
-        <h1 class="title">// {{ event.title }}</h1>
-        <div class="subtitle-wrapper">
-          <span class="category-badge">{{ event.category }}</span>
-          <p class="subtitle">>> 发布于: {{ event.date }}</p>
-        </div>
-      </section>
+        <!--
+          ↓↓↓ 核心改动：移除两栏布局，改为单栏布局 ↓↓↓
+        -->
+        <div class="tech-box dynamic-content-area">
+          <div v-for="(component, index) in event.mainContent" :key="index">
+            <!-- 渲染 Markdown 段落 -->
+            <div
+              v-if="component.__component === 'content-block.content-block'"
+              v-html="renderMarkdown(component.contentMd)"
+              class="markdown-block"
+            ></div>
 
-      <!--
-        ↓↓↓ 核心改动：移除两栏布局，改为单栏布局 ↓↓↓
-      -->
-      <div class="tech-box dynamic-content-area">
-        <div v-for="(component, index) in event.mainContent" :key="index">
-          <!-- 渲染 Markdown 段落 -->
-          <div
-            v-if="component.__component === 'content-block.content-block'"
-            v-html="renderMarkdown(component.contentMd)"
-            class="markdown-block"
-          ></div>
+            <!--
+              ↓↓↓ 核心改动：当遇到制品引用块时，在当前位置横向渲染所有关联制品 ↓↓↓
+            -->
+            <div
+              v-if="
+                component.__component === 'embedding.product-embed' &&
+                component.products &&
+                component.products.length > 0
+              "
+              class="product-embed-block"
+            >
+              <div class="horizontal-scroll-wrapper">
+                <!-- 循环渲染 ProductCard，用批量补全后的完整数据（原块只带 id） -->
+                <ProductCard
+                  v-for="product in resolveEmbeddedProducts(component)"
+                  :key="product.id"
+                  :product="product"
+                  class="embedded-product-card"
+                />
+              </div>
+            </div>
 
-          <!--
-            ↓↓↓ 核心改动：当遇到制品引用块时，在当前位置横向渲染所有关联制品 ↓↓↓
-          -->
-          <div
-            v-if="
-              component.__component === 'embedding.product-embed' &&
-              component.products &&
-              component.products.length > 0
-            "
-            class="product-embed-block"
-          >
-            <div class="horizontal-scroll-wrapper">
-              <!-- 循环渲染 ProductCard -->
-              <ProductCard
-                v-for="product in component.products"
-                :key="product.id"
-                :product="product"
-                class="embedded-product-card"
-              />
+            <!--考虑嵌入链接的情况-->
+            <div v-if="component.__component === 'embedding.link-embed'" class="link-embed-block">
+              <a :href="component.linkContent" target="_blank" rel="noopener" class="external-link">
+                {{ component.linkName || component.linkContent }}
+              </a>
+            </div>
+            <!--考虑嵌入iframe的情况-->
+            <div
+              v-if="component.__component === 'embedding.iframe-embed'"
+              class="iframe-embed-block"
+            >
+              <iframe
+                :src="component.iframeContent"
+                frameborder="0"
+                class="embedded-iframe"
+                allowfullscreen
+              ></iframe>
+            </div>
+            <!--考虑嵌入一个可下载的文件和它的名称的情况-->
+            <div
+              v-if="
+                component.__component === 'embedding.file-embed' &&
+                component.File &&
+                component.File.length > 0
+              "
+              class="file-embed-block"
+            >
+              <a
+                :href="getFileUrl(component.File[0])"
+                :download="component.FileName || component.File[0].name || '下载文件'"
+                class="external-link"
+                @click.prevent="
+                  downloadFile(
+                    component.File[0],
+                    component.FileName || component.File[0].name || '下载文件',
+                  )
+                "
+              >
+                {{ component.FileName || component.File[0].name || '下载文件' }}
+              </a>
             </div>
           </div>
-
-          <!--考虑嵌入链接的情况-->
-          <div v-if="component.__component === 'embedding.link-embed'" class="link-embed-block">
-            <a :href="component.linkContent" target="_blank" rel="noopener" class="external-link">
-              {{ component.linkName || component.linkContent }}
-            </a>
-          </div>
-          <!--考虑嵌入iframe的情况-->
-          <div v-if="component.__component === 'embedding.iframe-embed'" class="iframe-embed-block">
-            <iframe
-              :src="component.iframeContent"
-              frameborder="0"
-              class="embedded-iframe"
-              allowfullscreen
-            ></iframe>
-          </div>
-          <!--考虑嵌入一个可下载的文件和它的名称的情况-->
-          <div
-            v-if="
-              component.__component === 'embedding.file-embed' &&
-              component.File &&
-              component.File.length > 0
-            "
-            class="file-embed-block"
-          >
-            <a
-              :href="getFileUrl(component.File[0])"
-              :download="component.FileName || component.File[0].name || '下载文件'"
-              class="external-link"
-              @click.prevent="
-                downloadFile(
-                  component.File[0],
-                  component.FileName || component.File[0].name || '下载文件',
-                )
-              "
-            >
-              {{ component.FileName || component.File[0].name || '下载文件' }}
-            </a>
-          </div>
         </div>
-      </div>
-    </article>
+      </article>
+    </AsyncBoundary>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { apiClient } from '@/composables/strapi'
 import { marked } from 'marked'
 import ProductCard from '@/components/ProductCard.vue'
+import AsyncBoundary from '@/components/AsyncBoundary.vue'
+import { getStrapiMedia } from '@/composables/strapi'
+import { useEvent } from '@/composables/useEvents'
+import { useProductsByIds } from '@/composables/useProducts'
 
 const route = useRoute()
-const event = ref(null)
-const loading = ref(true)
-const error = ref(null)
-import { getStrapiMedia } from '@/composables/strapi'
+const {
+  data: event,
+  loading,
+  error,
+  notFound,
+  refresh,
+} = useEvent(() => route.params.slug)
+
+// 动态区里的 embedding.product-embed 块只带 id（oneToMany 关系 products），需要二次批量补全
+const embeddedProductIds = computed(() => {
+  const blocks = event.value?.mainContent ?? []
+  return blocks
+    .filter((b) => b.__component === 'embedding.product-embed')
+    .flatMap((b) => b.products ?? [])
+    .map((p) => p.id)
+})
+
+const { byId: productsById } = useProductsByIds(embeddedProductIds)
+
+// 模板里读取补全后的 product：用批量请求回来的完整数据替换掉只有 id 的占位对象
+const resolveEmbeddedProducts = (component) =>
+  (component.products ?? []).map((p) => productsById.value[p.id]).filter(Boolean)
+
 //在获取可下载文件的url时，应该调用这个函数
 const getFileUrl = (file) => {
   return getStrapiMedia(file)
@@ -125,82 +152,6 @@ const downloadFile = (file, filename) => {
 const renderMarkdown = (markdownText) => {
   return marked(markdownText || '')
 }
-
-// 获取事件数据的主函数
-const fetchEventData = async (slug) => {
-  loading.value = true
-  error.value = null
-
-  try {
-    // --- 步骤 1: 第一次请求，使用能正常工作的 populate: '*' ---
-    const initialResponse = await apiClient.get(`/events?filters[slug][$eq]=${slug}`, {
-      params: {
-        populate: {
-          mainContent: { populate: '*' },
-        },
-      },
-    })
-
-    const initialData = initialResponse.data.data?.[0] || initialResponse.data?.[0]
-    if (!initialData) throw new Error('该事件不存在或已被删除')
-
-    // --- 步骤 2: 提取所有不完整的 Product ID ---
-    const productIdsToFetch = []
-    if (initialData.mainContent) {
-      for (const component of initialData.mainContent) {
-        if (component.__component === 'embedding.product-embed' && component.products) {
-          for (const product of component.products) {
-            productIdsToFetch.push(product.id)
-          }
-        }
-      }
-    }
-    console.log(productIdsToFetch)
-
-    // --- 步骤 3: 如果有需要，发送第二次请求 ---
-    if (productIdsToFetch.length > 0) {
-      const productsResponse = await apiClient.get('/products', {
-        params: {
-          filters: {
-            id: { $in: productIdsToFetch },
-          },
-          populate: 'coverImage',
-        },
-      })
-      const fullProductsData = productsResponse.data.data || productsResponse.data
-
-      // --- 步骤 4: 数据合并 ---
-      // 创建一个以ID为键的Map，方便快速查找
-      const fullProductsMap = new Map(fullProductsData.map((p) => [p.id, p]))
-
-      // 遍历原始数据，用完整数据替换掉不完整的数据
-      for (const component of initialData.mainContent) {
-        if (component.__component === 'embedding.product-embed' && component.products) {
-          component.products = component.products.map((p) => fullProductsMap.get(p.id) || p)
-        }
-      }
-    }
-
-    // 最后，将处理好的完整数据赋值给 ref
-    event.value = initialData
-  } catch (e) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
-}
-
-// 路由监听 (保持不变)
-watch(
-  () => route.params.slug,
-  (newSlug) => {
-    if (newSlug) {
-      fetchEventData(newSlug)
-      window.scrollTo(0, 0)
-    }
-  },
-  { immediate: true },
-)
 </script>
 
 <style scoped>
