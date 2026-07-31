@@ -1,7 +1,7 @@
 <template>
   <div class="home-view container">
     <!-- 头部：更紧凑的标题 -->
-    <section class="page-header flex flex-col items-center text-center gap-4 lg:flex-row lg:text-left lg:gap-8">
+    <section class="page-header flex flex-col items-center text-center gap-4 lg:flex-row lg:gap-8">
       <div class="header-content">
         <h1 class="title">境界景观学会</h1>
         <p class="subtitle">In search of the vacua where phantasm resides.</p>

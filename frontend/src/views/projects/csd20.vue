@@ -94,11 +94,13 @@
         </section>
     </div>
 </template>
-<style>
+<style scoped>
 /* 原为按钮上的内联 style（本就不该写这么长，收进具名规则）。
    #4f8cff 不在颜色 token 表中，且与 --color-accent（#00a8ff）差异明显，
    直接归并到 --color-accent 会改变观感，故暂时保留为字面量。
-   box-shadow 的 rgba(0, 0, 0, 0.08) 是纯阴影叠加值，同样保留字面量。 */
+   box-shadow 的 rgba(0, 0, 0, 0.08) 是纯阴影叠加值，同样保留字面量。
+   单独放一个 scoped 块：这条规则只服务于本文件的按钮，不需要也不应该
+   像下方 .top-layout/.sidebar 等既存全局样式那样占据全局命名空间。 */
 .music-btn {
     padding: 0.75em 2em;
     font-size: 1.2em;
@@ -109,7 +111,8 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     cursor: pointer;
 }
-
+</style>
+<style>
 .top-layout {
     display: flex;
     flex-direction: column; /* 窄屏默认值；桌面（md 及以上）见下方 @screen md 覆盖 */
