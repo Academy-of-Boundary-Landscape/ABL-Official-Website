@@ -2,7 +2,7 @@
     <div class="csd20View">
         <section class="music-link-section" style="text-align:center;margin-top:2rem;">
             <router-link to="/project/csd20/music">
-                <button class="music-btn" style="padding:0.75em 2em;font-size:1.2em;background:#4f8cff;color:var(--color-heading);border:none;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;">
+                <button class="music-btn">
                     🎵 查看画册音乐特典
                 </button>
             </router-link>
@@ -95,6 +95,21 @@
     </div>
 </template>
 <style>
+/* 原为按钮上的内联 style（本就不该写这么长，收进具名规则）。
+   #4f8cff 不在颜色 token 表中，且与 --color-accent（#00a8ff）差异明显，
+   直接归并到 --color-accent 会改变观感，故暂时保留为字面量。
+   box-shadow 的 rgba(0, 0, 0, 0.08) 是纯阴影叠加值，同样保留字面量。 */
+.music-btn {
+    padding: 0.75em 2em;
+    font-size: 1.2em;
+    background: #4f8cff;
+    color: var(--color-heading);
+    border: none;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+}
+
 .top-layout {
     display: flex;
     flex-direction: column; /* 窄屏默认值；桌面（md 及以上）见下方 @screen md 覆盖 */

@@ -59,17 +59,17 @@
             <p><strong>首发活动:</strong> {{ product.releaseEvent }}</p>
             <p><strong>通常价格:</strong> {{ product.price ? `${product.price} CNY` : 'N/A' }}</p>
             <p><strong>当前状态:</strong> 
-              <span 
-              v-if="product.available === true" 
-              style="color: #27ae60; font-weight: bold;"
+              <span
+              v-if="product.available === true"
+              style="color: var(--color-success); font-weight: bold;"
               > 有库存</span>
-              <span 
-              v-else-if="product.available === false" 
-              style="color: #e74c3c; font-weight: bold;"
+              <span
+              v-else-if="product.available === false"
+              style="color: var(--color-error); font-weight: bold;"
               > 无库存</span>
-              <span 
-              v-else 
-              style="color: #f1c40f; font-weight: bold;"
+              <span
+              v-else
+              style="color: var(--color-warning); font-weight: bold;"
               > 未知</span>
             </p>
             </div>
