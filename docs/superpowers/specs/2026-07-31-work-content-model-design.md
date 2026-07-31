@@ -86,7 +86,7 @@
 | `staff` | component `staff.staff`，repeatable | 否 | 复用现有组件，朱元璋制作名单直接迁入 |
 | `details` | dynamiczone | 否 | 类型专属字段，见 3.2 |
 | `startDate` | date | 否 | |
-| `featured` | boolean（默认 `false`） | 否 | 首页精选 |
+| `featured` | boolean（默认 `false`） | 否 | **只抬高排序优先级，不做硬过滤**——`sort` 里 `featured:desc` 排在最前，配合首页轮播的 `limit: 6`，精选作品自然出现在轮播最前面。不提供单独的"仅显示精选"过滤开关：那样的硬过滤没有增加任何能力（排序 + `limit` 已经实现了"精选优先出现在首页"），却引入一个真实风险——社团方忘记勾选任何一条时，首页轮播会因为过滤结果为空而直接变成空态。 |
 | `order` | integer（默认 `0`） | 否 | 手工排序，降序优先 |
 
 `options.draftAndPublish` 设为 `true`，与现有四个内容类型一致。

@@ -8,11 +8,10 @@ import { useStrapiList, useStrapiOne } from './useStrapiResource'
  *
  * @param {Object} params - 筛选与分页参数
  * @param {string|Ref<string>} params.workType - 作品类型，为 "all" 或空时不过滤
- * @param {boolean} params.featuredOnly - 仅显示精选
  * @param {number|Ref<number>} params.limit - 分页限制
  * @param {Object} options - 往 useStrapiList 的 options 透传（debounce / immediate）
  */
-export function useWorkList({ workType, featuredOnly, limit } = {}, options = {}) {
+export function useWorkList({ workType, limit } = {}, options = {}) {
   return useStrapiList(
     'works',
     () => {
@@ -20,7 +19,6 @@ export function useWorkList({ workType, featuredOnly, limit } = {}, options = {}
       const lim = toValue(limit)
       const filters = {}
       if (t && t !== 'all') filters.workType = { $eq: t }
-      if (toValue(featuredOnly)) filters.featured = { $eq: true }
       return {
         populate: 'coverImage',
         sort: 'featured:desc,order:desc,startDate:desc',

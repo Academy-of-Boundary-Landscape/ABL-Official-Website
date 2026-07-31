@@ -15,8 +15,14 @@
 ## body 建议结构
 
 1. `contentBlock`：合同志介绍（抄自 `csd20.vue`），中间用 Markdown 图片语法插入两张宣传图
-2. `contentBlock`：一行 Markdown 链接指向制品页 `[查看制品详情](/products/csd20)`
-   （Spec 2 会为该路径加到 `/archive/products/csd20` 的重定向，链接不会断）
+2. `contentBlock`：一行 Markdown 链接指向制品页。**`/products/csd20` 只是猜测，不是事实**——
+   `product.slug` 是没有 `targetField` 的 `uid`，每条记录的 slug 都是后台手工填的，不保证等于标题
+   的 slug 化形式（这正是被删掉的 `csd20.vue` 当初按标题硬匹配、而不是按 slug 查找的原因，见
+   `frontend/src/composables/useProducts.js` 里的相关注释）。**录入前请先去 Strapi 后台的
+   product 集合里找到「梦违科学世纪20周年合同志」这条记录，复制它的真实 `slug` 字段值，
+   拼成 `/products/<真实slug>` 再填进链接。** 另外这个链接是 Markdown 块的一部分，`body`
+   经 `v-html` 渲染，点击站内链接会触发整页重载而不是路由跳转——这是站内既有行为，不是这条链接
+   独有的问题，此处只是提醒不要误判成 bug。
 3. `audioEmbed`：主题曲《梦祀之始》
 4. `contentBlock`：音乐简介 + 制作信息 + 作者寄语（抄自 `csd20music.vue`）
 

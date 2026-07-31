@@ -20,10 +20,13 @@
 
         <img v-if="coverUrl" :src="coverUrl" :alt="work.title" class="work-detail-cover" />
 
-        <!-- 招募位放在正文之前：招人是当前作品页最重要的转化动作 -->
-        <section v-if="work.recruiting && roles.length" class="work-recruiting">
+        <!-- 招募位放在正文之前：招人是当前作品页最重要的转化动作。
+             守卫只看 recruiting——即使 recruitingRoles 还没填，徽标宣传的
+             "招募中"也要有一个真实入口（联系我们），而不是显示徽标却没有
+             区块。岗位列表本身单独用 roles.length 兜底为空。 -->
+        <section v-if="work.recruiting" class="work-recruiting">
           <h2 class="detail-subtitle">正在招募</h2>
-          <ul class="role-list">
+          <ul v-if="roles.length" class="role-list">
             <li v-for="role in roles" :key="role.id ?? role.roleName">
               <strong>{{ role.roleName }}</strong>
               <span v-if="role.count"> × {{ role.count }}</span>

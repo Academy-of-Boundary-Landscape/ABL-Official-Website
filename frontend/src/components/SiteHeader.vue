@@ -137,8 +137,19 @@ const menuOptions = computed(() => [
   {
     label: '作品 // Works',
     key: 'project',
-    children:
-      projectMenuChildren.value.length > 0
+    children: [
+      {
+        key: 'project-all',
+        label: () =>
+          h(
+            RouterLink,
+            { to: '/works', class: 'menu-link' },
+            {
+              default: () => '全部作品',
+            },
+          ),
+      },
+      ...(projectMenuChildren.value.length > 0
         ? projectMenuChildren.value
         : [
             {
@@ -146,7 +157,8 @@ const menuOptions = computed(() => [
               key: 'project-empty',
               disabled: true,
             },
-          ],
+          ]),
+    ],
   },
 ])
 

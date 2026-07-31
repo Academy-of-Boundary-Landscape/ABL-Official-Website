@@ -35,7 +35,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useWorkList } from '@/composables/useWorks'
-import { typeLabel } from '@/utils/work'
+import { typeLabel, tabToWorkType, filterByTab } from '@/utils/work'
 import AsyncBoundary from '@/components/AsyncBoundary.vue'
 import WorkCard from '@/components/work/WorkCard.vue'
 
@@ -51,15 +51,14 @@ const tabs = computed(() => [
 
 // "其他"要一次拿 site 与 publication 两类，用 $in 而不是 $eq，
 // 所以这里不能直接把 activeType 交给 useWorkList 的 workType。
-const workType = computed(() => (activeType.value === 'other' ? 'all' : activeType.value))
+const workType = computed(() => tabToWorkType(activeType.value))
 
-const { data: rawData, loading, error, refresh } = useWorkList({ workType })
+// 当前作品数量远小于 100，先不做分页：显式传一个大 limit，避免"全部"
+// 页签被 Strapi 默认分页大小（25）悄悄截断，"其他"页签又是从被截断
+// 的一页里前端过滤，条目一多就会静默丢数据。
+const { data: rawData, loading, error, refresh } = useWorkList({ workType, limit: 100 })
 
-const data = computed(() => {
-  const list = rawData.value ?? []
-  if (activeType.value !== 'other') return list
-  return list.filter((w) => w?.workType === 'site' || w?.workType === 'publication')
-})
+const data = computed(() => filterByTab(rawData.value, activeType.value))
 
 // isEmpty 要看前端过滤之后的结果，不是资源层的原始列表——
 // 否则"其他"页签在过滤光时会误判为非空，渲染出一个空网格。

@@ -50,13 +50,6 @@ describe('useWorkList', () => {
     stop()
   })
 
-  it('featuredOnly 产生 featured 过滤', async () => {
-    const { stop } = withScope(() => useWorkList({ featuredOnly: true }))
-    await flush()
-    expect(paramsOf().filters).toEqual({ featured: { $eq: true } })
-    stop()
-  })
-
   it('limit 映射到 pagination[limit]，ref(0) 不应发送——不能用裸 Ref 做真值判断', async () => {
     const { stop } = withScope(() => useWorkList({ limit: ref(0) }))
     await flush()

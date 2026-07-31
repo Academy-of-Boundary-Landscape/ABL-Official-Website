@@ -25,7 +25,9 @@ const STATUS_LABELS = {
   discontinued: '已停止',
 }
 
-const DETAIL_COMPONENT_BY_TYPE = {
+// 导出以供 work.spec.js 直接与 Strapi schema.json 的 details.components 比对，
+// 防止后端加/改/删类型专属组件时前端悄悄漏配。
+export const DETAIL_COMPONENT_BY_TYPE = {
   game: 'work.game-detail',
   tool: 'work.tool-detail',
   site: 'work.site-detail',
@@ -57,3 +59,21 @@ export const parsePlatforms = (raw) =>
     .split(/[,，、\s]+/)
     .map((s) => s.trim())
     .filter(Boolean)
+
+/**
+ * 列表页页签到 useWorkList 的 workType 参数的映射。
+ * "other"（其他：活动站 + 出版物）不是后端能一次 $eq 过滤出的单一类型，
+ * 所以映射到 "all"，由 filterByTab 在前端二次收窄。
+ */
+export const tabToWorkType = (tab) => (tab === 'other' ? 'all' : tab)
+
+/**
+ * "其他"页签在前端过滤出 site / publication 两类；其余页签原样返回列表
+ * （过滤已经由 useWorkList 的 workType filters 在服务端完成）。
+ * list 为 null/undefined 时返回空数组，调用方不必自己再兜底。
+ */
+export const filterByTab = (list, tab) => {
+  const safeList = Array.isArray(list) ? list : []
+  if (tab !== 'other') return safeList
+  return safeList.filter((w) => w?.workType === 'site' || w?.workType === 'publication')
+}

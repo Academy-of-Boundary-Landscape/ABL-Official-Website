@@ -1,12 +1,28 @@
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import {
   WORK_TYPES,
   WORK_STATUSES,
+  DETAIL_COMPONENT_BY_TYPE,
   typeLabel,
   statusLabel,
   resolveDetailBlock,
   parsePlatforms,
+  tabToWorkType,
+  filterByTab,
 } from '@/utils/work'
+
+// 读 Strapi 的 work schema.json 而不是静态 import 它：跨 frontend/strapi-backend
+// 目录边界的静态 import 会撞上 Vite dev server 的 fs.allow 边界（在某些工作区
+// 布局下会被拒绝），readFileSync + import.meta.url 是不依赖那道边界的可靠方式。
+const workSchemaPath = fileURLToPath(
+  new URL(
+    '../../../../strapi-backend/src/api/work/content-types/work/schema.json',
+    import.meta.url,
+  ),
+)
+const workSchema = JSON.parse(readFileSync(workSchemaPath, 'utf-8'))
 
 describe('常量', () => {
   it('四种作品类型与六种状态，顺序即列表页与后台的展示顺序', () => {
@@ -19,6 +35,22 @@ describe('常量', () => {
       'ended',
       'discontinued',
     ])
+  })
+})
+
+describe('前后端枚举漂移守卫', () => {
+  it('WORK_TYPES 与 Strapi work.workType 的 enum 一致——漂移了就去改 strapi-backend/src/api/work/content-types/work/schema.json 或同步 utils/work.js', () => {
+    expect(WORK_TYPES).toEqual(workSchema.attributes.workType.enum)
+  })
+
+  it('WORK_STATUSES 与 Strapi work.status 的 enum 一致——漂移了就去改 schema.json 或同步 utils/work.js', () => {
+    expect(WORK_STATUSES).toEqual(workSchema.attributes.status.enum)
+  })
+
+  it('DETAIL_COMPONENT_BY_TYPE 的四个组件标识与 Strapi work.details 动态区的 components 一致——漂移了就去改 schema.json 或同步 utils/work.js', () => {
+    expect(Object.values(DETAIL_COMPONENT_BY_TYPE).sort()).toEqual(
+      [...workSchema.attributes.details.components].sort(),
+    )
   })
 })
 
@@ -90,5 +122,47 @@ describe('parsePlatforms', () => {
     expect(parsePlatforms(null)).toEqual([])
     expect(parsePlatforms(undefined)).toEqual([])
     expect(parsePlatforms(' , , ')).toEqual([])
+  })
+})
+
+describe('tabToWorkType', () => {
+  it('"other" 映射到 "all"——它对应 site+publication 两类，不是单一 workType', () => {
+    expect(tabToWorkType('other')).toBe('all')
+  })
+
+  it('其余页签原样返回', () => {
+    expect(tabToWorkType('all')).toBe('all')
+    expect(tabToWorkType('game')).toBe('game')
+    expect(tabToWorkType('tool')).toBe('tool')
+  })
+})
+
+describe('filterByTab', () => {
+  const game = { workType: 'game' }
+  const tool = { workType: 'tool' }
+  const site = { workType: 'site' }
+  const publication = { workType: 'publication' }
+  const list = [game, tool, site, publication]
+
+  it('"other" 只保留 site 与 publication', () => {
+    expect(filterByTab(list, 'other')).toEqual([site, publication])
+  })
+
+  it('"all" / "game" / "tool" 原样返回，不做前端过滤——过滤已经在服务端完成', () => {
+    expect(filterByTab(list, 'all')).toEqual(list)
+    expect(filterByTab(list, 'game')).toEqual(list)
+    expect(filterByTab(list, 'tool')).toEqual(list)
+  })
+
+  it('空列表返回空数组', () => {
+    expect(filterByTab([], 'other')).toEqual([])
+    expect(filterByTab([], 'all')).toEqual([])
+  })
+
+  it('null/undefined 列表返回空数组，不抛错', () => {
+    expect(filterByTab(null, 'other')).toEqual([])
+    expect(filterByTab(undefined, 'other')).toEqual([])
+    expect(filterByTab(null, 'all')).toEqual([])
+    expect(filterByTab(undefined, 'game')).toEqual([])
   })
 })
