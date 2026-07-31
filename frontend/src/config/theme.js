@@ -205,7 +205,12 @@ export const themeOverrides = {
   },
   // 时间线组件
   Timeline: {
-    titleFontSize: '0.9rem',
+    // titleFontSize 不是 Naive UI Timeline 主题的合法 key（真正的 key 按
+    // size 分是 titleFontSizeMedium / titleFontSizeLarge，见
+    // node_modules/naive-ui/lib/timeline/styles/_common.d.ts），这行原先
+    // 是死配置、从未生效过。n-timeline 站内均未传 size，用的是默认的
+    // medium，改成 titleFontSizeMedium 才会真正生效。
+    titleFontSizeMedium: '0.9rem',
     titleTextColor: colors.weakText,
     contentFontSize: '0.8rem',
     contentTextColor: colors.textMuted,
