@@ -49,6 +49,11 @@ export const routes = [
     name: 'works',
     component: () => import('../views/WorkList.vue'),
   },
+  {
+    path: '/works/:slug',
+    name: 'WorkDetail',
+    component: () => import('../views/WorkDetail.vue'),
+  },
 ]
 
 export default routes
