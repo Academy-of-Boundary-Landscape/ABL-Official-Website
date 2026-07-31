@@ -1,7 +1,7 @@
 import { computed, toValue } from 'vue'
 import { useStrapiList, useStrapiOne } from './useStrapiResource'
 
-export function useProducts({ limit, category, search } = {}, options = {}) {
+export function useProducts({ limit, category, search, sort } = {}, options = {}) {
   return useStrapiList(
     'products',
     () => {
@@ -13,7 +13,7 @@ export function useProducts({ limit, category, search } = {}, options = {}) {
       if (keyword) filters.title = { $containsi: keyword }
       return {
         populate: 'coverImage',
-        sort: 'releaseDate:desc',
+        sort: toValue(sort) || 'releaseDate:desc',
         ...(lim ? { 'pagination[limit]': lim } : {}),
         ...(Object.keys(filters).length ? { filters } : {}),
       }

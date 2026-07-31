@@ -116,6 +116,25 @@ describe('useProducts', () => {
     expect(paramsOf()['pagination[limit]']).toBeUndefined()
     stop()
   })
+
+  it('传入 sort 时覆盖默认排序——ProductList 的排序切换按钮靠这个实现', async () => {
+    const sort = ref('releaseDate:asc')
+    const { stop } = withScope(() => useProducts({ sort }))
+    await flush()
+    expect(paramsOf().sort).toBe('releaseDate:asc')
+
+    sort.value = 'releaseDate:desc'
+    await flush()
+    expect(paramsOf(1).sort).toBe('releaseDate:desc')
+    stop()
+  })
+
+  it('不传 sort 时回退到默认的按发布日倒序', async () => {
+    const { stop } = withScope(() => useProducts())
+    await flush()
+    expect(paramsOf().sort).toBe('releaseDate:desc')
+    stop()
+  })
 })
 
 describe('useProduct', () => {
