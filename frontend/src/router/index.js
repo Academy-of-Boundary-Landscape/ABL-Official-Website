@@ -2,7 +2,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import RecruitmentView from '../views/RecruitmentView.vue'
-import zyzView from '../views/zyzView.vue';
+import zyzView from '../views/zyzView.vue'
 import ProductList from '../views/ProductList.vue'
 import ProductDetail from '../views/ProductDetail.vue'
 import EventList from '../views/EventList.vue'
@@ -16,51 +16,50 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
     },
     {
       path: '/recruitment',
       name: 'recruitment',
-      component: RecruitmentView
+      component: RecruitmentView,
     },
     {
       path: '/project/zhu-yuanzhang', // 定义一个清晰的URL
       name: 'zhu-yuanzhang',
-      component: zyzView
+      component: zyzView,
     },
     {
       path: '/products',
       name: 'products',
-      component: ProductList
+      component: ProductList,
     },
     {
       path: '/products/:slug', // 路径中包含一个名为 "slug" 的动态参数
       name: 'ProductDetail',
-      component: ProductDetail
+      component: ProductDetail,
       // Vue Router 会自动将URL中的 slug 部分作为参数传递给组件
     },
     {
-      path: '/events', 
+      path: '/events',
       name: 'EventList',
-      component: EventList
+      component: EventList,
     },
     {
       path: '/events/:slug',
       name: 'EventDetail',
-      component: EventDetail
+      component: EventDetail,
     },
     {
       path: '/project/csd20',
       name: 'csd20',
-      component: csd20View
+      component: csd20View,
     },
     {
       path: '/project/csd20/music',
       name: 'csd20music',
-      component: csd20musicView
-    }
-
-  ]
+      component: csd20musicView,
+    },
+  ],
 })
 
 export default router

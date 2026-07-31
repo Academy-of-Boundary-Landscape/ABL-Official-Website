@@ -73,8 +73,8 @@ describe('配置守卫：uno.config.js 与 colorTokens 同源', () => {
     const unoColors = unoConfig.theme.colors
     for (const [key, value] of Object.entries(unoColors)) {
       // Uno 的键是 kebab-case，反查回 token 值
-      const match = Object.entries(colorTokens).find(([tokenKey]) =>
-        toCssVarName(tokenKey) === `--color-${key}`,
+      const match = Object.entries(colorTokens).find(
+        ([tokenKey]) => toCssVarName(tokenKey) === `--color-${key}`,
       )
       expect(match, `uno 颜色 "${key}" 在 colorTokens 中没有对应项`).toBeTruthy()
       expect(value).toBe(match[1])

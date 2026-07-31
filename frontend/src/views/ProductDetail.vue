@@ -8,141 +8,131 @@
       empty-text=">> 档案不存在或已被删除。"
       @retry="refresh"
     >
-    <!-- Main Content, rendered only when product data is available -->
-    <article v-if="product">
+      <!-- Main Content, rendered only when product data is available -->
+      <article v-if="product">
+        <!-- Page Header using the global style -->
+        <section class="page-header">
+          <router-link to="/products" class="back-button">&lt; 返回制品列表</router-link>
+          <h1 class="title">// {{ product.title }}</h1>
+          <p class="subtitle">
+            >> 制品编号: {{ product.storageId }} // 发布于: {{ product.releaseDate }}
+          </p>
+        </section>
 
-      <!-- Page Header using the global style -->
-      <section class="page-header">
-        <router-link to="/products" class="back-button">&lt; 返回制品列表</router-link>
-        <h1 class="title">// {{ product.title }}</h1>
-        <p class="subtitle">>> 制品编号: {{ product.storageId }} // 发布于: {{ product.releaseDate }}</p>
-      </section>
+        <!-- Main layout: a two-column grid inside a tech-box -->
+        <div
+          class="tech-box content-wrapper grid gap-6 grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]"
+        >
+          <!-- Left Column: Main Content -->
+          <div class="main-content">
+            <!-- Product Description (rendered from Markdown) -->
+            <section class="description" v-html="parsedDescription"></section>
 
-      <!-- Main layout: a two-column grid inside a tech-box -->
-      <div
-        class="tech-box content-wrapper grid gap-6 grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]"
-      >
-        
-        <!-- Left Column: Main Content -->
-        <div class="main-content">
-          
-          <!-- Product Description (rendered from Markdown) -->
-          <section class="description" v-html="parsedDescription"></section>
+            <!-- Specifications (handles different component types) -->
+            <!-- Staff/Credits List (from repeatable component) -->
+            <section v-if="product.productStaff && product.productStaff.length">
+              <h3 class="section-title">制作人员</h3>
+              <ul class="staff-list">
+                <li v-for="credit in product.productStaff" :key="credit.id">
+                  <strong>{{ credit.role }}:</strong> {{ credit.name }}
+                </li>
+              </ul>
+            </section>
+          </div>
 
-          <!-- Specifications (handles different component types) -->
-          <!-- Staff/Credits List (from repeatable component) -->
-          <section v-if="product.productStaff && product.productStaff.length">
-            <h3 class="section-title">制作人员</h3>
-            <ul class="staff-list">
-              <li v-for="credit in product.productStaff" :key="credit.id">
-                <strong>{{ credit.role }}:</strong> {{ credit.name }}
-              </li>
-            </ul>
-          </section>
-
-        </div>
-        
-        <!-- Right Column: Sidebar with key info -->
-        <aside class="sidebar">
-          
-          <!-- Cover Image with WebP Optimization -->
+          <!-- Right Column: Sidebar with key info -->
+          <aside class="sidebar">
+            <!-- Cover Image with WebP Optimization -->
             <div class="cover-image-container" v-if="getCoverFormatUrl()">
-            <img 
-              :src="getCoverFormatUrl()" 
-              :alt="product.title"
-            />
+              <img :src="getCoverFormatUrl()" :alt="product.title" />
             </div>
 
-          <!-- Key Metadata -->
+            <!-- Key Metadata -->
             <div class="meta-data">
-            <p><strong>制品分类:</strong> {{ product.category }}</p>
-            <p><strong>首发活动:</strong> {{ product.releaseEvent }}</p>
-            <p><strong>通常价格:</strong> {{ product.price ? `${product.price} CNY` : 'N/A' }}</p>
-            <p><strong>当前状态:</strong> 
-              <span
-              v-if="product.available === true"
-              style="color: var(--color-success); font-weight: bold;"
-              > 有库存</span>
-              <span
-              v-else-if="product.available === false"
-              style="color: var(--color-error); font-weight: bold;"
-              > 无库存</span>
-              <span
-              v-else
-              style="color: var(--color-warning); font-weight: bold;"
-              > 未知</span>
-            </p>
+              <p><strong>制品分类:</strong> {{ product.category }}</p>
+              <p><strong>首发活动:</strong> {{ product.releaseEvent }}</p>
+              <p><strong>通常价格:</strong> {{ product.price ? `${product.price} CNY` : 'N/A' }}</p>
+              <p>
+                <strong>当前状态:</strong>
+                <span
+                  v-if="product.available === true"
+                  style="color: var(--color-success); font-weight: bold"
+                >
+                  有库存</span
+                >
+                <span
+                  v-else-if="product.available === false"
+                  style="color: var(--color-error); font-weight: bold"
+                >
+                  无库存</span
+                >
+                <span v-else style="color: var(--color-warning); font-weight: bold"> 未知</span>
+              </p>
             </div>
-        </aside>
-      </div>
-      <section v-if="recommended.length > 0" class="recommendation-section">
-        <h2 class="section-title">其他社团制品推荐</h2>
-        <div class="product-grid">
-          <!-- 复用 ProductCard 组件来展示推荐制品 -->
-          <ProductCard
-            v-for="recProduct in recommended"
-            :key="recProduct.id"
-            :product="recProduct"
-          />
+          </aside>
         </div>
-      </section>
-    </article>
+        <section v-if="recommended.length > 0" class="recommendation-section">
+          <h2 class="section-title">其他社团制品推荐</h2>
+          <div class="product-grid">
+            <!-- 复用 ProductCard 组件来展示推荐制品 -->
+            <ProductCard
+              v-for="recProduct in recommended"
+              :key="recProduct.id"
+              :product="recProduct"
+            />
+          </div>
+        </section>
+      </article>
     </AsyncBoundary>
   </div>
 </template>
 
 <script setup>
-import { computed, watch } from 'vue';
-import { useRoute } from 'vue-router';
-import { getStrapiMedia } from '@/composables/strapi.js';
-import { marked } from 'marked';
-import ProductCard from '@/components/ProductCard.vue';
-import AsyncBoundary from '@/components/AsyncBoundary.vue';
-import { useProduct, useRecommendedProducts } from '@/composables/useProducts';
+import { computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { getStrapiMedia } from '@/composables/strapi.js'
+import { marked } from 'marked'
+import ProductCard from '@/components/ProductCard.vue'
+import AsyncBoundary from '@/components/AsyncBoundary.vue'
+import { useProduct, useRecommendedProducts } from '@/composables/useProducts'
 
-const route = useRoute();
-const {
-  data: product,
-  loading,
-  error,
-  notFound,
-  refresh,
-} = useProduct(() => route.params.slug);
+const route = useRoute()
+const { data: product, loading, error, notFound, refresh } = useProduct(() => route.params.slug)
 
 // 推荐位：排除当前条目后随机取 4 条，与改造前的 fetchRecommendedProducts 行为一致
 const { data: recommended } = useRecommendedProducts(
   computed(() => product.value?.id),
   4,
-);
+)
 
 const parsedDescription = computed(() => {
-  return product.value && product.value.description ? marked(product.value.description) : '';
-});
+  return product.value && product.value.description ? marked(product.value.description) : ''
+})
 
 // getStrapiMedia 已经能处理 v4/v5 两种媒体形状，这里只保留尺寸挑选逻辑
 const getCoverFormatUrl = (size = 'large') => {
   // 直接从 product.value.coverImage 获取数据（不是 attributes.coverImage.data）
-  const coverImageObject = product.value?.coverImage;
+  const coverImageObject = product.value?.coverImage
   if (!coverImageObject) {
-    console.log("没有封面图数据");
-    return null;
+    console.log('没有封面图数据')
+    return null
   }
 
   // Strapi 格式字段：small, medium, thumbnail。没有 large，优先 medium，其次 small，最后原图
-  let imageUrl = null;
+  let imageUrl = null
   if (size === 'large' && coverImageObject.formats?.medium) {
-    imageUrl = coverImageObject.formats.medium.url;
+    imageUrl = coverImageObject.formats.medium.url
   } else if (size === 'small' && coverImageObject.formats?.small) {
-    imageUrl = coverImageObject.formats.small.url;
+    imageUrl = coverImageObject.formats.small.url
   } else if (coverImageObject.formats?.[size]) {
-    imageUrl = coverImageObject.formats[size].url;
+    imageUrl = coverImageObject.formats[size].url
   } else {
     // 回退到原图
-    imageUrl = coverImageObject.url;
+    imageUrl = coverImageObject.url
   }
 
-  return getStrapiMedia({ url: imageUrl });
-};
+  return getStrapiMedia({ url: imageUrl })
+}
 
 // useProduct(getter) 已经自动处理换 slug 后的重新拉取；这里单独保留滚动重置这个
 // 与拉取数据无关的副作用（EventDetail.vue 的路由 watch 也这样做，保持两个详情页一致）
@@ -150,7 +140,7 @@ watch(
   () => route.params.slug,
   () => window.scrollTo(0, 0),
   { immediate: true },
-);
+)
 </script>
 
 <style scoped>
@@ -164,7 +154,7 @@ watch(
   padding-bottom: 0.5rem;
 }
 .section-title::before {
-  content: "// ";
+  content: '// ';
   color: var(--color-accent);
 }
 /* Sidebar styles（窄屏默认：置顶单栏堆叠；桌面见下方 @screen md 覆盖） */
@@ -205,7 +195,6 @@ watch(
 .main-content section {
   margin-bottom: 3rem;
 }
-
 
 .staff-list {
   list-style: none;

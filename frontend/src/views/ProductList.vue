@@ -1,28 +1,22 @@
 <!-- src/views/ProductList.vue -->
 <template>
   <div class="product-list-view container">
-
     <section class="page-header">
       <h1 class="title">// 社团制品一览</h1>
-      <p class="subtitle"> >> Accessing archive of all released products.</p>
+      <p class="subtitle">>> Accessing archive of all released products.</p>
     </section>
 
     <div class="controls-wrapper tech-box">
-      <CategoryFilter
-        :categories="categories"
-        v-model="selectedCategory"
-      />
+      <CategoryFilter :categories="categories" v-model="selectedCategory" />
       <div class="search-group">
         <input
           type="text"
           v-model="searchTerm"
           placeholder="搜索制品标题..."
           class="search-input"
-        >
+        />
       </div>
-      <button @click="toggleSortOrder" class="sort-button">
-        排序: {{ sortButtonText }}
-      </button>
+      <button @click="toggleSortOrder" class="sort-button">排序: {{ sortButtonText }}</button>
     </div>
 
     <AsyncBoundary
@@ -33,14 +27,9 @@
       @retry="refresh"
     >
       <div class="product-grid">
-        <ProductCard
-          v-for="product in products"
-          :key="product.id"
-          :product="product"
-        />
+        <ProductCard v-for="product in products" :key="product.id" :product="product" />
       </div>
     </AsyncBoundary>
-
   </div>
 </template>
 

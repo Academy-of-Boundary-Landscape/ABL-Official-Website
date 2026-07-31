@@ -7,8 +7,8 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+  },
 })
 
 // 请求拦截器
@@ -19,7 +19,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error)
-  }
+  },
 )
 
 // 响应拦截器
@@ -53,7 +53,7 @@ api.interceptors.response.use(
       // 请求配置错误
       return Promise.reject('请求配置错误')
     }
-  }
+  },
 )
 
 export function useEventAPI() {
@@ -145,7 +145,7 @@ export function useEventAPI() {
   const batchUpdateStatus = async (eventIds, status) => {
     const response = await api.post('/events/batch-update-status', {
       event_ids: eventIds,
-      status
+      status,
     })
     return response
   }
@@ -157,9 +157,9 @@ export function useEventAPI() {
   const exportEvents = async (params = {}) => {
     const response = await api.get('/events/export', {
       params,
-      responseType: 'blob'
+      responseType: 'blob',
     })
-    
+
     // 创建下载链接
     const url = window.URL.createObjectURL(new Blob([response]))
     const link = document.createElement('a')
@@ -169,7 +169,7 @@ export function useEventAPI() {
     link.click()
     link.remove()
     window.URL.revokeObjectURL(url)
-    
+
     return response
   }
 
@@ -180,13 +180,13 @@ export function useEventAPI() {
   const uploadCoverImage = async (file) => {
     const formData = new FormData()
     formData.append('image', file)
-    
+
     const response = await api.post('/events/upload-cover', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+        'Content-Type': 'multipart/form-data',
+      },
     })
-    
+
     return response
   }
 
@@ -201,6 +201,6 @@ export function useEventAPI() {
     batchDeleteEvents,
     batchUpdateStatus,
     exportEvents,
-    uploadCoverImage
+    uploadCoverImage,
   }
 }

@@ -111,13 +111,7 @@ import { useEvent } from '@/composables/useEvents'
 import { useProductsByIds } from '@/composables/useProducts'
 
 const route = useRoute()
-const {
-  data: event,
-  loading,
-  error,
-  notFound,
-  refresh,
-} = useEvent(() => route.params.slug)
+const { data: event, loading, error, notFound, refresh } = useEvent(() => route.params.slug)
 
 // useEvent(getter) 已经自动处理换 slug 后的重新拉取；这里单独保留滚动重置这个
 // 与拉取数据无关的副作用（ProductDetail.vue 的路由 watch 也这样做，保持两个详情页一致）
