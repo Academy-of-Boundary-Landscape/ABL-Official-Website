@@ -7,10 +7,11 @@ export function useEvents({ limit, search } = {}, options = {}) {
     'events',
     () => {
       const keyword = String(toValue(search) ?? '').trim()
+      const lim = toValue(limit)
       return {
         populate: 'coverImage',
         sort: 'date:desc',
-        ...(limit ? { 'pagination[limit]': toValue(limit) } : {}),
+        ...(lim ? { 'pagination[limit]': lim } : {}),
         ...(keyword ? { filters: { title: { $containsi: keyword } } } : {}),
       }
     },

@@ -15,8 +15,7 @@ export const normalizeStrapiError = (e) => {
   if (e?.code === 'ERR_CANCELED' || e?.name === 'CanceledError') return null
   const status = e?.response?.status ?? null
   const message =
-    STATUS_MESSAGE[status] ??
-    (status ? `请求失败（HTTP ${status}）` : '连接超时或服务器错误。')
+    STATUS_MESSAGE[status] ?? (status ? `请求失败（HTTP ${status}）` : '连接超时或服务器错误。')
   return { status, message }
 }
 
@@ -70,7 +69,11 @@ export function useStrapiList(resource, params = {}, options = {}) {
     })
   }
 
-  watch(() => toValue(params), () => refresh(), { deep: true })
+  watch(
+    () => toValue(params),
+    () => refresh(),
+    { deep: true },
+  )
 
   if (immediate) run()
 

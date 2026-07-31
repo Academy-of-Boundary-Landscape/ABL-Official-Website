@@ -7,13 +7,14 @@ export function useProducts({ limit, category, search } = {}, options = {}) {
     () => {
       const cat = String(toValue(category) ?? '').trim()
       const keyword = String(toValue(search) ?? '').trim()
+      const lim = toValue(limit)
       const filters = {}
       if (cat && cat !== '全部') filters.category = { $eq: cat }
       if (keyword) filters.title = { $containsi: keyword }
       return {
         populate: 'coverImage',
         sort: 'releaseDate:desc',
-        ...(limit ? { 'pagination[limit]': toValue(limit) } : {}),
+        ...(lim ? { 'pagination[limit]': lim } : {}),
         ...(Object.keys(filters).length ? { filters } : {}),
       }
     },
@@ -46,7 +47,10 @@ export function useProductsByIds(ids) {
     Object.fromEntries((list.data.value ?? []).map((item) => [item.id, item])),
   )
 
-  return { ...list, byId }
+  // id 列表为空时尚未发起请求，不能算"查无结果"——避免在 ids 到来前闪一下空态。
+  const isEmpty = computed(() => (toValue(ids)?.length ?? 0) > 0 && list.isEmpty.value)
+
+  return { ...list, byId, isEmpty }
 }
 
 /** ProductDetail 的推荐位。行为与改造前一致：排除当前条目后随机取若干。 */
@@ -66,5 +70,10 @@ export function useRecommendedProducts(excludeId, count = 3) {
     return pool.slice(0, count)
   })
 
-  return { ...list, data: picked }
+  // isEmpty 要看裁剪后的 picked，不是原始 list.data——否则原始池非空但裁剪结果为空时会误判非空。
+  const isEmpty = computed(
+    () => !list.loading.value && !list.error.value && picked.value.length === 0,
+  )
+
+  return { ...list, data: picked, isEmpty }
 }
