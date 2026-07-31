@@ -2370,11 +2370,18 @@ git rm frontend/src/views/zyzView.vue \
 
 `frontend/assets-src/` 是上一轮资源优化建立的目录——留在 git 里、不参与 Vite 打包。csd20 的媒体要上传到 Strapi，但上传前不能先从磁盘上消失。
 
+**`frontend/assets-src/csd20related/` 已经存在**——上一轮资源优化把三张印刷母版 PNG 放在那里了。所以不能整目录 `git mv`（会套成 `csd20related/csd20related/`），要把文件**平铺搬进**已有目录，与母版并列：
+
 ```bash
 cd /data/sunyunbo/www/ABL-Official-Website/frontend
-mkdir -p assets-src
-git mv src/assets/images/csd20related assets-src/csd20related
+ls assets-src/csd20related/          # 先看清楚里面已有什么
+for f in src/assets/images/csd20related/*; do
+  git mv "$f" assets-src/csd20related/
+done
+rmdir src/assets/images/csd20related
 ```
+
+搬完后 `assets-src/csd20related/` 里应同时有 `.png` 母版与 `.webp` / `.mp3` 产物。
 
 确认没有任何代码还引用它们：
 
