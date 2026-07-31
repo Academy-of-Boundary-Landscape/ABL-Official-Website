@@ -180,7 +180,7 @@ const {
 }
 .page-header .subtitle {
   font-size: 0.85rem;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--font-family-mono);
   opacity: 0.7;
 }
 
@@ -211,7 +211,7 @@ const {
 :deep(.n-timeline-item-content__meta) {
   font-size: 0.75rem !important;
   color: var(--color-accent) !important;
-  font-family: monospace;
+  font-family: var(--font-family-mono);
 }
 
 /* --- 主内容布局 --- */
@@ -253,7 +253,7 @@ const {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 10px;
-  font-family: monospace;
+  font-family: var(--font-family-mono);
 }
 
 .floating-recruit-btn {

@@ -93,6 +93,13 @@ const sortButtonText = computed(() => {
 
 <style scoped>
 /* 样式部分保持完全不变 */
+/* 从 main.css 移回本页（仅 1 处使用，不需要占据全局命名空间） */
+.product-list-view.container {
+  max-width: 1800px; /* 或更大，根据需要调整 */
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
 .controls-wrapper {
   display: flex;
   flex-wrap: wrap;

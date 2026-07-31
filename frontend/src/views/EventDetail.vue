@@ -336,7 +336,7 @@ const renderMarkdown = (markdownText) => {
 }
 
 :deep(.markdown-block code) {
-  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-family: var(--font-family-mono);
   font-size: 0.9em;
   border: 1px solid rgba(76, 201, 255, 0.28);
   border-radius: 5px;

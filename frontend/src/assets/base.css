@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600&family=Space+Grotesk:wght@400;500;600&display=swap');
+/* 字体加载已收拢到 index.html 的 <link>（Orbitron / Roboto Mono / Space Grotesk），
+   不再在此重复 @import，省掉一轮阻塞渲染的往返请求。 */
 
 /* == AUTO-GENERATED FROM src/config/colorTokens.js — 勿手改，改后跑 npm run tokens:sync == */
 :root {
@@ -178,16 +179,6 @@ h3 {
     0 0 8px rgba(255, 255, 255, 0.25),
     0 0 14px rgba(0, 168, 255, 0.15),
     0 1px 3px rgba(0, 0, 0, 0.8);
-}
-
-/* --- 建议添加的样式 --- */
-/* 您可以为特定的标题添加下划线，以更贴近原图效果 */
-
-.main-title {
-  border-bottom: 2px solid var(--color-border);
-  padding-bottom: 10px;
-  display: inline-block;
-  box-shadow: 0 4px 12px var(--color-border-glow);
 }
 
 .divider {
