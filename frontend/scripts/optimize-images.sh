@@ -3,6 +3,10 @@
 # 一次性工具，不接入构建流程——这些图几乎不变，自动化价值不足以抵消
 # 新依赖与构建耗时。改图或加图时手动跑一次。
 #
+# 依赖 ImageMagick 6（`convert` 命令）。ImageMagick 7 把命令改名为 `magick`，
+# 且不保证产出字节相同——仓库里提交的 .webp 是用 IM6 生成的，评审也是在 IM6
+# 下逐字节复现的；换成 IM7 跑这个脚本得到的文件可能与已提交的产物不一致。
+#
 # 目标尺寸按各自的实际显示需求确定，不统一裁到同一尺寸：
 #   abl_logo        页头显示 48-82px 高，200px 覆盖 2x 屏
 #   calabi-yau      base.css 写死 background-size: min(92vw, 1280px)
@@ -10,8 +14,9 @@
 #   zyz_title       母版仅 1173px，'>' 修饰符使其保持原尺寸，收益来自换格式
 #   zyz_screenshot  653px 本就合理，仅换格式
 #
-# 用法: cd frontend && bash scripts/optimize-images.sh
+# 用法: cd frontend && bash scripts/optimize-images.sh（在任意目录下都可执行）
 set -euo pipefail
+cd "$(dirname "$0")/.."
 
 SRC=assets-src
 DST=src/assets/images
@@ -35,6 +40,8 @@ conv() { # conv <相对路径(不含扩展名)> <resize 参数或 -> <质量>
 conv abl_logo                     '200x200>'   $Q_UI
 conv calabi-yau                   '1280x1280>' $Q_ART
 conv zyz_title                    '1200x1200>' $Q_ART
+# 85 是写死的，不用 $Q_ART / $Q_UI：这是一张游戏截图，既不是作品图也不是 UI
+# 元素，画质需求介于两者之间，单独给一个值即可，没必要为一张图新增变量。
 conv zyz_screenshot               '-'          85
 conv csd20related/csd_20_title    '1600x1600>' $Q_ART
 conv csd20related/宣传图12         '1600x1600>' $Q_ART
