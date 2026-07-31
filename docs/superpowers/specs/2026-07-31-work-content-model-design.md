@@ -6,7 +6,9 @@
 后续：本文档是社团转型三个 spec 中的第一个（地基）。Spec 2「站点重构」与 Spec 3「中英双语」在第 6 节列明，不在本轮范围。
 实施计划：[作品体系与内容模型 Implementation Plan](../plans/2026-07-31-work-content-model.md)
 
-> **2026-07-31 修订**：编写实施计划时发现四处可以做得更好或原判断有误，已回填到下文——字段名 `type` 改为 `workType`（§3.1）、`details` 的「至多一个组件」可由 schema 的 `max` 键强制而非仅靠约定（§3.2）、`body` 允许的嵌入块收窄到前端真正会渲染的四种（§3.1）、csd20 页面的数据源与 `customView` 的落地形态修正（§3.5）。
+> **2026-07-31 修订 A**（编写实施计划时核对代码库发现）：字段名 `type` 改为 `workType`（§3.1）；`details` 的「至多一个组件」可由 schema 的 `max` 键强制而非仅靠约定（§3.2）；`body` 允许的嵌入块收窄到前端真正会渲染的几种（§3.1）。
+>
+> **2026-07-31 修订 B**（用户裁定）：**取消 `customView` 逃生舱，主站只保留统一形式。** 三个特制页（`zyzView.vue`、`csd20.vue`、`csd20music.vue`）全部退役，内容改由 `work` 记录 + `body` 嵌入块表达。新增 `embedding.audio-embed` 承载 csd20 的主题曲播放器。详见 §3.7。
 
 ---
 
@@ -58,7 +60,7 @@
 | 旧业务处理 | 保数据、砍运营前端（Strapi 数据一条不删，前端删掉贩售运营功能） |
 | 国际化 | 本轮做中英双语，但**放在 Spec 3**，本 spec 只保证建模不排斥 i18n |
 | GitHub 为事实源 | **不做**。主线是游戏，游戏不走 GitHub Release，收益只落在两个工具上却要引入构建期拉取与缓存兜底。YAGNI |
-| 特制页 | 通过 `customView` 逃生舱保留 csd20，朱元璋通用化 |
+| 特制页 | **不做。** 主站只有统一形式，三个既有特制页全部退役。需要"花活"时走独立子域名或 `iframe-embed`，见 §3.7 |
 
 ---
 
@@ -80,13 +82,12 @@
 | `recruitingRoles` | component `work.recruiting-role`，repeatable | 否 | 供首页招募块与 Spec 2 的 `/join` 消费 |
 | `summary` | text | 是 | 一句话简介，列表卡片用 |
 | `coverImage` | media（single） | **否** | 必须可空——`project.coverImage` 当前为 required，正是预告态条目的拦路虎 |
-| `body` | dynamiczone | 否 | 复用 `content-block.content-block` 与 `embedding.link-embed` / `iframe-embed` / `file-embed`。**不含 `product-embed` 与 `pdf-embed`**：前者需要二次批量补全制品数据，后者在 `EventDetail.vue` 里其实从未被渲染（那条 `v-if` 链没有它）。开一个前端会静默丢弃的块类型，等于给编辑埋一个"填了没反应"的坑 |
+| `body` | dynamiczone | 否 | `content-block.content-block` + `embedding.link-embed` / `iframe-embed` / `file-embed` / **`audio-embed`（新建）**。**不含 `product-embed` 与 `pdf-embed`**：前者需要二次批量补全制品数据，后者在 `EventDetail.vue` 里其实从未被渲染（那条 `v-if` 链没有它）。开一个前端会静默丢弃的块类型，等于给编辑埋一个"填了没反应"的坑 |
 | `staff` | component `staff.staff`，repeatable | 否 | 复用现有组件，朱元璋制作名单直接迁入 |
 | `details` | dynamiczone | 否 | 类型专属字段，见 3.2 |
 | `startDate` | date | 否 | |
 | `featured` | boolean（默认 `false`） | 否 | 首页精选 |
 | `order` | integer（默认 `0`） | 否 | 手工排序，降序优先 |
-| `customView` | string | 否 | **逃生舱**：有值时前端路由到同名特制组件，无值走通用详情页 |
 
 `options.draftAndPublish` 设为 `true`，与现有四个内容类型一致。
 
@@ -185,7 +186,7 @@
 | project「2026宇佐见堇子角色日接力」 | work | `site` / `ended` | |
 | project「2026二岩猯藏角色日接力」 | work | `site` / `ended` | |
 | project「2025蓬莱人形23周年纪念接力」 | work | `site` / `ended` | |
-| project「梦违科学世纪20周年纪念合同志」+ `csd20.vue` | work（合并为一条） | `publication` / `ended` | `customView` = `csd20` |
+| project「梦违科学世纪20周年纪念合同志」+ `csd20.vue` + `csd20music.vue` | work（合并为一条） | `publication` / `ended` | 三处内容合并进一条记录的 `body`；主题曲用 `audio-embed` 块 |
 | `zyzView.vue`（东方朱元璋） | work | `game` / `discontinued` | 正文与制作名单迁入 Strapi 后删除该组件 |
 | event「THTK-Studio」 | **提升**为 work（原 event 保留并关联） | `tool` / `maintained` | |
 | 东方设定 agent | work（全新） | `tool` / `in-development` | 正文与实际 `status` 由社团方在填充内容时确定，建模上先按开发中建立 |
@@ -216,13 +217,16 @@
 
 **修改**
 
-- `src/router/index.js`：新增 `/works`、`/works/:slug`、`/works/csd20/music` 三条路由；`/project/zhu-yuanzhang`、`/project/csd20`、`/project/csd20/music` 三条由组件路由改为 `redirect` 路由（见 3.6）。`/works/csd20/music` 是唯一的作品子路由，直接写成具名路径而非 `/works/:slug/music` 通配——目前只有 csd20 有子页，通配会给不存在的组合留下 404 入口。
-- `src/components/ProjectsBar.vue`：改吃 `useWorks` 而非 `useProjects`。形态（轮播）本轮不动，导航改版属于 Spec 2。
+- `src/router/index.js`：新增 `/works`、`/works/:slug` 两条路由（**没有任何作品专属路由**）；`/project/zhu-yuanzhang`、`/project/csd20`、`/project/csd20/music` 三条由组件路由改为 `redirect`（见 3.6）。
+- `src/components/ProjectsBar.vue`、`src/components/SiteHeader.vue`：改吃 `useWorks` 而非 `useProjects`。形态（轮播、下拉）本轮不动，导航改版属于 Spec 2。
 - `src/composables/useProjects.js`：随 `project` 消费点移除而删除。
-- `src/views/zyzView.vue`：删除（内容迁入 Strapi）。
-- `src/views/projects/csd20.vue`：保留，改由 `customView` 机制路由到。**数据源仍是 `product` 而非 `work`**——该页面展示的是制品「梦违科学世纪20周年合同志」的卡片，不需要 work 数据；但把 `useProductByTitle('梦违科学世纪20周年合同志')` 换成按 slug 取的 `useProduct('csd20')`，顺手修掉"后台改一个字页面就空"的既有缺陷。`csd20music.vue` 保留为其子路由。
 
-**`customView` 的落地形态**：前端的分发由**路由顺序**完成，不读该字段——`/works/csd20` 写成具名路由并排在通配的 `/works/:slug` 之前，于是 csd20 走特制页、其余走通用详情页。`work.customView` 字段仍然保留并填 `csd20`，作用是让后台可读（编辑能看出这条记录有专属页面），以及为将来真正需要按字段动态分发时留出空间。
+**删除**
+
+- `src/views/zyzView.vue`、`src/views/projects/csd20.vue`、`src/views/projects/csd20music.vue` 三个特制页全部删除，内容迁入 Strapi。
+- `src/assets/images/csd20related/`（9.0 MB：主题曲 mp3 8.5 MB + 三张 webp）移到不参与打包的 `frontend/assets-src/`，原文件上传到 Strapi 媒体库。**`dist/` 直接减少 9 MB**，`/works/csd20` 的图片与音频改由媒体域名提供。
+
+副产物：`csd20.vue` 与 `csd20music.vue` 是全仓库仅有的两条 lint 错误（`vue/multi-word-component-names`）。删除后 `npx eslint .` 退出码归零，`npm run lint` 首次可以作为 CI 门禁使用。
 
 ### 3.6 重定向表
 
@@ -232,9 +236,32 @@
 |---|---|
 | `/project/zhu-yuanzhang` | `/works/zhu-yuanzhang` |
 | `/project/csd20` | `/works/csd20` |
-| `/project/csd20/music` | `/works/csd20/music` |
+| `/project/csd20/music` | `/works/csd20` |
+
+主题曲页并入作品页（音乐成为 `body` 里的一个 `audio-embed` 块），所以 `/project/csd20/music` 与 `/project/csd20` 指向同一个目标。深链粒度变粗是统一形式的代价，站外若有直接指向音乐页的链接，仍能落到正确的作品上。
 
 `/products`、`/events`、`/recruitment` 的重定向属于 Spec 2（站点重构），本轮不动——它们的目标页面（`/archive/*`、`/news`、`/join`）在 Spec 2 才存在。
+
+### 3.7 特制页政策：主站只有统一形式
+
+**主站代码库里不再有作品专属页面，也不保留任何指向专属页面的字段。**
+
+取消 `customView` 而不是留着备用，是因为一个专门用来绕开统一形式的字段本身就是邀请——留着它，下一个"这个项目有点特别"就会绕过去，三年后又是三个特制页。删掉它，政策自我执行；将来真需要时，加回一个字段和一条路由是十分钟的事。
+
+**"花活"有两条已验证的出路，都不向主站收税：**
+
+1. **独立子域名。** 社团已经这样做过四次（sumireko2026、mamizou2026、hourai2025、boothkernel）。技术栈随便挑，发版与主站脱钩，主站只留一条 `work` 记录加 `site-detail.url`。这是重度定制的正确答案。
+2. **`iframe-embed`。** 任意复杂的交互做成独立页面挂在别处，嵌进 `body`。视觉上在站内，工程上在站外。
+
+**为什么主站内特制页是三者中最差的：** 它耦合主站的构建、路由、样式与部署，于是每一次横切改造都得带上它；但它既拿不到独立站的自由，也拿不到结构化记录的好处（不能被列表、筛选，不能由非程序员编辑）。两头不靠。
+
+这个代价在本项目里是可量化的：2026-07-31 那轮前端改造中，`csd20.vue` 被反复卷入颜色令牌迁移、断点移动优先化、图片格式转换、路由改造；而全仓库仅有的两条 lint 错误就长在这两个特制页上，让 `npm run lint` 至今无法作为 CI 门禁。三个特制页换来的是每轮改造的固定开销和一条永远修不干净的基线。
+
+**本轮承担的具体代价**（明说，不粉饰）：
+
+- csd20 封面的点击放大模态框会消失。图片预览应当作为**详情页的通用能力**去做（`UPGRADE_TODO.md` §3.2 / §3.3 早已列为待办），而不是为一个作品保留一整个特制页。
+- csd20 页面上那张制品卡片降级为 `body` 里的一条 Markdown 链接，指向 `/products/csd20`。Spec 2 会为该路径加上到 `/archive/products/csd20` 的重定向，链接不会断。
+- 主题曲页与作品页合并，深链粒度变粗（见 §3.6）。
 
 ---
 
@@ -255,14 +282,16 @@
 - `useWorks` 的参数拼装、`populate`、默认排序、`workType` 过滤有单元测试，沿用现有 66 条测试的组织方式。
 - `resolveDetailBlock(details, workType)` 对四种类型、类型不匹配、动态区为空/为 `null`、挂载多个组件等情况有单元测试（一律降级返回 `null` 而非抛错）；`typeLabel` / `statusLabel` 对未知枚举值有回落测试。
 - 重定向表逐条测试：`createRouter` + memory history 在 Node 环境下可跑，不需要 jsdom。
-- `npm run build` 通过；`npm run lint` 相对分支基线无新增错误（基线在 `csd20.vue` / `csd20music.vue` 上有两条 `vue/multi-word-component-names` 错误，`npx eslint .` 在基线即以退出码 1 结束）。
+- `npm run build` 通过。
+- **`npx eslint .` 退出码为 0。** 基线上仅有的两条错误随特制页删除而消失，这是可验证的产出，不再是"相对基线无新增"的软标准。
+- **`dist/` 体积相对基线至少减少 9 MB**（`csd20related/` 的 mp3 与三张 webp 移出打包范围）。
 - 实施报告须附：新增/修改文件清单、测试数量变化、`dist/` 体积对照。
 
 需要人工确认的：
 
 - **预告态**：新游戏条目在无 `coverImage`、无 `details`、无 `body` 的情况下，列表卡片与详情页都要体面——不能出现破图、空白区块或布局塌陷。这是本轮最容易做错的一处，且只有肉眼能判断。
 - 四种 `workType` 各自的详情页渲染正确的 detail 组件。
-- `customView` 机制下 csd20 页面与改造前观感一致。
+- csd20 用统一形式重建后仍然可读：封面、两张宣传图、主题曲播放器、制作信息、作者寄语都在，不因为丢了特制布局而变成一堵纯文字墙。
 - 作品详情页正确显示 `relatedWork` 关联过来的 devlog 列表。
 
 ---

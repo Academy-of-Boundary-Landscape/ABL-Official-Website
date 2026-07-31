@@ -18,7 +18,8 @@
 - **不新增颜色 token。** 状态徽标全部复用既有 token（见 Task 3），新增 token 会牵动 `src/config/__tests__/tokens.spec.js` 的守卫测试。
 - **旧链接不得 404**，一律用 `redirect` 路由，不得直接删除路径。
 - **字段名用 `workType` 而非 `type`**（设计文档 §3.1 写作 `type`，本计划刻意收窄）。理由：`type` 同时是 Strapi 属性定义自身的键名，作为字段名有与内部 schema 词汇冲突的风险；`workType` 零成本规避。前端属性访问一律 `work.workType`。
-- **`npm run lint` 在分支基线就以退出码 1 结束**（`csd20.vue` / `csd20music.vue` 上两条 `vue/multi-word-component-names`）。验收标准是"相对基线无新增错误"，不是"通过"。
+- **不做作品专属页面，也不留指向专属页面的字段或路由**（spec §3.7）。需要重度定制时走独立子域名或 `iframe-embed`。
+- **`npm run lint` 在分支基线以退出码 1 结束**（`csd20.vue` / `csd20music.vue` 上两条 `vue/multi-word-component-names`）。Task 1–4 期间标准是"相对基线无新增错误"；**Task 5 删掉这两个文件后，标准升级为 `npx eslint .` 退出码必须为 0**，此后每个 Task 都按这个标准。
 - 每个 Task 结束时 `npm test` 全绿、`npm run build` 通过。
 
 ---
@@ -63,13 +64,15 @@
 | `src/components/ProjectsBar.vue` | 改：数据源换成 `useWorkList` |
 | `src/components/SiteHeader.vue` | 改：下拉数据源换成 `useWorkList`，链接指向 `/works/:slug` |
 | `src/composables/useProjects.js` | **删除** |
-| `src/views/zyzView.vue` | **删除**（正文先导出到 `docs/content-migration/`） |
+| `src/views/zyzView.vue`、`src/views/projects/csd20.vue`、`src/views/projects/csd20music.vue` | **全部删除**（正文先导出到 `docs/content-migration/`）。主站不再有作品专属页面 |
+| `src/assets/images/csd20related/` | **移到 `frontend/assets-src/`**（9.0 MB，含 8.5 MB mp3），媒体改由 Strapi 提供，`dist/` 相应减少 |
 
 **文档**
 
 | 文件 | 职责 |
 |---|---|
 | `docs/content-migration/zhu-yuanzhang.md` | 从 `zyzView.vue` 提取的正文，供人工录入 Strapi |
+| `docs/content-migration/csd20.md` | 从 `csd20.vue` + `csd20music.vue` 合并提取的正文与媒体清单 |
 | `docs/content-migration/work-records.md` | 10 条 work 记录的录入清单 |
 
 ---
@@ -79,6 +82,7 @@
 建立 `work` 集合类型、六个组件，并改造 `event`。这是全部后续任务的地基——前端拿不到 `/api/works` 就什么都做不了。
 
 **Files:**
+- Create: `strapi-backend/src/components/embedding/audio-embed.json`
 - Create: `strapi-backend/src/components/work/download-channel.json`
 - Create: `strapi-backend/src/components/work/recruiting-role.json`
 - Create: `strapi-backend/src/components/work/game-detail.json`
@@ -93,9 +97,34 @@
 - Modify（自动重新生成，需提交）: `strapi-backend/types/generated/contentTypes.d.ts`、`strapi-backend/types/generated/components.d.ts`
 
 **Interfaces:**
-- Produces: REST 端点 `GET /api/works`、`GET /api/works?filters[slug][$eq]=<slug>`；`work` 字段名 `title` `slug` `workType` `status` `recruiting` `recruitingRoles` `summary` `coverImage` `body` `staff` `details` `startDate` `featured` `order` `customView` `news`；`event` 新增字段 `relatedWork`；`details` 动态区组件标识 `work.game-detail` / `work.tool-detail` / `work.site-detail` / `work.publication-detail`。
+- Produces: REST 端点 `GET /api/works`、`GET /api/works?filters[slug][$eq]=<slug>`；`work` 字段名 `title` `slug` `workType` `status` `recruiting` `recruitingRoles` `summary` `coverImage` `body` `staff` `details` `startDate` `featured` `order` `news`；`event` 新增字段 `relatedWork`；`details` 动态区组件标识 `work.game-detail` / `work.tool-detail` / `work.site-detail` / `work.publication-detail`；`body` 动态区新增组件标识 `embedding.audio-embed`（字段 `trackName` `audioFile`）。
 
-- [ ] **Step 1: 建两个共用组件**
+- [ ] **Step 1: 建三个共用组件**
+
+`strapi-backend/src/components/embedding/audio-embed.json` —— 承载 csd20 主题曲的播放器。放在 `embedding/` 而不是 `work/`，因为它和现有四种嵌入块是同一类东西；转型做游戏之后 BGM 试听、PV 音轨还会再用到：
+
+```json
+{
+  "collectionName": "components_embedding_audio_embeds",
+  "info": {
+    "displayName": "audioEmbed",
+    "icon": "music"
+  },
+  "options": {},
+  "attributes": {
+    "trackName": {
+      "type": "string"
+    },
+    "audioFile": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["audios", "files"],
+      "required": true
+    }
+  },
+  "config": {}
+}
+```
 
 `strapi-backend/src/components/work/download-channel.json`：
 
@@ -345,7 +374,8 @@
         "content-block.content-block",
         "embedding.link-embed",
         "embedding.iframe-embed",
-        "embedding.file-embed"
+        "embedding.file-embed",
+        "embedding.audio-embed"
       ]
     },
     "staff": {
@@ -373,9 +403,6 @@
     "order": {
       "type": "integer",
       "default": 0
-    },
-    "customView": {
-      "type": "string"
     },
     "news": {
       "type": "relation",
@@ -2069,7 +2096,7 @@ const detailComponent = computed(() => DETAIL_COMPONENTS[work.value?.workType] ?
 
 - [ ] **Step 5b: 写 `src/components/work/ContentBlocks.vue`**
 
-只渲染 Task 1 里 `work.body` 允许的四种块。写法与取值路径照抄 `EventDetail.vue`（`contentMd` / `linkName` + `linkContent` / `iframeContent` / `File` + `FileName`），确保后台填法一致。
+只渲染 Task 1 里 `work.body` 允许的五种块。前四种的写法与取值路径照抄 `EventDetail.vue`（`contentMd` / `linkName` + `linkContent` / `iframeContent` / `File` + `FileName`），确保后台填法一致；第五种 `audio-embed` 是本轮新建的组件（字段 `trackName` / `audioFile`），承载 csd20 的主题曲。
 
 ```vue
 <template>
@@ -2107,6 +2134,14 @@ const detailComponent = computed(() => DETAIL_COMPONENTS[work.value?.workType] ?
         >
           {{ block.FileName || block.File[0].name || '下载文件' }}
         </a>
+      </div>
+
+      <div
+        v-else-if="block.__component === 'embedding.audio-embed' && block.audioFile"
+        class="audio-embed-block"
+      >
+        <p v-if="block.trackName" class="audio-track-name">{{ block.trackName }}</p>
+        <audio :src="fileUrl(block.audioFile)" controls preload="none"></audio>
       </div>
     </div>
   </div>
@@ -2173,6 +2208,24 @@ const fileUrl = (file) => getStrapiMedia(file)
   aspect-ratio: 16 / 9;
   border: 1px solid var(--color-border-soft);
 }
+
+.audio-embed-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.audio-track-name {
+  margin: 0;
+  font-family: var(--font-family-mono);
+  font-size: 0.9rem;
+  color: var(--color-text-subtle);
+}
+
+/* preload="none"：8.5MB 的主题曲不能在页面打开时就开始下载 */
+.audio-embed-block audio {
+  width: 100%;
+}
 </style>
 ```
 
@@ -2215,19 +2268,29 @@ git commit -m "feat: :sparkles: 作品详情页与四种类型专属区块"
 
 ---
 
-### Task 5: 旧路径重定向与 customView 逃生舱
+### Task 5: 特制页退役与旧路径重定向
+
+三个作品专属 Vue 页面全部删除，内容改由 `work` 记录承载（设计文档 §3.7）。旧路径改为重定向。
+
+**这个 Task 有两个可验证的产出**，实施报告必须给出证据：
+
+1. `npx eslint .` 退出码从 1 变成 **0**——`csd20.vue` 与 `csd20music.vue` 是全仓库仅有的两条 lint 错误。
+2. `dist/` 至少减少 **9 MB**——`csd20related/` 的 8.5 MB mp3 与三张 webp 移出打包范围。
 
 **Files:**
 - Create: `frontend/src/router/redirects.js`
 - Create: `frontend/src/router/__tests__/redirects.spec.js`
 - Create: `docs/content-migration/zhu-yuanzhang.md`
+- Create: `docs/content-migration/csd20.md`
 - Modify: `frontend/src/router/routes.js`
-- Modify: `frontend/src/views/projects/csd20.vue`
 - Delete: `frontend/src/views/zyzView.vue`
+- Delete: `frontend/src/views/projects/csd20.vue`
+- Delete: `frontend/src/views/projects/csd20music.vue`
+- Move: `frontend/src/assets/images/csd20related/` → `frontend/assets-src/csd20related/`
 
 **Interfaces:**
 - Consumes: Task 3 的 `src/router/routes.js`。
-- Produces: `src/router/redirects.js` 导出 `LEGACY_REDIRECTS: Record<string,string>` 与 `redirectRoutes(): Array<{path, redirect}>`；路由 `/works/csd20`、`/works/csd20/music` 由具名记录承载。
+- Produces: `src/router/redirects.js` 导出 `LEGACY_REDIRECTS: Record<string,string>` 与 `redirectRoutes(): Array<{path, redirect}>`。**路由表里没有任何作品专属记录**，`/works/:slug` 一条通吃。
 
 - [ ] **Step 1: 写 `src/router/__tests__/redirects.spec.js`（先失败）**
 
@@ -2248,16 +2311,15 @@ const makeRouter = () =>
       ...redirectRoutes(),
       { path: '/works', name: 'works', component: Stub },
       { path: '/works/:slug', name: 'WorkDetail', component: Stub },
-      { path: '/works/csd20/music', name: 'csd20music', component: Stub },
     ],
   })
 
 describe('旧路径重定向', () => {
-  it('三条 /project/* 旧路径都有映射', () => {
+  it('三条 /project/* 旧路径都有映射，音乐页并入作品页', () => {
     expect(LEGACY_REDIRECTS).toEqual({
       '/project/zhu-yuanzhang': '/works/zhu-yuanzhang',
       '/project/csd20': '/works/csd20',
-      '/project/csd20/music': '/works/csd20/music',
+      '/project/csd20/music': '/works/csd20',
     })
   })
 
@@ -2273,10 +2335,12 @@ describe('旧路径重定向', () => {
     expect(router.currentRoute.value.matched.length).toBeGreaterThan(0)
   })
 
-  it('/works/csd20/music 走具名记录而不是被 /works/:slug 吞掉', async () => {
+  it('所有作品都落到同一条通用路由——主站没有作品专属页面', async () => {
     const router = makeRouter()
-    await router.push('/works/csd20/music')
-    expect(router.currentRoute.value.name).toBe('csd20music')
+    for (const slug of ['csd20', 'zhu-yuanzhang', 'new-game']) {
+      await router.push(`/works/${slug}`)
+      expect(router.currentRoute.value.name).toBe('WorkDetail')
+    }
   })
 })
 ```
@@ -2302,7 +2366,9 @@ Expected：FAIL，报 `Failed to resolve import "@/router/redirects"`。
 export const LEGACY_REDIRECTS = {
   '/project/zhu-yuanzhang': '/works/zhu-yuanzhang',
   '/project/csd20': '/works/csd20',
-  '/project/csd20/music': '/works/csd20/music',
+  // 主题曲页已并入作品页（音乐是 body 里的一个 audio-embed 块），
+  // 所以这两条指向同一个目标。深链粒度变粗是统一形式的代价。
+  '/project/csd20/music': '/works/csd20',
 }
 
 export const redirectRoutes = () =>
@@ -2317,26 +2383,15 @@ export default redirectRoutes
 
 1. 顶部加 `import { redirectRoutes } from './redirects'`
 2. **删掉** `/project/zhu-yuanzhang`、`/project/csd20`、`/project/csd20/music` 三条组件路由
-3. 在 `/works/:slug` **之前**加 `/works/csd20/music` 具名路由（先注册更具体的路径，否则 `/works/:slug` 会先匹配 `csd20`，`/music` 段落空），在数组末尾展开 `...redirectRoutes()`
+3. 在数组末尾展开 `...redirectRoutes()`
 
-改动后的 `/works` 相关片段：
+改动后的 `/works` 相关片段——**只有两条，没有任何作品专属路由**：
 
 ```js
   {
     path: '/works',
     name: 'works',
     component: () => import('../views/WorkList.vue'),
-  },
-  // 必须排在 /works/:slug 之前：路径更具体的记录要先注册
-  {
-    path: '/works/csd20/music',
-    name: 'csd20music',
-    component: () => import('../views/projects/csd20music.vue'),
-  },
-  {
-    path: '/works/csd20',
-    name: 'csd20',
-    component: () => import('../views/projects/csd20.vue'),
   },
   {
     path: '/works/:slug',
@@ -2347,82 +2402,145 @@ export default redirectRoutes
 ]
 ```
 
-**`/works/csd20` 是 `customView` 逃生舱的落地形态**：这条具名路由排在通配 `/works/:slug` 之前，于是 csd20 走它自己的特制页，其余作品走通用详情页。设计文档 §3.4 里 csd20 那条 work 记录的 `customView` 字段填 `csd20`，作用是让后台可读——前端的分发由路由顺序完成，不读该字段。
+这是设计文档 §3.7 的政策落地：**主站只有统一形式，不保留任何指向作品专属页面的路由或字段。** 需要重度定制时走独立子域名（社团已做过四次）或 `iframe-embed`。不要"顺手"为某个作品加一条具名路由——那正是这条政策要防的事。
 
-- [ ] **Step 5: 导出 `zyzView.vue` 正文后删除该组件**
+- [ ] **Step 5: 导出三个特制页的内容后删除它们**
 
-先把正文抠出来存档，供人工录入 Strapi（内容迁移是社团方的活，见设计文档 §7）：
+内容不能只留在 git 历史里——社团方要照着录入 Strapi（设计文档 §7）。先存档，再删。
 
 ```bash
-mkdir -p docs/content-migration
+cd /data/sunyunbo/www/ABL-Official-Website && mkdir -p docs/content-migration
 ```
 
-创建 `docs/content-migration/zhu-yuanzhang.md`，把 `frontend/src/views/zyzView.vue` 模板里 `// 游戏介绍`、`// 制作名单`、`// 关于作品` 三节的**文字内容**逐段抄成 Markdown，顶部加一段录入说明：
+**`docs/content-migration/zhu-yuanzhang.md`** —— 把 `frontend/src/views/zyzView.vue` 模板里 `// 游戏介绍`、`// 制作名单`、`// 关于作品` 三节的文字逐段抄成 Markdown：
 
 ```markdown
 # 东方朱元璋 · 内容迁移稿
 
-来源：`frontend/src/views/zyzView.vue`（该组件已于本次改造中删除，内容保存在此供录入 Strapi）。
+来源：`frontend/src/views/zyzView.vue`（已于本次改造中删除）。
 
 录入目标：`work` 集合，`slug` = `zhu-yuanzhang`，`workType` = `game`，`status` = `discontinued`。
-两张配图在 `frontend/src/assets/images/zyz_title.webp` 与 `zyz_screenshot.webp`，需在后台重新上传。
+配图 `frontend/src/assets/images/zyz_title.webp` 与 `zyz_screenshot.webp` 需在后台上传，
+放进 `body` 的 Markdown 块里引用。
 
 ---
 
-（此处是从组件里逐段抄出的正文与制作名单）
+（此处逐段抄写组件模板里的正文、制作名单、关于作品三节）
 ```
 
-抄完后删除组件：
+**`docs/content-migration/csd20.md`** —— 合并 `csd20.vue` 与 `csd20music.vue` 两页的内容：
+
+```markdown
+# 梦违科学世纪20周年合同志 · 内容迁移稿
+
+来源：`frontend/src/views/projects/csd20.vue` 与 `csd20music.vue`（均已删除）。
+
+录入目标：`work` 集合，`slug` = `csd20`，`workType` = `publication`，`status` = `ended`。
+
+## 需要上传的媒体（现存于 `frontend/assets-src/csd20related/`）
+
+| 文件 | 用途 |
+|---|---|
+| `csd_20_title.webp` | 封面 → `coverImage` |
+| `宣传图12.webp`、`宣传图10.webp` | `body` 的 Markdown 块里引用 |
+| `csd20_theme.mp3` | `body` 的 `audioEmbed` 块，`trackName` 填「梦祀之始」 |
+
+## body 建议结构
+
+1. `contentBlock`：合同志介绍（抄自 `csd20.vue`），中间用 Markdown 图片语法插入两张宣传图
+2. `contentBlock`：一行 Markdown 链接指向制品页 `[查看制品详情](/products/csd20)`
+   （Spec 2 会为该路径加到 `/archive/products/csd20` 的重定向，链接不会断）
+3. `audioEmbed`：主题曲《梦祀之始》
+4. `contentBlock`：音乐简介 + 制作信息 + 作者寄语（抄自 `csd20music.vue`）
+
+## 制作信息（抄自 csd20music.vue，原为一个 ul 列表）
+
+- 曲名：梦祀之始
+- 作曲：Tama_Evans
+- 作者 QQ：1730515208
+- 时长：3 分 33 秒
+- 发行时间：2025 年秋
+
+---
+
+（此处逐段抄写两个组件模板里的全部正文，包括作者寄语整段）
+```
+
+**注意抄全** —— `csd20music.vue` 的「作者寄语」是一大段完整的创作自述，不要摘要，逐字抄。
+
+存档完成后删除三个组件：
 
 ```bash
-git rm frontend/src/views/zyzView.vue
+cd /data/sunyunbo/www/ABL-Official-Website
+git rm frontend/src/views/zyzView.vue \
+       frontend/src/views/projects/csd20.vue \
+       frontend/src/views/projects/csd20music.vue
 ```
 
-- [ ] **Step 6: 修掉 csd20 的标题硬匹配**
+`frontend/src/views/projects/` 目录随之清空，一并删掉。
 
-`frontend/src/views/projects/csd20.vue` 目前用 `useProductByTitle('梦违科学世纪20周年合同志')` 找制品——后台改一个字页面就空。该制品的 slug 是 `csd20`，直接按 slug 取更稳。
+- [ ] **Step 6: 把 9 MB 资源移出打包范围**
 
-把 import 与调用两处改掉：
-
-```js
-// 改前
-import { useProductByTitle } from '@/composables/useProducts'
-// ...
-} = useProductByTitle('梦违科学世纪20周年合同志')
-
-// 改后
-import { useProduct } from '@/composables/useProducts'
-// ...
-} = useProduct('csd20')
-```
-
-`useProduct(slug)` 的返回结构（`{ data, loading, error, notFound, refresh }`）与 `useProductByTitle` 一致，解构处不需要改。
-
-`useProductByTitle` 失去唯一调用者后**保留不动**——它在 `src/composables/__tests__/resources.spec.js` 里有测试覆盖，删函数要连带改测试文件，与本任务无关。是否清理留给最终复审。
-
-- [ ] **Step 7: 跑测试与构建**
+`frontend/assets-src/` 是上一轮资源优化建立的目录——留在 git 里、不参与 Vite 打包。csd20 的媒体要上传到 Strapi，但上传前不能先从磁盘上消失。
 
 ```bash
-cd frontend && npm test && npm run build
+cd /data/sunyunbo/www/ABL-Official-Website/frontend
+mkdir -p assets-src
+git mv src/assets/images/csd20related assets-src/csd20related
 ```
 
-Expected：新增 4 条重定向测试通过；既有测试全绿；构建成功且**不再有 `zyzView` chunk**。
+确认没有任何代码还引用它们：
+
+```bash
+grep -rn 'csd20related' src/ && echo '还有引用，先处理掉' || echo '零引用 ✓'
+```
+
+Expected：`零引用 ✓`（三个特制页已在 Step 5 删除，它们是仅有的引用方）。
+
+`zyz_title.webp` 与 `zyz_screenshot.webp` **暂不移动**——它们在 `src/assets/images/` 根目录下，与其他仍在使用的图片混放，单独挑出来收益小、误伤风险大。它们会因无人引用而不进产物（Vite 只打包被 import 的资源）。
+
+- [ ] **Step 7: 跑测试、lint 与构建**
+
+```bash
+cd frontend && npm test && npx eslint . ; echo "eslint exit=$?" ; npm run build
+```
+
+Expected：
+
+- 重定向测试通过，既有测试全绿
+- **`eslint exit=0`** —— 这是本 Task 的硬产出。基线上仅有的两条错误就在刚删掉的两个文件上
+- 构建成功，产物里**不再有 `zyzView` / `csd20` / `csd20music` chunk**
+
+记录 `dist/` 体积：
+
+```bash
+du -sh dist/
+```
+
+Expected：相对基线**至少小 9 MB**。把改前/改后数值写进实施报告。
 
 - [ ] **Step 8: 肉眼确认重定向**
 
-开发服务器下逐条访问，确认地址栏跳转且页面正常：
+开发服务器下逐条访问，确认地址栏跳转：
 
-- `http://localhost:5173/project/csd20` → 跳到 `/works/csd20`，csd20 特制页原样渲染
-- `http://localhost:5173/project/csd20/music` → 跳到 `/works/csd20/music`
-- `http://localhost:5173/project/zhu-yuanzhang` → 跳到 `/works/zhu-yuanzhang`（本地库没有这条记录，显示空态文案属正常）
+- `http://localhost:5173/project/csd20` → 跳到 `/works/csd20`
+- `http://localhost:5173/project/csd20/music` → **也跳到 `/works/csd20`**（音乐已并入作品页）
+- `http://localhost:5173/project/zhu-yuanzhang` → 跳到 `/works/zhu-yuanzhang`
+
+本地开发库里还没有这三条 work 记录，所以落地后显示空态文案 `>> 找不到这个作品。` —— **这是正常的**，重定向本身是否生效看地址栏，不看页面内容。
 
 - [ ] **Step 9: 提交**
 
 ```bash
-git add frontend/src/router frontend/src/views/projects/csd20.vue docs/content-migration
-git rm --cached frontend/src/views/zyzView.vue 2>/dev/null || true
-git add -A frontend/src/views
-git commit -m "feat: :truck: /project/* 重定向到 /works/*，csd20 改按 slug 取制品，删除 zyzView"
+cd /data/sunyunbo/www/ABL-Official-Website
+git add -A frontend/src frontend/assets-src docs/content-migration
+git commit -m "refactor: :fire: 三个作品特制页退役，/project/* 重定向到 /works/*
+
+主站只保留统一形式（见 spec §3.7）。zyzView / csd20 / csd20music 删除，
+内容存档到 docs/content-migration/ 供录入 Strapi。
+csd20related 的 9MB 媒体移到不打包的 assets-src/。
+
+副产物：全仓库仅有的两条 lint 错误随之消失，npx eslint . 现在退出码为 0。"
 ```
 
 ---
@@ -2571,13 +2689,15 @@ Strapi 的内容数据不随 git 同步。schema 由代码带过去，**下面 1
 | `sumireko-2026` | 2026宇佐见堇子角色日接力 | `site` | `ended` | `siteDetail.url` = https://sumireko2026.secret-sealing.club |
 | `mamizou-2026` | 2026二岩猯藏角色日接力 | `site` | `ended` | `siteDetail.url` = https://mamizou2026.secret-sealing.club |
 | `hourai-2025` | 2025蓬莱人形23周年纪念接力 | `site` | `ended` | `siteDetail.url` = https://hourai2025.secret-sealing.club/ |
-| `csd20` | 梦违科学世纪20周年纪念合同志 | `publication` | `ended` | **`customView` 填 `csd20`**；页面走特制路由 |
+| `csd20` | 梦违科学世纪20周年纪念合同志 | `publication` | `ended` | 内容与媒体见 `docs/content-migration/csd20.md`，含封面、两张宣传图、主题曲 mp3，需全部上传 |
 
 ## 从硬编码页迁移（1 条）
 
 | slug | title | workType | status | 备注 |
 |---|---|---|---|---|
-| `zhu-yuanzhang` | 东方朱元璋 | `game` | `discontinued` | 正文见 `docs/content-migration/zhu-yuanzhang.md`；配图需重新上传 |
+| `zhu-yuanzhang` | 东方朱元璋 | `game` | `discontinued` | 正文见 `docs/content-migration/zhu-yuanzhang.md`；两张配图需上传 |
+
+> **三条特制页迁来的记录（`csd20`、`zhu-yuanzhang`）在录入完成前，`/works/<slug>` 会显示空态。** 旧链接的重定向已经生效，落到的是一个还没有内容的页面。若在意这段窗口期，先录这两条再上前端。
 
 ## 新建（4 条）
 
@@ -2629,6 +2749,9 @@ Strapi 的内容数据不随 git 同步。schema 由代码带过去，**下面 1
 - [x] `/works` 列表与 `/works/:slug` 详情，四种类型各有专属区块
 - [x] `event` 新增 `relatedWork` 关联，开发日志可挂到具体作品
 - [x] `/project/*` 旧路径全部重定向
+- [x] 三个作品特制页（`zyzView` / `csd20` / `csd20music`）退役，主站只保留统一形式（见 spec §3.7）
+- [x] 随之 `npx eslint .` 退出码归零，`npm run lint` 首次可作为 CI 门禁
+- [ ] 图片点击放大预览做成详情页通用能力（原 csd20 特制页的模态框随该页消失）
 - [ ] 导航改版、首页重排、`/about`、归档化、`/join` —— 见 Spec 2
 - [ ] 中英双语 —— 见 Spec 3
 ```
@@ -2660,6 +2783,8 @@ git commit -m "refactor: :recycle: ProjectsBar 与 SiteHeader 改吃 work，useP
 
 - **动态区渲染有两份实现**：`WorkDetail` 用 `components/work/ContentBlocks.vue`，`EventDetail` 用自己内联的模板。合并需要把 `EventDetail` 的 `<style scoped>` 一起搬走并逐一核对观感，且 `EventDetail` 无测试覆盖，风险不匹配本轮收益。
 - **`embedding.pdf-embed` 在 `EventDetail.vue` 里从未被渲染**——它在 `event.mainContent` 的允许组件列表里，但那条 `v-if` 链没有它。属于既有缺陷，与本轮无关，但值得单独修。
-- **`useProductByTitle` 失去唯一调用者**（Task 5 把 csd20 改成按 slug 取）。函数与其测试仍在，清理与否由复审判断。
+- **`useProductByTitle` 失去唯一调用者**（`csd20.vue` 已删除）。函数与其测试仍在 `useProducts.js` / `resources.spec.js` 里，清理与否由复审判断。
+- **图片点击放大预览应做成详情页的通用能力**。csd20 特制页原有的封面模态框随该页删除而消失；`UPGRADE_TODO.md` §3.2 / §3.3 早已把"图片预览"列为待办，届时一并覆盖 `WorkDetail`、`ProductDetail`、`EventDetail`。
+- **`zyz_title.webp` / `zyz_screenshot.webp` 失去引用方**但仍在 `src/assets/images/` 根目录。Vite 只打包被 import 的资源，所以它们不会进产物；是否从仓库移走由复审判断。
 - **`project` 内容类型在 Strapi 里保留但已零引用**。删除集合需要生产库迁移，风险不匹配收益，维持保留。
 - Spec 2（站点重构）与 Spec 3（中英双语）的全部范围，见设计文档 §6。
