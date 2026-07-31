@@ -65,6 +65,7 @@ describe('配置守卫：theme.js 不得出现字面量颜色', () => {
   })
 })
 
+import { createGenerator } from 'unocss'
 import unoConfig from '../../../uno.config.js'
 
 describe('配置守卫：uno.config.js 与 colorTokens 同源', () => {
@@ -84,6 +85,21 @@ describe('配置守卫：uno.config.js 与 colorTokens 同源', () => {
     const shortcutNames = Object.keys(unoConfig.shortcuts || {})
     const conflicts = ['container', 'tech-box', 'page-header', 'section-title']
     expect(shortcutNames.filter((n) => conflicts.includes(n))).toEqual([])
+  })
+
+  // 行为级守卫（C1 修复）：光验证 shortcut 没有同名条目是不够的——
+  // 曾经发生过「删掉 shortcut 却没堵住 presetUno 内置的同名 container 规则」，
+  // 导致 UnoCSS 仍然为 .container 生成了一套响应式阶梯 max-width，
+  // 覆盖了 main.css 里 min(1600px, 100vw) 的实现（构建产物 diff 出来的）。
+  // 这里直接跑一次真实的 UnoCSS 生成，断言这四个类名不产生任何 CSS。
+  it('UnoCSS 不为 main.css 的四个全局类生成任何规则', async () => {
+    const uno = await createGenerator(unoConfig)
+    const { css } = await uno.generate('container tech-box page-header section-title', {
+      preflights: false,
+    })
+    for (const name of ['container', 'tech-box', 'page-header', 'section-title']) {
+      expect(css, `UnoCSS 仍在为 .${name} 生成规则`).not.toContain(`.${name}`)
+    }
   })
 })
 
