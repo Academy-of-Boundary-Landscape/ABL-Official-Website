@@ -18,7 +18,7 @@
 - 只输出 WebP，不做 `<picture>` 多格式回退。
 - 字族与字重与现状 1:1 对应，不增不减。
 - 不引入构建期图片处理插件，不做 `manualChunks`。
-- 66 个既有测试必须保持通过；`npm run build` 与 `npm run lint` 必须通过。
+- 66 个既有测试必须保持通过；`npm run build` 必须通过；`npm run lint` 相对分支基线不得有新增错误（`csd20.vue` / `csd20music.vue` 上两条 `vue/multi-word-component-names` 错误在基线上已存在，`npx eslint .` 在基线与 HEAD 均以退出码 1 结束，"通过"这一表述本身不可能满足）。
 - 每个 Task 一个 commit，仓库风格：`type: :emoji: 中文描述`。
 - `src/assets/base.css` 的 `:root` 颜色块是机器生成的，本计划不涉及它——若因故需要改 `colorTokens.js`，必须跑 `npm run tokens:sync`。
 
@@ -455,7 +455,8 @@ git commit -m "perf: :zap: 路由改为懒加载，详情页依赖移出首屏�
 ```bash
 cd frontend
 npm run test                          # 66/66
-npm run build && npm run lint         # 均通过
+npm run build                         # 通过
+npm run lint                          # 相对分支基线无新增错误（基线已有两条 vue/multi-word-component-names 错误）
 grep -rn "\.png" src/ index.html      # 无输出
 grep -rn "fonts.googleapis" src/ index.html   # 无输出
 ls dist/assets/*.js | wc -l           # > 1（出现路由 chunk）

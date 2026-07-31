@@ -44,7 +44,9 @@ Vite 把图片作为独立文件输出，浏览器按需请求，因此 40 MB �
 
 ### 1.4 代码分割
 
-`router/index.js` 全部静态导入，产物只有一个 `index.js`（656 KB）。`bytemd` / `marked`（仅 `EventDetail` 使用）与 `swiper`（仅 `ProjectsBar` 使用）都被打进首屏包。
+`router/index.js` 全部静态导入，产物只有一个 `index.js`（656 KB）。`marked`（`ProductDetail`、`EventDetail` 使用）被打进首屏包。
+
+更正：`bytemd` 与 `swiper` 虽在 `package.json` 中声明为依赖，但 `src/` 下没有任何文件引入它们（`grep -rn "bytemd\|swiper" src/` 无匹配）——此前认为它们被打进首屏包是误判，实际上它们根本不参与构建产物。这两个未使用的依赖是后续清理的候选项，不在本批范围内。
 
 ---
 
@@ -107,7 +109,7 @@ Vite 把图片作为独立文件输出，浏览器按需请求，因此 40 MB �
 
 - 构建产物中 `index.js` 体积显著下降，且出现多个路由 chunk
 - 每页首屏资源总量（当前约 2.4 MB）
-- 66 个既有测试保持通过、`npm run build` 与 `npm run lint` 通过
+- 66 个既有测试保持通过、`npm run build` 通过；`npm run lint` 相对分支基线无新增错误（基线本身在 `csd20.vue` / `csd20music.vue` 上有两条 `vue/multi-word-component-names` 错误，`npx eslint .` 在基线与 HEAD 均以退出码 1 结束，此项不可能满足"通过"这一表述）
 - 实施报告须附改前 / 改后的 `dist/` 体积对照表
 
 **需要人工确认的只有一项**：转换后图片是否存在可见画质损失，尤其 csd20 的三张作品图。执行环境无浏览器，此项无法自动化。
