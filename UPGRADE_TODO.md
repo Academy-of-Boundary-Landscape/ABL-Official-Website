@@ -13,6 +13,24 @@
 
 ---
 
+## ⚠️ 本分支（`feat/frontend-foundation`）已知的观感变化
+
+本轮改造的既定前提是「观感不变」（只挪代码位置，不改渲染结果）。但 C1（详见上面 4.1 的修正说明与
+`.superpowers/sdd/2026-07-31-frontend-foundation-consolidation/final-fix-report.md`）修好之后，
+`.tech-box`/`.page-header`/`.section-title`/`.container` 这四个类从「实际由 shortcut/UnoCSS 生效」
+翻转成「真正由 `main.css` 生效」，是这条前提下**唯二**的例外——没有浏览器可用来走查，需要人工在浏览器里
+确认以下四处改变是否可接受：
+
+- **`.tech-box`**：内边距 `1.5rem` → `1.5rem 2rem`；左右描边 3px → 4px；背景不再叠加发灰的 `#21252E`
+  底色（渐变背景下的灰雾感消失）；hover 态从 shortcut 版本笼统的阴影，换成 `main.css` 里的蓝紫辉光
+- **`.section-title`**：青色 `#1EB5E8` 文字 + 下划线、字号 `1.25rem` → 白色 `var(--color-heading)`、字号 `1.5rem`
+- **`.page-header`**：外边距 `5rem 0` → `40px 0 80px`
+- **`.container`**：`max-width` 从 UnoCSS 内置的响应式阶梯值，变成 `min(1600px, 100vw)` + `2rem` 侧边距——
+  这个结果既不同于当前线上部署的行为（`80rem` / `1rem`），也不同于本分支修 C1 之前的行为（阶梯值），
+  是三者中唯一「正确」的一版，但视觉上仍需人工确认
+
+---
+
 ## 🎯 阶段一：基础设施优化 ✅ 已完成
 
 ### 1.1 移除 Element Plus ✅
@@ -24,7 +42,7 @@
 ### 1.2 优化 UnoCSS 配置 ✅
 
 - [x] 在 `uno.config.js` 中添加主题颜色配置（primary/background/box 等，现由 `colorTokens.js` 单一源派生）
-- [x] 添加自定义快捷方式（`card-base` 仍在用，原样迁移到 `main.css`；`tech-box`/`container` 明确决定保留 `main.css` 实现，见下方 4.1）
+- [x] 添加自定义快捷方式（`card-base` 仍在用，原样迁移到 `main.css`；`tech-box`/`container`/`page-header`/`section-title` 决定保留 `main.css` 实现，见下方 4.1——**注意**：光删 shortcut 不够，还需要 `uno.config.js` 里的 `blocklist` 显式挡住这四个类名，否则 UnoCSS 内置的同名规则会顶上来接管，这是 2026-07-31 白板评审发现的 Critical 项，详见下方 4.1 的修正说明）
 - [x] 配置响应式断点（xs~2xl，已在 2026-07-31 改造中用于替换全部手写 `@media`）
 - [x] 启用 transformerDirectives
 
@@ -142,6 +160,16 @@
 - [x] ~~将 `.tech-box` 转换为 UnoCSS shortcut~~ → **已决定不做**：`.tech-box` 的 clip-path 角标、多层 hover 辉光等效果在 `main.css` 里比拆成 Uno shortcut 更易读，保留现有实现（见 spec 2.4 节）
 - [x] ~~将 `.container` 转换为 UnoCSS 工具类~~ → **已决定不做**，理由同上
 - [x] ~~优化响应式断点~~ → 已完成（2026-07-31，全部手写 `@media (max-width: …)` 改为 UnoCSS 移动优先 `sm:`/`md:`/`lg:` 前缀或 `@screen` 指令）
+
+> **2026-07-31 事后修正（C1，最终修复报告）：** 上面两条「保留现有实现」曾经建立在一个错误前提上——
+> 「删掉 `uno.config.js` 里同名的 4 个 shortcut，`main.css` 就会接管」。**这是反的。**
+> `uno.css` 在 `main.js` 里晚于 `main.css` 引入，两边选择器权重相同（0,1,0），后引入的赢；改造前实际生效的
+> 一直是 shortcut 版本，`main.css` 里的 `.tech-box`/`.container`/`.page-header`/`.section-title` 是被压制的
+> 死代码。删掉 shortcut 之后更糟：`presetUno` 内置的 `container` 规则顶了上来，产生了和 `main.css` 完全不同的
+> 响应式阶梯 `max-width`。这个反转**只有 diff 构建产物里生成的 CSS 才能看出来**，读源码本身看不出谁赢。
+> 已在 `uno.config.js` 加 `blocklist: ['container', 'tech-box', 'page-header', 'section-title']` 修复，
+> 让 UnoCSS 对这四个类完全不生成规则，`main.css` 的实现才真正生效。这四个类因此产生了几处真实的观感变化，
+> 见下方新增的「本分支已知的观感变化」一节。
 
 ### 4.2 清理冗余样式
 

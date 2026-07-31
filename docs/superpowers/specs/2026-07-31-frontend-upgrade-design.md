@@ -93,6 +93,16 @@ surfaceSunken   #050810    强调按钮文字色 / 更深的凹陷
 
 **删掉 `uno.config.js` 中冲突的 4 个 shortcut**（`container` / `tech-box` / `page-header` / `section-title`），保留 `main.css` 实现——它才是页面正在用的那个，且带有 shortcut 版本没有的左右描边特效。`card-base` 无人引用，一并删。
 
+> **2026-07-31 事后修正（C1）：以上「保留 `main.css` 实现」的前提是错的，写反了。**
+> `uno.css` 在 `main.js` 里晚于 `main.css` 引入，两边选择器权重相同（0,1,0），后引入的赢——也就是说
+> **实际渲染时一直是 shortcut／UnoCSS 那份在生效，`main.css` 里的同名类从写下的那天起就是被压制的死代码。**
+> 删掉 shortcut 之后问题更进一步：`presetUno` 自带一个内置的 `container` 规则（响应式断点阶梯 `max-width`），
+> shortcut 让位后这个内置规则顶了上来，产生了一套与 `main.css` 完全不同的 `.container` 实现（详见
+> `docs/superpowers/plans/2026-07-31-frontend-foundation-consolidation.md` 的同名修正说明）。
+> 这个反转**只有在构建产物里 diff 实际生成的 CSS 才能看出来**——读 `shortcuts: {}` 这行代码本身看不出任何问题，
+> 静态读 `uno.config.js` 和 `main.css` 两份源码也看不出谁赢，因为答案取决于运行时的引入顺序和 UnoCSS 的内置规则表。
+> 正确修法是用 `blocklist` 显式挡掉这四个类名，见 `frontend/uno.config.js` 与最终修复报告。
+
 ### 2.2 数据层
 
 **底座 `src/composables/useStrapiResource.js`，导出两个函数：**

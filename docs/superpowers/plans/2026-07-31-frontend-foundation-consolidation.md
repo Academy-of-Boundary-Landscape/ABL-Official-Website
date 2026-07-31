@@ -476,6 +476,19 @@ git commit -m "refactor: :art: theme.js 清除字面量颜色并补齐 Timeline 
 
 现状：`uno.config.js` 的 colors 是上一版设计（`#2F333D` 灰底 + `#1EB5E8`），与纯黑主题不搭——这正是 UnoCSS 装了却全站只有 4 处命中的原因。同时其 shortcuts 定义了 `container` / `tech-box` / `page-header` / `section-title`，与 `main.css` 中真实使用的同名全局类冲突。
 
+> **2026-07-31 事后修正（C1，白板评审发现的 Critical 项）：**
+> 本 Task 原本的结论是「删掉这 4 个 shortcut，`main.css` 才是页面正在用的那个，删了就能让 `main.css` 接管」——**这个前提是错的**。
+> `uno.css` 在 `main.js` 里晚于 `main.css` 引入，两者选择器权重相同（0,1,0），后引入的赢，也就是说改造前实际生效的
+> 一直是 shortcut／UnoCSS 那份，`main.css` 里的同名类是被压制的死代码。删掉 shortcut 后情况更糟：`presetUno`
+> 自带一个内置的 `container` 规则（响应式断点阶梯 `max-width`），shortcut 让位后它顶了上来，产生一套和
+> `main.css` 完全不同的 `.container` 实现（构建产物里 `.container` 的 `max-width` 从 `min(1600px, 100vw)`
+> 变成按 480/640/768/1024/1280/1600 断点分段的固定值，1200px 视口下实际内容宽度从 1136px 变成 960px）。
+> **这个反转只有 diff 构建产物里实际生成的 CSS 才能看出来**，读两边源码本身看不出谁赢。正确修法是在
+> `shortcuts: {}` 之外再加一条 `blocklist: ['container', 'tech-box', 'page-header', 'section-title']`，
+> 显式挡住这四个类名不让 UnoCSS（包括其内置规则与 attributify 变体）生成任何东西。
+> 下面 Step 3 的 `uno.config.js` 代码示例仍是本 Task 原始设计、未包含这条 `blocklist`——以
+> `frontend/uno.config.js` 的实际内容和最终修复报告为准。
+
 **Files:**
 - Modify: `frontend/uno.config.js`
 - Modify: `frontend/src/config/__tests__/tokens.spec.js`（追加守卫）
