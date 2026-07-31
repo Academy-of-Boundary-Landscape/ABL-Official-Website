@@ -4,6 +4,9 @@
 范围：Strapi `work` 内容类型、`event` 关联改造、现有内容迁移、前端 `/works` 页面与全套重定向
 状态：待实施
 后续：本文档是社团转型三个 spec 中的第一个（地基）。Spec 2「站点重构」与 Spec 3「中英双语」在第 6 节列明，不在本轮范围。
+实施计划：[作品体系与内容模型 Implementation Plan](../plans/2026-07-31-work-content-model.md)
+
+> **2026-07-31 修订**：编写实施计划时发现四处可以做得更好或原判断有误，已回填到下文——字段名 `type` 改为 `workType`（§3.1）、`details` 的「至多一个组件」可由 schema 的 `max` 键强制而非仅靠约定（§3.2）、`body` 允许的嵌入块收窄到前端真正会渲染的四种（§3.1）、csd20 页面的数据源与 `customView` 的落地形态修正（§3.5）。
 
 ---
 
@@ -51,7 +54,7 @@
 | 议题 | 决定 |
 |---|---|
 | 主线定位 | 一条主线（东方二创开发团队），游戏与工具是其下两类作品 |
-| 内容模型 | **统一 `work` 实体 + `type` 判别**，不建 `game` / `software` 两个并列实体 |
+| 内容模型 | **统一 `work` 实体 + `workType` 判别**，不建 `game` / `software` 两个并列实体 |
 | 旧业务处理 | 保数据、砍运营前端（Strapi 数据一条不删，前端删掉贩售运营功能） |
 | 国际化 | 本轮做中英双语，但**放在 Spec 3**，本 spec 只保证建模不排斥 i18n |
 | GitHub 为事实源 | **不做**。主线是游戏，游戏不走 GitHub Release，收益只落在两个工具上却要引入构建期拉取与缓存兜底。YAGNI |
@@ -71,13 +74,13 @@
 |---|---|---|---|
 | `title` | string | 是 | |
 | `slug` | uid（targetField: `title`） | 是 | 修掉 `project` 无 slug、只能硬编码路由的缺陷 |
-| `type` | enumeration | 是 | `game` / `tool` / `site` / `publication` |
+| `workType` | enumeration | 是 | `game` / `tool` / `site` / `publication`。**不叫 `type`**：该词同时是 Strapi 属性定义自身的键名，作为字段名有与内部 schema 词汇冲突的风险，`workType` 零成本规避 |
 | `status` | enumeration | 是 | `planned` / `in-development` / `released` / `maintained` / `ended` / `discontinued` |
 | `recruiting` | boolean（默认 `false`） | 否 | **与 `status` 正交**：新游戏 = `in-development` + `recruiting`；摊盒 = `maintained`；朱元璋 = `discontinued` |
 | `recruitingRoles` | component `work.recruiting-role`，repeatable | 否 | 供首页招募块与 Spec 2 的 `/join` 消费 |
 | `summary` | text | 是 | 一句话简介，列表卡片用 |
 | `coverImage` | media（single） | **否** | 必须可空——`project.coverImage` 当前为 required，正是预告态条目的拦路虎 |
-| `body` | dynamiczone | 否 | 复用 `content-block.content-block` 与四种 `embedding.*` |
+| `body` | dynamiczone | 否 | 复用 `content-block.content-block` 与 `embedding.link-embed` / `iframe-embed` / `file-embed`。**不含 `product-embed` 与 `pdf-embed`**：前者需要二次批量补全制品数据，后者在 `EventDetail.vue` 里其实从未被渲染（那条 `v-if` 链没有它）。开一个前端会静默丢弃的块类型，等于给编辑埋一个"填了没反应"的坑 |
 | `staff` | component `staff.staff`，repeatable | 否 | 复用现有组件，朱元璋制作名单直接迁入 |
 | `details` | dynamiczone | 否 | 类型专属字段，见 3.2 |
 | `startDate` | date | 否 | |
@@ -91,9 +94,11 @@
 
 ### 3.2 类型专属字段：`details` dynamic zone
 
-四个组件，每条 work 按其 `type` 挂载对应的一个。采用 dynamic zone 而非四个常驻可空 component，是为了让后台编辑界面只显示实际相关的字段。
+四个组件，每条 work 按其 `workType` 挂载对应的一个。采用 dynamic zone 而非四个常驻可空 component，是为了让后台编辑界面只显示实际相关的字段。
 
-**约定**：`details` 至多挂载一个组件，且其类型应与 `type` 字段匹配。Strapi 无法在 schema 层强制这条约束，前端按 `type` 选择渲染组件（见 3.5），挂载不匹配或为空时降级为只渲染 `body`，不报错。
+**「至多一个组件」由 schema 的 `"max": 1` 强制**（动态区支持 `min` / `max`）。若某个 Strapi 版本拒绝该键，退回为约定，并依赖前端降级。
+
+无论 schema 是否强制，前端都不假设它成立：`resolveDetailBlock(details, workType)`（见 3.5）在类型不匹配、动态区为空、挂了多个组件时一律返回 `null`，详情页降级为只渲染 `body`，不报错。
 
 新建组件分类 `work`，路径 `strapi-backend/src/components/work/*.json`：
 
@@ -174,7 +179,7 @@
 
 ### 3.4 内容迁移映射
 
-| 来源 | 目标 | `type` / `status` | 备注 |
+| 来源 | 目标 | `workType` / `status` | 备注 |
 |---|---|---|---|
 | project「摊盒 Booth-Kernel」 | work | `tool` / `maintained` | `homepage` 填 boothkernel 子域名 |
 | project「2026宇佐见堇子角色日接力」 | work | `site` / `ended` | |
@@ -198,15 +203,16 @@
 | 文件 | 职责 |
 |---|---|
 | `src/composables/useWorks.js` | `useWorkList(params)` / `useWorkBySlug(slug)`，基于现有 `useStrapiResource`，固定 `populate` 与默认排序（`featured` 降序、`order` 降序、`startDate` 降序） |
-| `src/views/WorkList.vue` | `/works`，按 `type` 切页签：全部 / 游戏（`game`）/ 工具（`tool`）/ 其他（`site` 与 `publication` 合并）。用 `AsyncBoundary` 包裹 |
-| `src/views/WorkDetail.vue` | `/works/:slug`，渲染公共字段 + 按 `type` 选择 detail 组件 + 关联 devlog 列表 |
+| `src/views/WorkList.vue` | `/works`，按 `workType` 切页签：全部 / 游戏（`game`）/ 工具（`tool`）/ 其他（`site` 与 `publication` 合并）。用 `AsyncBoundary` 包裹 |
+| `src/views/WorkDetail.vue` | `/works/:slug`，渲染公共字段 + 按 `workType` 选择 detail 组件 + 关联 devlog 列表 |
 | `src/components/work/WorkCard.vue` | 列表卡片，含状态徽标 |
 | `src/components/work/StatusBadge.vue` | `status` + `recruiting` 的标签渲染 |
 | `src/components/work/GameDetail.vue` | 游戏专属区块 |
 | `src/components/work/ToolDetail.vue` | 工具专属区块（含多渠道下载、更新日志） |
 | `src/components/work/SiteDetail.vue` | 活动站专属区块 |
 | `src/components/work/PublicationDetail.vue` | 出版物专属区块 |
-| `src/utils/workDetail.js` | **纯函数** `resolveDetailComponent(type)` 与 `resolveCustomView(customView)`，把「类型 → 组件」映射从组件里抽出来以便单测 |
+| `src/utils/work.js` | **纯函数**：`WORK_TYPES` / `WORK_STATUSES` 常量、`typeLabel(workType)`、`statusLabel(status)`、`resolveDetailBlock(details, workType)`、`parsePlatforms(raw)`。把所有会产生渲染分支的判断从组件里抽出来，以便在 Node 环境单测 |
+| `src/components/work/ContentBlocks.vue` | `body` 动态区渲染。**不复用 `EventDetail.vue` 的内联实现**：那段模板配套的样式写在它的 `<style scoped>` 里，抽进子组件会让 `EventDetail` 掉样式，而它没有测试覆盖。有意留下两份实现，合并列为后续工单 |
 
 **修改**
 
@@ -214,7 +220,9 @@
 - `src/components/ProjectsBar.vue`：改吃 `useWorks` 而非 `useProjects`。形态（轮播）本轮不动，导航改版属于 Spec 2。
 - `src/composables/useProjects.js`：随 `project` 消费点移除而删除。
 - `src/views/zyzView.vue`：删除（内容迁入 Strapi）。
-- `src/views/projects/csd20.vue`：保留，改由 `customView` 机制路由到，数据源从硬编码改为 `useWorkBySlug('csd20')`。`csd20music.vue` 保留为其子路由。
+- `src/views/projects/csd20.vue`：保留，改由 `customView` 机制路由到。**数据源仍是 `product` 而非 `work`**——该页面展示的是制品「梦违科学世纪20周年合同志」的卡片，不需要 work 数据；但把 `useProductByTitle('梦违科学世纪20周年合同志')` 换成按 slug 取的 `useProduct('csd20')`，顺手修掉"后台改一个字页面就空"的既有缺陷。`csd20music.vue` 保留为其子路由。
+
+**`customView` 的落地形态**：前端的分发由**路由顺序**完成，不读该字段——`/works/csd20` 写成具名路由并排在通配的 `/works/:slug` 之前，于是 csd20 走特制页、其余走通用详情页。`work.customView` 字段仍然保留并填 `csd20`，作用是让后台可读（编辑能看出这条记录有专属页面），以及为将来真正需要按字段动态分发时留出空间。
 
 ### 3.6 重定向表
 
@@ -244,8 +252,8 @@
 
 可自动化的部分：
 
-- `useWorks` 的参数拼装、`populate`、默认排序、`type` 过滤有单元测试，沿用现有 66 条测试的组织方式。
-- `resolveDetailComponent(type)` 对四种 `type` 及未知值/空值的返回有单元测试（未知值与空值必须降级而非抛错）。
+- `useWorks` 的参数拼装、`populate`、默认排序、`workType` 过滤有单元测试，沿用现有 66 条测试的组织方式。
+- `resolveDetailBlock(details, workType)` 对四种类型、类型不匹配、动态区为空/为 `null`、挂载多个组件等情况有单元测试（一律降级返回 `null` 而非抛错）；`typeLabel` / `statusLabel` 对未知枚举值有回落测试。
 - 重定向表逐条测试：`createRouter` + memory history 在 Node 环境下可跑，不需要 jsdom。
 - `npm run build` 通过；`npm run lint` 相对分支基线无新增错误（基线在 `csd20.vue` / `csd20music.vue` 上有两条 `vue/multi-word-component-names` 错误，`npx eslint .` 在基线即以退出码 1 结束）。
 - 实施报告须附：新增/修改文件清单、测试数量变化、`dist/` 体积对照。
@@ -253,7 +261,7 @@
 需要人工确认的：
 
 - **预告态**：新游戏条目在无 `coverImage`、无 `details`、无 `body` 的情况下，列表卡片与详情页都要体面——不能出现破图、空白区块或布局塌陷。这是本轮最容易做错的一处，且只有肉眼能判断。
-- 四种 `type` 各自的详情页渲染正确的 detail 组件。
+- 四种 `workType` 各自的详情页渲染正确的 detail 组件。
 - `customView` 机制下 csd20 页面与改造前观感一致。
 - 作品详情页正确显示 `relatedWork` 关联过来的 devlog 列表。
 
