@@ -5,6 +5,12 @@ import { useStrapiList, useStrapiOne } from './useStrapiResource'
  * 作品列表。排序语义：精选置顶 → 手工序 → 开始时间。
  * sort 用逗号分隔的字符串而不是数组：axios 会把数组序列化成 sort[]=…，
  * Strapi 认的是 sort=a:desc,b:desc。
+ *
+ * @param {Object} params - 筛选与分页参数
+ * @param {string|Ref<string>} params.workType - 作品类型，为 "all" 或空时不过滤
+ * @param {boolean} params.featuredOnly - 仅显示精选
+ * @param {number|Ref<number>} params.limit - 分页限制
+ * @param {Object} options - 往 useStrapiList 的 options 透传（debounce / immediate）
  */
 export function useWorkList({ workType, featuredOnly, limit } = {}, options = {}) {
   return useStrapiList(
@@ -55,7 +61,9 @@ export function useWorkNews(slug, limit = 10) {
       filters: { relatedWork: { slug: { $eq: toValue(slug) } } },
       populate: 'coverImage',
       sort: 'date:desc',
-      'pagination[limit]': limit,
+      // 与 useWorkList 一致必须 toValue：调用方传 ref 时，裸 Ref 会被原样
+      // 塞进查询参数，请求悄悄失真。默认值是普通数字，所以这个坑平时不会暴露。
+      'pagination[limit]': toValue(limit),
     }),
     { immediate: Boolean(toValue(slug)) },
   )

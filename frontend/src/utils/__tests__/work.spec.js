@@ -81,6 +81,10 @@ describe('parsePlatforms', () => {
     expect(parsePlatforms('Windows Android')).toEqual(['Windows', 'Android'])
   })
 
+  it('混合使用多种分隔符', () => {
+    expect(parsePlatforms('Windows, Android、iOS')).toEqual(['Windows', 'Android', 'iOS'])
+  })
+
   it('空值与全分隔符返回空数组，不返回 [""]', () => {
     expect(parsePlatforms('')).toEqual([])
     expect(parsePlatforms(null)).toEqual([])

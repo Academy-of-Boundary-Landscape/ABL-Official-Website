@@ -115,4 +115,11 @@ describe('useWorkNews', () => {
     expect(get).not.toHaveBeenCalled()
     stop()
   })
+
+  it('limit 必须 toValue 解包，ref(5) 不能原样塞进参数', async () => {
+    const { stop } = withScope(() => useWorkNews('work-slug', ref(5)))
+    await flush()
+    expect(paramsOf()['pagination[limit]']).toBe(5)
+    stop()
+  })
 })
