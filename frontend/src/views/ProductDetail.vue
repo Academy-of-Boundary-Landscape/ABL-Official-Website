@@ -1,16 +1,16 @@
 <template>
   <div class="product-detail-view container">
-    <!-- Loading and Error States -->
-    <div v-if="loading" class="status-box">
-        <p>>> 正在从深层档案馆调取数据...</p>
-    </div>
-    <div v-if="error" class="status-box error">
-        <p>>> [错误] 数据检索失败: {{ error }}</p>
-    </div>
-
+    <AsyncBoundary
+      :loading="loading"
+      :error="error"
+      :empty="notFound"
+      skeleton="text"
+      empty-text=">> 档案不存在或已被删除。"
+      @retry="refresh"
+    >
     <!-- Main Content, rendered only when product data is available -->
     <article v-if="product">
-      
+
       <!-- Page Header using the global style -->
       <section class="page-header">
         <router-link to="/products" class="back-button">&lt; 返回制品列表</router-link>
@@ -87,100 +87,51 @@
 
         </aside>
       </div>
-      <section v-if="recommendedProducts.length > 0" class="recommendation-section">
+      <section v-if="recommended.length > 0" class="recommendation-section">
         <h2 class="section-title">其他社团制品推荐</h2>
         <div class="product-grid">
           <!-- 复用 ProductCard 组件来展示推荐制品 -->
           <ProductCard
-            v-for="recProduct in recommendedProducts"
+            v-for="recProduct in recommended"
             :key="recProduct.id"
             :product="recProduct"
           />
         </div>
       </section>
     </article>
+    </AsyncBoundary>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
-// ⬇️ 关键修改 1：同时导入 apiClient 和 getStrapiMedia ⬇️
-import { apiClient, getStrapiMedia } from '@/composables/strapi.js';
+import { getStrapiMedia } from '@/composables/strapi.js';
 import { marked } from 'marked';
 import ProductCard from '@/components/ProductCard.vue';
+import AsyncBoundary from '@/components/AsyncBoundary.vue';
+import { useProduct, useRecommendedProducts } from '@/composables/useProducts';
 
 const route = useRoute();
-const product = ref(null);
-const loading = ref(true);
-const error = ref(null);
-const recommendedProducts = ref([]);
+const {
+  data: product,
+  loading,
+  error,
+  notFound,
+  refresh,
+} = useProduct(() => route.params.slug);
+
+// 推荐位：排除当前条目后随机取 4 条，与改造前的 fetchRecommendedProducts 行为一致
+const { data: recommended } = useRecommendedProducts(
+  computed(() => product.value?.id),
+  4,
+);
 
 const parsedDescription = computed(() => {
   return product.value && product.value.description ? marked(product.value.description) : '';
 });
 
-const fetchProductData = async (slug) => {
-  loading.value = true;
-  error.value = null;
-  recommendedProducts.value = [];
-
-  try {
-    // ⬇️ 关键修改 2：将 product.value 的赋值从 responseData[0] 改为 responseData[0].attributes ⬇️
-    // 这是 Strapi v4 的标准数据结构，可以使后续代码更简洁
-    const response = await apiClient.get(`/products?filters[slug][$eq]=${slug}&populate=*`);
-    const responseData = response.data.data;
-    if (responseData.length === 0) {
-      throw new Error('档案不存在或已被删除');
-    }
-    // 将整个对象（包括 id 和 attributes）赋给 product
-    product.value = responseData[0];
-    
-    // 在主数据加载成功后，去获取推荐数据
-    await fetchRecommendedProducts(product.value.id);
-
-  } catch (e) {
-    error.value = e.message;
-    console.error("获取制品数据失败:", e);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const fetchRecommendedProducts = async (currentProductId) => {
-  try {
-    const countResponse = await apiClient.get('/products?pagination[pageSize]=1');
-    const total = countResponse.data.meta?.pagination?.total;
-    if (!total || total <= 1) return;
-
-    const allIdsResp = await apiClient.get('/products', {
-      params: {
-        fields: ['id'],
-        'filters[id][$ne]': currentProductId,
-        'pagination[pageSize]': total
-      }
-    });
-    const allIds = allIdsResp.data.data.map(item => item.id);
-    const limit = 4;
-    const shuffled = allIds.sort(() => Math.random() - 0.5);
-    const pickedIds = shuffled.slice(0, Math.min(limit, shuffled.length));
-
-    if (pickedIds.length === 0) return;
-
-    const response = await apiClient.get('/products', {
-      params: {
-        populate: 'coverImage',
-        'filters[id][$in]': pickedIds
-      }
-    });
-    recommendedProducts.value = response.data.data;
-  } catch (e) {
-    console.error("获取推荐制品失败:", e);
-  }
-};
-
-// ⬇️ 关键修改 3：重写 getCoverFormatUrl 函数 ⬇️
-// 让它使用从 strapi.js 导入的 getStrapiMedia 函数
+// getStrapiMedia 已经能处理 v4/v5 两种媒体形状，这里只保留尺寸挑选逻辑
 const getCoverFormatUrl = (size = 'large') => {
   // 直接从 product.value.coverImage 获取数据（不是 attributes.coverImage.data）
   const coverImageObject = product.value?.coverImage;
@@ -205,22 +156,13 @@ const getCoverFormatUrl = (size = 'large') => {
   return getStrapiMedia({ url: imageUrl });
 };
 
-// 监视路由参数变化
+// useProduct(getter) 已经自动处理换 slug 后的重新拉取；这里单独保留滚动重置这个
+// 与拉取数据无关的副作用（EventDetail.vue 的路由 watch 也这样做，保持两个详情页一致）
 watch(
   () => route.params.slug,
-  (newSlug) => {
-    if (newSlug) {
-      fetchProductData(newSlug);
-      window.scrollTo(0, 0);
-    }
-  },
-  { immediate: true } // 添加 immediate: true，这样 onMounted 的调用就不再需要了
+  () => window.scrollTo(0, 0),
+  { immediate: true },
 );
-
-// onMounted(() => {
-//   fetchProductData(route.params.slug);
-// });
-
 </script>
 
 <style scoped>
@@ -294,13 +236,13 @@ watch(
   border-color: var(--color-accent);
 }
 .purchase-link.disabled {
-  background-color: var(--color-background-mute);
+  background-color: var(--color-surface-sunken);
   color: var(--color-text-muted);
   border-color: var(--color-border);
   cursor: not-allowed;
 }
 .purchase-link.disabled:hover {
-  background-color: var(--color-background-mute);
+  background-color: var(--color-surface-sunken);
   color: var(--color-text-muted);
 }
 
