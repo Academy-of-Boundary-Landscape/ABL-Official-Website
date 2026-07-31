@@ -36,3 +36,31 @@ describe('CSS 变量派生', () => {
     }
   })
 })
+
+import { readFileSync } from 'node:fs'
+import { fileURLToPath, URL } from 'node:url'
+
+const readSource = (relativePath) =>
+  readFileSync(fileURLToPath(new URL(relativePath, import.meta.url)), 'utf-8')
+
+describe('配置守卫：theme.js 不得出现字面量颜色', () => {
+  it('themeOverrides 配置项只能引用 token 或文件顶部的叠加层常量', () => {
+    const source = readSource('../theme.js')
+    // 只扫 themeOverrides 之后的部分。文件顶部允许有一个集中的叠加层常量块
+    // （白色蒙版、阴影），那些值在 colorTokens 里没有语义对应物，
+    // 集中在顶部十来行比散在 190 行配置中好管。守卫要挡的是「配置项里内联颜色」。
+    const start = source.indexOf('export const themeOverrides')
+    expect(start, 'theme.js 中找不到 themeOverrides 导出').toBeGreaterThan(-1)
+
+    const code = source
+      .slice(start)
+      .split('\n')
+      .filter((line) => !line.trim().startsWith('//') && !line.trim().startsWith('*'))
+      .join('\n')
+
+    const hex = code.match(/#[0-9a-fA-F]{3,8}\b/g) || []
+    const rgba = code.match(/rgba?\(\s*\d+/g) || []
+
+    expect({ hex, rgba }).toEqual({ hex: [], rgba: [] })
+  })
+})
