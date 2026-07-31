@@ -75,7 +75,14 @@ export function useRecommendedProducts(excludeId, count = 3) {
   }))
 
   const picked = computed(() => {
-    const pool = [...(list.data.value ?? [])]
+    // 防御性排除：setup 阶段 excludeId 通常还是 undefined（依赖父组件的 product
+    // 请求先落地才有值），而 useStrapiList 的首次请求是 immediate 的，会带着
+    // filters[id][$ne]=undefined 出去——axios 会丢掉这个 undefined 参数，
+    // 实际发出的是不带过滤条件的请求。如果这次响应先于父组件的 product 请求
+    // 落地，服务端过滤形同虚设，"当前条目"就可能出现在推荐池里。这里在裁剪
+    // 阶段再排一次当前 id，与服务端过滤结果无关，任何响应顺序下都成立。
+    const currentId = toValue(excludeId)
+    const pool = (list.data.value ?? []).filter((item) => item?.id !== currentId)
     for (let i = pool.length - 1; i > 0; i -= 1) {
       const j = Math.floor(Math.random() * (i + 1))
       ;[pool[i], pool[j]] = [pool[j], pool[i]]

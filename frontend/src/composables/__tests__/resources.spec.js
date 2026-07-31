@@ -252,6 +252,22 @@ describe('useRecommendedProducts', () => {
     expect(result.isEmpty.value).toBe(true)
     stop()
   })
+
+  it('即使服务端过滤失效、响应里混入了当前条目，裁剪结果也绝不包含它', async () => {
+    // 复现 I2：excludeId 在 setup 时是 undefined，首次 immediate 请求带的
+    // filters[id][$ne]=undefined 会被 axios 丢弃参数，等价于不过滤——
+    // mock 直接返回一个包含"当前条目"（id: 42）的池子，模拟这种服务端未过滤的响应。
+    get.mockResolvedValueOnce({
+      data: {
+        data: [{ id: 42 }, { id: 1 }, { id: 2 }, { id: 3 }],
+        meta: null,
+      },
+    })
+    const { result, stop } = withScope(() => useRecommendedProducts(42, 3))
+    await flush()
+    expect(result.data.value.some((item) => item.id === 42)).toBe(false)
+    stop()
+  })
 })
 
 describe('useProjects', () => {
