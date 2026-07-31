@@ -14,28 +14,44 @@
     </TechSection>
 
     <!-- 最新动态 & 展会 (关键修改区) -->
-    <section v-if="recentEvents.length > 0" class="events-conventions-grid">
+    <section class="events-conventions-grid">
       <!-- 左侧：事件列表 -->
       <TechSection title="最新动态 / EVENTS" custom-class="event-section">
-        <div class="events-compact-list">
-          <EventCard v-for="event in recentEvents" :key="event.id" :event="event" />
-        </div>
+        <AsyncBoundary
+          :loading="eventsLoading"
+          :error="eventsError"
+          :empty="eventsEmpty"
+          empty-text=">> 暂无最新动态。"
+          @retry="refreshEvents"
+        >
+          <div class="events-compact-list">
+            <EventCard v-for="event in recentEvents" :key="event.id" :event="event" />
+          </div>
+        </AsyncBoundary>
       </TechSection>
 
       <!-- 右侧：展会 Timeline -->
       <TechSection title="近期展会 / EXP" custom-class="convention-section">
         <div class="timeline-wrapper">
-          <n-timeline v-if="upcomingConventions.length > 0">
-            <n-timeline-item
-              v-for="conv in upcomingConventions"
-              :key="conv.id"
-              type="info"
-              :title="conv.name"
-              :content="'QQ群: ' + conv.qqgroup"
-              :time="conv.date"
-            />
-          </n-timeline>
-          <p v-else class="empty-text">暂无即将参加的展会</p>
+          <AsyncBoundary
+            :loading="conventionsLoading"
+            :error="conventionsError"
+            :empty="conventionsEmpty"
+            skeleton="text"
+            empty-text=">> 暂无即将参加的展会。"
+            @retry="refreshConventions"
+          >
+            <n-timeline>
+              <n-timeline-item
+                v-for="conv in upcomingConventions"
+                :key="conv.id"
+                type="info"
+                :title="conv.name"
+                :content="'QQ群: ' + conv.qqgroup"
+                :time="conv.date"
+              />
+            </n-timeline>
+          </AsyncBoundary>
         </div>
       </TechSection>
     </section>
@@ -45,10 +61,18 @@
       <!-- 左侧：最新制品 (侧边栏) -->
       <aside class="sidebar">
         <TechSection title="最新制品" custom-class="sidebar-content">
-          <div v-if="recentProducts.length > 0" class="products-list">
-            <ProductCard v-for="product in recentProducts" :key="product.id" :product="product" />
-          </div>
-          <p v-else class="empty-text">暂无新品发布</p>
+          <AsyncBoundary
+            :loading="productsLoading"
+            :error="productsError"
+            :empty="productsEmpty"
+            skeleton="list"
+            empty-text=">> 暂无新品发布。"
+            @retry="refreshProducts"
+          >
+            <div class="products-list">
+              <ProductCard v-for="product in recentProducts" :key="product.id" :product="product" />
+            </div>
+          </AsyncBoundary>
         </TechSection>
       </aside>
 
@@ -97,41 +121,39 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { apiClient } from '@/composables/strapi'
 import { NTimeline, NTimelineItem, NDivider } from 'naive-ui'
 import ProjectsBar from '@/components/ProjectsBar.vue'
 import ProductCard from '@/components/ProductCard.vue'
 import EventCard from '@/components/EventCard.vue'
 import TechSection from '@/components/TechSection.vue'
+import AsyncBoundary from '@/components/AsyncBoundary.vue'
+import { useProducts } from '@/composables/useProducts'
+import { useEvents } from '@/composables/useEvents'
+import { useConventions } from '@/composables/useConventions'
 
-const recentProducts = ref([])
-const recentEvents = ref([])
-const upcomingConventions = ref([])
+const {
+  data: recentProducts,
+  loading: productsLoading,
+  error: productsError,
+  isEmpty: productsEmpty,
+  refresh: refreshProducts,
+} = useProducts({ limit: 3 })
 
-const fetchRecentData = async () => {
-  const today = new Date().toISOString().slice(0, 10)
-  try {
-    const [productsResponse, eventsResponse, conventionResponse] = await Promise.all([
-      apiClient.get('/products', {
-        params: { sort: 'releaseDate:desc', 'pagination[limit]': 3, populate: 'coverImage' },
-      }),
-      apiClient.get('/events', {
-        params: { sort: 'date:desc', 'pagination[limit]': 3, populate: 'coverImage' },
-      }),
-      apiClient.get('/conventions', {
-        params: { sort: 'date:asc', 'filters[date][$gte]': today, 'pagination[limit]': 4 },
-      }),
-    ])
-    recentProducts.value = productsResponse.data.data || []
-    recentEvents.value = eventsResponse.data.data || []
-    upcomingConventions.value = conventionResponse.data.data || []
-  } catch (error) {
-    console.error('无法获取主页动态数据:', error)
-  }
-}
+const {
+  data: recentEvents,
+  loading: eventsLoading,
+  error: eventsError,
+  isEmpty: eventsEmpty,
+  refresh: refreshEvents,
+} = useEvents({ limit: 3 })
 
-onMounted(fetchRecentData)
+const {
+  data: upcomingConventions,
+  loading: conventionsLoading,
+  error: conventionsError,
+  isEmpty: conventionsEmpty,
+  refresh: refreshConventions,
+} = useConventions({ upcoming: true, limit: 4 })
 </script>
 
 <style scoped>
@@ -183,7 +205,14 @@ onMounted(fetchRecentData)
   padding: 10px 5px;
 }
 
-/* 微调 Timeline 样式以适应深色背景 */
+/* 微调 Timeline 样式以适应深色背景
+ * 保留（未按 Task 9 Step 3 删除）：themeOverrides.Timeline（theme.js）目前不足以完全接管这两条规则——
+ * - titleFontSize 与 Naive UI 期望的 key（titleFontSizeMedium）不一致，覆盖未生效；
+ * - 标题 font-weight:600 无对应的 themeOverrides 字段，全局 fontWeightStrong 默认是 500；
+ * - meta 的 font-family（这里用于展会日期的等宽字体）在 Naive UI 里完全没有暴露主题变量。
+ * 删除会导致标题变细、展会日期从等宽字体变回正文字体，是可感知的视觉回退。
+ * 本批次不允许改动 theme.js（超出 HomeView.vue 范围），故保留 :deep，留给 Task 3 后续修正。
+ */
 :deep(.n-timeline-item-content__title) {
   font-size: 0.9rem !important;
   font-weight: 600;
@@ -242,13 +271,6 @@ onMounted(fetchRecentData)
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 10px;
   font-family: monospace;
-}
-
-.empty-text {
-  font-size: 0.8rem;
-  opacity: 0.5;
-  text-align: center;
-  padding: 20px;
 }
 
 .floating-recruit-btn {
