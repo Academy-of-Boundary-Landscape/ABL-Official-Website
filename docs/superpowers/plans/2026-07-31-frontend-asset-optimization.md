@@ -268,6 +268,10 @@ cd frontend && for f in public/fonts/*.woff2; do echo "$(file -b "$f" | head -c 
 ```
 Expected: 每行都以 `Web Open Font Format (Version 2)` 开头。单个文件约 6–30 KB，六个合计约 120 KB。
 
+> **执行后更正（实施 Task 2 时发现）：** 上面 `<字族>-<字重>.woff2` 的命名规则、以及"六个 woff2"的提法，是在不知道 Google 把 Orbitron 与 Space Grotesk 作为**可变字体**（variable font）签发的前提下写的。实测：Orbitron 的 500/600 两个 `/* latin */` 块指向同一个 gstatic URL，Space Grotesk 的 400/500/600 三个块也指向同一个 URL（均已用 fontTools 确认含 `fvar` 的 `wght` 轴），只有 Roboto Mono 是真正的独立静态文件。若照本计划字面意思落地成六个物理文件，会让浏览器对同一份可变字体按六个不同 URL 各下载一次，比 Google Fonts 原本"每字族一次请求"的开销更大，与本任务"降低资源体积"的目的相悖。
+>
+> **修正后的落地方式**：`frontend/public/fonts/` 下只放 **3 个物理文件**——`orbitron-variable.woff2`、`space-grotesk-variable.woff2`、`roboto-mono-400.woff2`；base.css 里仍然保留全部 **6 条** `@font-face` 声明（字族/字重/font-style/font-display 不变），只是 Orbitron 的两条都指向 `orbitron-variable.woff2`、Space Grotesk 的三条都指向 `space-grotesk-variable.woff2`——即让多条离散的 `src` 声明共享同一个 URL，而不是合并成一条 `font-weight: 400 600` 的区间声明（区间声明会改变浏览器的字重插值方式）。这样能同时满足"外观不变"与"每个字族只下载一次"两个要求。
+
 - [ ] **Step 3: 在 base.css 声明 @font-face**
 
 加在 `base.css` 顶部（`AUTO-GENERATED` 标记块**之前**，因为那个块是机器生成的，任何手写内容都不能落在它里面）：

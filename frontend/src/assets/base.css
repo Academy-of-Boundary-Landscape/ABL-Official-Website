@@ -1,40 +1,49 @@
 /* 自托管字体：不再依赖 Google Fonts 的可达性，并省去两次跨域握手。
    字族与字重与此前 <link> 加载的完全一致，未增删。
-   仅 latin 子集——中文由系统字体承担，这三个字族本身不含 CJK 字形。 */
+   仅 latin 子集——中文由系统字体承担，这三个字族本身不含 CJK 字形。
+   Orbitron 与 Space Grotesk 在 Google Fonts 上本身是可变字体（variable font，
+   内含一个 wght 轴覆盖所需字重区间），所以下面每个字族的多条 @font-face 声明
+   刻意共享同一个物理文件（orbitron-variable.woff2 / space-grotesk-variable.woff2），
+   仅 font-weight 不同——这与 Google 自己签发的 CSS 完全一致，浏览器按需在同一份
+   文件内实例化对应字重，而每个字族只需下载一次，不会因为声明了多个字重就重复拉取。
+   Roboto Mono 只有一个字重，roboto-mono-400.woff2 是真正的静态文件。
+   不要把同字族的多条声明合并成一条 font-weight: 400 600 的区间声明——
+   区间声明会改变浏览器选字重/插值的方式，六条离散声明共享一个 URL
+   才是保持渲染与此前一致的写法。 */
 @font-face {
   font-family: 'Orbitron';
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('/fonts/orbitron-500.woff2') format('woff2');
+  src: url('/fonts/orbitron-variable.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Orbitron';
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url('/fonts/orbitron-600.woff2') format('woff2');
+  src: url('/fonts/orbitron-variable.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Space Grotesk';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/space-grotesk-400.woff2') format('woff2');
+  src: url('/fonts/space-grotesk-variable.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Space Grotesk';
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('/fonts/space-grotesk-500.woff2') format('woff2');
+  src: url('/fonts/space-grotesk-variable.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Space Grotesk';
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url('/fonts/space-grotesk-600.woff2') format('woff2');
+  src: url('/fonts/space-grotesk-variable.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Roboto Mono';
