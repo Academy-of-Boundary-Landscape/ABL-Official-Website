@@ -101,7 +101,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { marked } from 'marked'
 import ProductCard from '@/components/ProductCard.vue'
@@ -118,6 +118,14 @@ const {
   notFound,
   refresh,
 } = useEvent(() => route.params.slug)
+
+// useEvent(getter) 已经自动处理换 slug 后的重新拉取；这里单独保留滚动重置这个
+// 与拉取数据无关的副作用（ProductDetail.vue 的路由 watch 也这样做，保持两个详情页一致）
+watch(
+  () => route.params.slug,
+  () => window.scrollTo(0, 0),
+  { immediate: true },
+)
 
 // 动态区里的 embedding.product-embed 块只带 id（oneToMany 关系 products），需要二次批量补全
 const embeddedProductIds = computed(() => {
