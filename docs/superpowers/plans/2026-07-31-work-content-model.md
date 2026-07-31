@@ -939,7 +939,9 @@ export function useWorkNews(slug, limit = 10) {
       filters: { relatedWork: { slug: { $eq: toValue(slug) } } },
       populate: 'coverImage',
       sort: 'date:desc',
-      'pagination[limit]': limit,
+      // 与 useWorkList 一致必须 toValue：调用方传 ref 时，裸 Ref 会被原样
+      // 塞进查询参数，请求悄悄失真。默认值是普通数字，所以这个坑平时不会暴露。
+      'pagination[limit]': toValue(limit),
     }),
     { immediate: Boolean(toValue(slug)) },
   )
