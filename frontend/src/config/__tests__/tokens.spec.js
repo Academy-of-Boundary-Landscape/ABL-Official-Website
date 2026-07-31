@@ -64,3 +64,25 @@ describe('配置守卫：theme.js 不得出现字面量颜色', () => {
     expect({ hex, rgba }).toEqual({ hex: [], rgba: [] })
   })
 })
+
+import unoConfig from '../../../uno.config.js'
+
+describe('配置守卫：uno.config.js 与 colorTokens 同源', () => {
+  it('Uno 的颜色取自 colorTokens，不得手抄', () => {
+    const unoColors = unoConfig.theme.colors
+    for (const [key, value] of Object.entries(unoColors)) {
+      // Uno 的键是 kebab-case，反查回 token 值
+      const match = Object.entries(colorTokens).find(([tokenKey]) =>
+        toCssVarName(tokenKey) === `--color-${key}`,
+      )
+      expect(match, `uno 颜色 "${key}" 在 colorTokens 中没有对应项`).toBeTruthy()
+      expect(value).toBe(match[1])
+    }
+  })
+
+  it('不再定义与 main.css 全局类同名的 shortcut', () => {
+    const shortcutNames = Object.keys(unoConfig.shortcuts || {})
+    const conflicts = ['container', 'tech-box', 'page-header', 'section-title']
+    expect(shortcutNames.filter((n) => conflicts.includes(n))).toEqual([])
+  })
+})
