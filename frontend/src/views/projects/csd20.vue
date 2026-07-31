@@ -97,8 +97,8 @@
 <style>
 .top-layout {
     display: flex;
-    flex-direction: row;
-    gap: 2rem;
+    flex-direction: column; /* 窄屏默认值；桌面（md 及以上）见下方 @screen md 覆盖 */
+    gap: 1.2rem; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
     justify-content: center;
     align-items: stretch; /* 关键：让子项高度一致 */
     margin: 2rem 0;
@@ -107,7 +107,7 @@
 .sidebar {
     flex: 2 1 0%;
     min-width: 300px;
-    max-width: none;
+    max-width: 100%; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -119,7 +119,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    max-width: 350px;
+    max-width: 100%; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
     height: 100%; /* 填满父容器高度 */
     box-sizing: border-box;
 }
@@ -150,13 +150,17 @@
     align-items: center;
     z-index: 1000;
 }
-@media (max-width: 768px) {
+/* 移动优先：上方为窄屏默认值，md 及以上覆盖为桌面值 */
+@screen md {
     .top-layout {
-        flex-direction: column;
-        gap: 1.2rem;
+        flex-direction: row;
+        gap: 2rem;
     }
-    .sidebar, .centered-product-card {
-        max-width: 100%;
+    .sidebar {
+        max-width: none;
+    }
+    .centered-product-card {
+        max-width: 350px;
     }
 }
 </style>

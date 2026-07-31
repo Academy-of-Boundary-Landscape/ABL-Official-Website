@@ -130,12 +130,12 @@ const toInternalProjectPath = (link = '') => {
 }
 
 .projects-carousel {
-  height: 280px;
+  height: 190px; /* 窄屏默认值；桌面（md 及以上）见下方 @screen md 覆盖 */
 }
 
 .carousel-slide {
   position: relative;
-  height: 280px;
+  height: 190px; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
   background-color: #202534;
   background-size: cover;
   background-position: center;
@@ -154,14 +154,14 @@ const toInternalProjectPath = (link = '') => {
 .slide-content {
   position: relative;
   z-index: 1;
-  padding: 1.4rem;
+  padding: 1rem; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
   color: #fff;
-  max-width: 70%;
+  max-width: 100%; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
 }
 
 .slide-content h3 {
   margin: 0.25rem 0 0.45rem;
-  font-size: 1.65rem;
+  font-size: 1.15rem; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
   letter-spacing: 0.02em;
 }
 
@@ -201,14 +201,15 @@ const toInternalProjectPath = (link = '') => {
 .project-summary {
   background: #242a35;
   border-radius: 16px;
-  padding: 1.1rem 1.25rem;
+  padding: 0.9rem; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
   color: #f5f7ff;
 }
 
 .summary-header {
   display: flex;
+  flex-direction: column; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-start; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
   gap: 1rem;
   margin-bottom: 0.4rem;
 }
@@ -237,28 +238,29 @@ const toInternalProjectPath = (link = '') => {
   text-align: center;
 }
 
-@media (max-width: 768px) {
+/* 移动优先：上方为窄屏默认值，md 及以上覆盖为桌面值 */
+@screen md {
   .projects-carousel,
   .carousel-slide {
-    height: 190px;
+    height: 280px;
   }
 
   .slide-content {
-    max-width: 100%;
-    padding: 1rem;
+    max-width: 70%;
+    padding: 1.4rem;
   }
 
   .slide-content h3 {
-    font-size: 1.15rem;
+    font-size: 1.65rem;
   }
 
   .project-summary {
-    padding: 0.9rem;
+    padding: 1.1rem 1.25rem;
   }
 
   .summary-header {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: baseline;
   }
 }
 </style>

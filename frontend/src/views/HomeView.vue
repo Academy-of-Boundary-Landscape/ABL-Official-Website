@@ -1,7 +1,7 @@
 <template>
   <div class="home-view container">
     <!-- 头部：更紧凑的标题 -->
-    <section class="page-header">
+    <section class="page-header flex flex-col items-center text-center gap-4 lg:flex-row lg:text-left lg:gap-8">
       <div class="header-content">
         <h1 class="title">境界景观学会</h1>
         <p class="subtitle">In search of the vacua where phantasm resides.</p>
@@ -14,7 +14,7 @@
     </TechSection>
 
     <!-- 最新动态 & 展会 (关键修改区) -->
-    <section class="events-conventions-grid">
+    <section class="events-conventions-grid grid gap-4 my-4 grid-cols-1 lg:grid-cols-[1.8fr_1.2fr]">
       <!-- 左侧：事件列表 -->
       <TechSection title="最新动态 / EVENTS" custom-class="event-section">
         <AsyncBoundary
@@ -57,7 +57,7 @@
     </section>
 
     <!-- 主布局：制品与介绍 -->
-    <div class="main-layout">
+    <div class="main-layout grid gap-5 mt-5 grid-cols-1 lg:grid-cols-[280px_1fr]">
       <!-- 左侧：最新制品 (侧边栏) -->
       <aside class="sidebar">
         <TechSection title="最新制品" custom-class="sidebar-content">
@@ -164,9 +164,6 @@ const {
 
 /* --- Header 优化 --- */
 .page-header {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
   margin: 40px 0 30px; /* 缩小间距 */
 }
 .page-header::before,
@@ -188,13 +185,6 @@ const {
 }
 
 /* --- 事件与展会 2栏布局 --- */
-.events-conventions-grid {
-  display: grid;
-  grid-template-columns: 1.8fr 1.2fr;
-  gap: 16px;
-  margin: 16px 0;
-}
-
 .events-compact-list {
   display: flex;
   flex-direction: column;
@@ -225,13 +215,6 @@ const {
 }
 
 /* --- 主内容布局 --- */
-.main-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr; /* 固定左侧宽度 */
-  gap: 20px;
-  margin-top: 20px;
-}
-
 .products-list {
   display: flex;
   flex-direction: column;
@@ -275,15 +258,17 @@ const {
 
 .floating-recruit-btn {
   position: fixed;
-  right: 24px;
-  top: 56%;
-  transform: translateY(-50%);
+  /* --- 响应式处理：以下 7 项窄屏为默认值，lg: 断点覆盖为桌面值（原 @media (max-width: 992px) 内容） --- */
+  right: 10px;
+  top: auto;
+  bottom: 84px;
+  transform: none;
+  writing-mode: horizontal-tb;
+  letter-spacing: 0.08em;
+  font-size: 0.74rem;
+  padding: 0.48rem 0.72rem;
   z-index: 30;
-  padding: 0.72rem 0.82rem;
-  writing-mode: vertical-rl;
   text-orientation: mixed;
-  letter-spacing: 0.16em;
-  font-size: 0.8rem;
   color: var(--color-heading);
   text-decoration: none;
   border: 1px solid rgba(255, 255, 255, 0.72);
@@ -308,7 +293,7 @@ const {
 }
 
 .floating-recruit-btn:hover {
-  transform: translateY(-50%) translateX(-2px);
+  transform: translateX(-2px);
   border-color: #9ac0ff;
   border-left-color: #b09dff;
   border-right-color: #b09dff;
@@ -318,31 +303,22 @@ const {
     inset 0 0 24px rgba(132, 176, 255, 0.12);
 }
 
-/* --- 响应式处理 --- */
-@media (max-width: 992px) {
-  .events-conventions-grid,
-  .main-layout {
-    grid-template-columns: 1fr;
-  }
-  .page-header {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-  }
-
+/* 桌面（lg 及以上，1024px+）覆盖：原 @media (max-width: 992px) 之外的默认桌面值，
+   现归并到 992px→1024px（接受微差），改写为 UnoCSS 移动优先断点 */
+@screen lg {
   .floating-recruit-btn {
-    right: 10px;
-    top: auto;
-    bottom: 84px;
-    transform: none;
-    writing-mode: horizontal-tb;
-    letter-spacing: 0.08em;
-    font-size: 0.74rem;
-    padding: 0.48rem 0.72rem;
+    right: 24px;
+    top: 56%;
+    bottom: auto;
+    transform: translateY(-50%);
+    writing-mode: vertical-rl;
+    letter-spacing: 0.16em;
+    font-size: 0.8rem;
+    padding: 0.72rem 0.82rem;
   }
 
   .floating-recruit-btn:hover {
-    transform: translateX(-2px);
+    transform: translateY(-50%) translateX(-2px);
   }
 }
 </style>

@@ -143,7 +143,7 @@ const jobOpenings = [
 
 .intro {
   margin-top: 1.25rem;
-  padding: 1.35rem 1.6rem;
+  padding: 1.1rem 1.1rem; /* 窄屏默认值；桌面（md 及以上）见下方 @screen md 覆盖 */
   text-align: left;
 }
 
@@ -161,9 +161,11 @@ const jobOpenings = [
 }
 
 .tracks {
+  /* 注：.tracks/.track/.track-title/.track-desc 在当前模板中未被使用（零命中），
+     属既存死代码，超出本 Task 范围，未做删除，仅按要求做媒体查询的移动优先翻转 */
   margin-top: 1rem;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr; /* 窄屏默认值；桌面（lg 及以上）见下方 @screen lg 覆盖 */
   gap: 0.85rem;
 }
 
@@ -171,7 +173,7 @@ const jobOpenings = [
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.03);
   border-radius: 14px;
-  padding: 0.9rem 0.95rem;
+  padding: 0.85rem 0.9rem; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
 }
 
 .track-title {
@@ -188,7 +190,7 @@ const jobOpenings = [
 }
 
 .job-card {
-  padding: 1.35rem 1.6rem;
+  padding: 1.1rem 1.1rem; /* 窄屏默认值；桌面（md 及以上）见下方 @screen md 覆盖 */
   margin-bottom: 2rem;
 }
 
@@ -209,7 +211,7 @@ const jobOpenings = [
 
 .job-card h2 {
   color: var(--color-accent);
-  font-size: 1.42rem;
+  font-size: 1.2rem; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
   margin-bottom: 0.15rem;
   letter-spacing: 0.5px;
 }
@@ -317,24 +319,26 @@ const jobOpenings = [
   font-size: 0.95rem;
 }
 
-@media (max-width: 980px) {
-  .tracks {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
+/* 移动优先：上方为窄屏默认值，md/lg 及以上覆盖为桌面值
+ * 980px 与 768px 两个原断点分别归并到 lg（1024px）与 md（768px） */
+@screen md {
   .intro,
   .job-card {
-    padding: 1.1rem 1.1rem;
+    padding: 1.35rem 1.6rem;
   }
 
   .job-card h2 {
-    font-size: 1.2rem;
+    font-size: 1.42rem;
   }
 
   .track {
-    padding: 0.85rem 0.9rem;
+    padding: 0.9rem 0.95rem;
+  }
+}
+
+@screen lg {
+  .tracks {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 </style>

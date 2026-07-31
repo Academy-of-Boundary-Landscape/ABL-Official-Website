@@ -210,7 +210,7 @@ const renderMarkdown = (markdownText) => {
 }
 
 .dynamic-content-area {
-  padding: 2.5rem;
+  padding: 1rem; /* 窄屏默认值；桌面（md 及以上）见下方 @screen md 覆盖 */
   max-width: 1200px; /* 限制主内容区的最大宽度以保证可读性 */
   margin: 0 auto; /* 居中 */
 }
@@ -221,7 +221,7 @@ const renderMarkdown = (markdownText) => {
 }
 
 .markdown-block {
-  padding: 1.2rem 1.25rem;
+  padding: 0.9rem; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
 }
 
 .dynamic-content-area > div:last-child {
@@ -443,13 +443,14 @@ const renderMarkdown = (markdownText) => {
   margin-top: 1rem;
 }
 
-@media (max-width: 768px) {
+/* 移动优先：上方为窄屏默认值，md 及以上覆盖为桌面值 */
+@screen md {
   .dynamic-content-area {
-    padding: 1rem;
+    padding: 2.5rem;
   }
 
   .markdown-block {
-    padding: 0.9rem;
+    padding: 1.2rem 1.25rem;
   }
 }
 </style>

@@ -199,7 +199,7 @@ const closeDrawer = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.45rem 0;
+  padding: 0.35rem 0; /* 窄屏默认值；桌面（md 及以上）见下方 @screen md 覆盖 */
   position: relative;
 }
 
@@ -217,12 +217,12 @@ const closeDrawer = () => {
 .logo {
   display: flex;
   align-items: flex-end;
-  gap: 0.8rem;
+  gap: 1rem; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
   text-decoration: none;
 }
 
 .logo img {
-  height: 5.1rem;
+  height: 3rem; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
   width: auto;
   object-fit: contain;
 }
@@ -235,7 +235,7 @@ const closeDrawer = () => {
 
 .site-title {
   font-family: var(--font-family-heading);
-  font-size: 2.25rem;
+  font-size: 1.35rem; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
   color: var(--color-heading);
   font-weight: bold;
   text-shadow:
@@ -248,22 +248,23 @@ const closeDrawer = () => {
 
 .site-subtitle {
   font-family: var(--font-family-body);
-  font-size: 0.88rem;
+  font-size: 0.7rem; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
   color: var(--color-text);
   opacity: 0.8;
-  margin-top: 0.15rem;
+  margin-top: 0.1rem; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
 }
 
-/* 桌面端导航 */
+/* 桌面端导航：窄屏默认隐藏；桌面见下方 @screen md 覆盖 */
 .desktop-nav {
   flex: 1;
-  display: flex;
+  display: none;
   justify-content: center;
 }
 
-/* 移动端菜单按钮 */
+/* 移动端菜单按钮：窄屏默认显示；桌面见下方 @screen md 覆盖 */
 .mobile-menu-btn {
-  display: none;
+  display: flex;
+  color: var(--color-text);
 }
 
 /* 菜单链接样式 */
@@ -286,7 +287,7 @@ const closeDrawer = () => {
    （一处在 theme.js，一处在这里的 text-shadow 硬编码色值），维护成本反而更高，
    所以整体保留在这里而不拆分。*/
 :deep(.n-menu-item) {
-  font-size: 0.86rem;
+  font-size: 1rem; /* 窄屏默认值；桌面见下方 @screen md 覆盖 */
   border-bottom: 2px solid transparent;
   transition: all 0.2s ease;
 }
@@ -302,40 +303,39 @@ const closeDrawer = () => {
   text-shadow: 0 0 10px rgba(61, 180, 230, 0.5);
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
+/* 响应式设计（移动优先：上方为窄屏默认值，md 及以上覆盖为桌面值） */
+@screen md {
   .branding-bar {
-    padding: 0.35rem 0;
+    padding: 0.45rem 0;
   }
 
   .logo {
-    gap: 1rem;
+    gap: 0.8rem;
   }
 
   .logo img {
-    height: 3rem;
+    height: 5.1rem;
   }
 
   .site-title {
-    font-size: 1.35rem;
+    font-size: 2.25rem;
   }
 
   .site-subtitle {
-    font-size: 0.7rem;
-    margin-top: 0.1rem;
+    font-size: 0.88rem;
+    margin-top: 0.15rem;
   }
 
   .desktop-nav {
-    display: none;
+    display: flex;
   }
 
   .mobile-menu-btn {
-    display: flex;
-    color: var(--color-text);
+    display: none;
   }
 
   :deep(.n-menu-item) {
-    font-size: 1rem;
+    font-size: 0.86rem;
   }
 }
 </style>

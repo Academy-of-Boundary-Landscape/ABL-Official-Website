@@ -21,7 +21,9 @@
       @retry="refresh"
     >
       <!-- 3. 事件列表容器 -->
-      <div class="event-list-container">
+      <div
+        class="event-list-container grid-cols-1 gap-[0.65rem] sm:gap-[0.9rem] sm:grid-cols-[repeat(auto-fill,minmax(260px,320px))]"
+      >
         <EventCard v-for="event in events" :key="event.slug" :event="event" />
       </div>
     </AsyncBoundary>
@@ -64,25 +66,18 @@ const {
   min-width: 250px;
 }
 
-/* 事件卡片的垂直列表容器 */
+/* 事件卡片的垂直列表容器
+ * 断点相关的 grid-template-columns / gap 已移至模板的 UnoCSS 工具类（移动优先，sm: 为桌面覆盖）
+ */
 .event-list-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 320px));
   justify-content: center;
-  gap: 0.9rem;
   max-width: 1120px;
   margin: 0 auto;
 }
 
 :deep(.event-list-container .event-card) {
   width: 100%;
-}
-
-@media (max-width: 640px) {
-  .event-list-container {
-    grid-template-columns: 1fr;
-    gap: 0.65rem;
-  }
 }
 
 /* 页面主体容器 */

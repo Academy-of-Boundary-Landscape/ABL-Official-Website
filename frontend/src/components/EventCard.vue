@@ -96,8 +96,9 @@ const navigateToDetail = () => {
 
 <style scoped>
 .event-card {
-  --event-card-height: 112px;
-  --event-media-width: 140px;
+  /* 窄屏默认值；桌面（sm 及以上）见下方 @screen sm 覆盖 */
+  --event-card-height: 92px;
+  --event-media-width: 108px;
   background-color: #21252e;
   border: 1px solid rgba(255, 255, 255, 0.7);
   border-left: 3px solid #ffffff;
@@ -276,7 +277,7 @@ const navigateToDetail = () => {
 }
 
 .event-title {
-  font-size: 0.9rem;
+  font-size: 0.82rem; /* 窄屏默认值；桌面见下方 @screen sm 覆盖 */
   color: var(--color-heading);
   margin: 0;
   line-height: 1.3;
@@ -308,19 +309,15 @@ const navigateToDetail = () => {
   box-shadow: 0 0 10px rgba(76, 201, 255, 0.18);
 }
 
-/* 响应式设计 */
-@media (max-width: 640px) {
+/* 响应式设计（移动优先：上方为窄屏默认值，sm 及以上覆盖为桌面值） */
+@screen sm {
   .event-card {
-    --event-card-height: 92px;
-    --event-media-width: 108px;
-  }
-
-  .event-layout {
-    grid-template-columns: var(--event-media-width) minmax(0, 1fr);
+    --event-card-height: 112px;
+    --event-media-width: 140px;
   }
 
   .event-title {
-    font-size: 0.82rem;
+    font-size: 0.9rem;
   }
 }
 </style>

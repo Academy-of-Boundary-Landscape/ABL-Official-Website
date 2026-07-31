@@ -19,7 +19,9 @@
       </section>
 
       <!-- Main layout: a two-column grid inside a tech-box -->
-      <div class="tech-box content-wrapper">
+      <div
+        class="tech-box content-wrapper grid gap-6 grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]"
+      >
         
         <!-- Left Column: Main Content -->
         <div class="main-content">
@@ -166,12 +168,8 @@ watch(
 </script>
 
 <style scoped>
-/* Main Layout: Two-column grid for desktop */
-.content-wrapper {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); /* Flexible 2:1 ratio */
-  gap: 1.5rem;
-}
+/* Main Layout: Two-column grid for desktop
+ * display/grid-template-columns/gap 已移至模板的 UnoCSS 工具类（移动优先，md: 为桌面覆盖） */
 .section-title {
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
@@ -183,9 +181,11 @@ watch(
   content: "// ";
   color: var(--color-accent);
 }
-/* Sidebar styles */
+/* Sidebar styles（窄屏默认：置顶单栏堆叠；桌面见下方 @screen md 覆盖） */
 .sidebar {
-  position: sticky; /* Make the sidebar "stick" on scroll */
+  grid-row: 1; /* 窄屏下移到内容上方 */
+  position: static; /* 窄屏重置 sticky */
+  margin-bottom: 3rem;
   top: 2rem;
   height: fit-content; /* Ensure it doesn't overflow */
 }
@@ -278,15 +278,12 @@ watch(
   padding-left: 2rem;
 }
 
-/* Responsive Design for smaller screens */
-@media (max-width: 768px) { /* A wider breakpoint for better layout on tablets */
-  .content-wrapper {
-    grid-template-columns: 1fr; /* Switch to a single column layout */
-  }
+/* Responsive Design（移动优先：上方为窄屏默认值，md 及以上覆盖为桌面双栏值） */
+@screen md {
   .sidebar {
-    grid-row: 1; /* Move the sidebar to the top */
-    position: static; /* Reset sticky positioning */
-    margin-bottom: 3rem;
+    grid-row: auto; /* 恢复源码顺序placement，与 main-content 并排 */
+    position: sticky; /* Make the sidebar "stick" on scroll */
+    margin-bottom: 0;
   }
 }
 

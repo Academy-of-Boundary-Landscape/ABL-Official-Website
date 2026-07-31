@@ -74,7 +74,7 @@ const navigateToDetail = () => {
 
 .card-image-wrapper {
   width: 100%;
-  height: 140px; /* 高度从 160px 减小到 140px，更紧凑 */
+  height: 120px; /* 窄屏默认值；桌面见下方 @screen sm 覆盖 */
   background-color: #1a1a1a;
   overflow: hidden;
 }
@@ -91,15 +91,15 @@ const navigateToDetail = () => {
 }
 
 .card-content {
-  padding: 10px 10px 8px 10px; /* 紧凑的内边距 */
+  padding: 8px; /* 窄屏默认值；桌面见下方 @screen sm 覆盖 */
 }
 
 .card-content h3 {
-  font-size: 0.875rem; /* 字号从 0.95 缩小到 0.875 */
+  font-size: 0.8rem; /* 窄屏默认值；桌面见下方 @screen sm 覆盖 */
   margin: 0 0 6px 0;
   color: var(--color-heading, #fff);
   line-height: 1.25; /* 紧凑行高 */
-  min-height: 2.5em; /* 保证两行的高度占位，防止对齐错乱 */
+  min-height: 2.4em; /* 窄屏默认值；桌面见下方 @screen sm 覆盖，保证两行的高度占位，防止对齐错乱 */
   display: -webkit-box;
   -webkit-line-clamp: 2; /* 依然保留两行截断，支持长名字 */
   -webkit-box-orient: vertical;
@@ -129,19 +129,19 @@ const navigateToDetail = () => {
   padding: 0 6px;
 }
 
-/* 响应式设计 */
-@media (max-width: 640px) {
+/* 响应式设计（移动优先：上方为窄屏默认值，sm 及以上覆盖为桌面值） */
+@screen sm {
   .card-image-wrapper {
-    height: 120px;
+    height: 140px; /* 原 160px→140px 的紧凑高度 */
   }
 
   .card-content {
-    padding: 8px;
+    padding: 10px 10px 8px 10px;
   }
 
   .card-content h3 {
-    font-size: 0.8rem;
-    min-height: 2.4em;
+    font-size: 0.875rem;
+    min-height: 2.5em;
   }
 }
 </style>
