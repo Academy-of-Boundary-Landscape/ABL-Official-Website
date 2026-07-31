@@ -20,6 +20,16 @@ export default defineConfig([
     },
   },
 
+  {
+    name: 'app/node-config-files',
+    files: ['vite.config.js', 'vitest.config.js', 'uno.config.js', 'scripts/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+
   js.configs.recommended,
   ...pluginVue.configs['flat/essential'],
   skipFormatting,
