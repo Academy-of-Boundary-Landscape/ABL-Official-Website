@@ -3,7 +3,7 @@
   <n-layout-header bordered class="site-header">
     <div class="branding-bar container">
       <RouterLink to="/" class="logo" @click="closeDrawer">
-        <img src="@/assets/images/abl_logo.png" alt="境界景观学会 Logo" />
+        <img src="@/assets/images/abl_logo.webp" alt="境界景观学会 Logo" />
         <div class="title-group">
           <span class="site-title">境界景观学会</span>
           <p class="site-subtitle">Academy of Boundary Landscape</p>

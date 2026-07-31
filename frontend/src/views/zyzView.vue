@@ -9,8 +9,8 @@
 
     <div class="gallery">
       <!-- 你可以在这里放游戏的截图 -->
-      <img src="@/assets/images/zyz_title.png" alt="游戏截图1" />
-      <img src="@/assets/images/zyz_screenshot.png" alt="游戏截图2" />
+      <img src="@/assets/images/zyz_title.webp" alt="游戏截图1" />
+      <img src="@/assets/images/zyz_screenshot.webp" alt="游戏截图2" />
     </div>
 
     <div class="content-section">

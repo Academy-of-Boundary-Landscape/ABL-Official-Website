@@ -225,9 +225,9 @@ import ProductCard from '@/components/ProductCard.vue'
 import AsyncBoundary from '@/components/AsyncBoundary.vue'
 import { useProductByTitle } from '@/composables/useProducts'
 
-import coverImg from '@/assets/images/csd20related/csd_20_title.png'
-import previewImg1 from '@/assets/images/csd20related/宣传图12.png'
-import previewImg2 from '@/assets/images/csd20related/宣传图10.png'
+import coverImg from '@/assets/images/csd20related/csd_20_title.webp'
+import previewImg1 from '@/assets/images/csd20related/宣传图12.webp'
+import previewImg2 from '@/assets/images/csd20related/宣传图10.webp'
 
 const cover = ref({ id: 1, url: coverImg, title: '画册封面' })
 

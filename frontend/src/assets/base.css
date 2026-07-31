@@ -95,7 +95,7 @@ body::before {
   right: 0;
   bottom: 0;
   pointer-events: none;
-  background-image: url('./images/calabi-yau.png');
+  background-image: url('./images/calabi-yau.webp');
   background-repeat: no-repeat;
   background-position: center;
   background-size: min(92vw, 1280px) auto;
