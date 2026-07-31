@@ -204,24 +204,7 @@
   color: #111;
 }
 
-/* --- 4. 状态提示框 --- */
-/*
-  用于显示"加载中"或"错误"信息。
-*/
-.status-box {
-  text-align: center;
-  margin: 4rem 0;
-  padding: 2rem;
-  font-size: 1.2rem;
-  color: var(--color-heading);
-  border: 1px solid #ffffff;
-  background: rgba(10, 15, 26, 0.6);
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.14);
-  border-radius: 0;
-  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
-}
-
-/* --- 5. 卡片基础态 ---
+/* --- 4. 卡片基础态 ---
    原为 uno.config.js 的 `card-base` shortcut
    (`rounded-lg overflow-hidden transition-all hover:-translate-y-1 hover:shadow-xl`)。
    ProductCard.vue / EventCard.vue 仍在用这个类名，Uno 侧删除后原样搬到这里，行为不变。
@@ -239,10 +222,4 @@
   box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 8px 10px -6px rgba(0, 0, 0, 0.1);
-}
-
-.status-box.error {
-  color: #ff5252;
-  border-color: rgba(255, 82, 82, 0.4);
-  box-shadow: 0 0 20px rgba(255, 82, 82, 0.2);
 }

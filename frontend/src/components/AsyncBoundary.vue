@@ -52,4 +52,25 @@ const emit = defineEmits(['retry'])
   align-items: center;
   gap: 0.75rem;
 }
+
+/* 原 main.css 里全局的 .status-box / .status-box.error，
+   使用点已全部收进本组件，随迁移一起搬过来。 */
+.status-box {
+  text-align: center;
+  margin: 4rem 0;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: var(--color-heading);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: 0 0 12px var(--color-box-glow);
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+
+.status-box.error {
+  color: var(--color-error-strong);
+  border-color: var(--color-error);
+  box-shadow: 0 0 20px var(--color-accent-glow);
+}
 </style>
