@@ -139,6 +139,88 @@ describe('useStrapiList', () => {
     expect(get).toHaveBeenCalledTimes(2)
     stop()
   })
+
+  it('竞态：后发请求先返回时，早先请求的迟到响应不会覆盖新状态', async () => {
+    const search = ref('a')
+    let resolveA
+    let resolveB
+    get.mockImplementationOnce(() => new Promise((r) => (resolveA = r)))
+    const { result, stop } = withScope(() => useStrapiList('events', () => ({ q: search.value })))
+    // 此时请求 A（q=a）已同步发出但尚未 resolve。
+    expect(get).toHaveBeenCalledTimes(1)
+
+    get.mockImplementationOnce(() => new Promise((r) => (resolveB = r)))
+    search.value = 'b'
+    await flush() // watcher 触发 refresh -> 发出请求 B，并 abort 掉 A 的 controller
+    expect(get).toHaveBeenCalledTimes(2)
+
+    // B 先返回。
+    resolveB(okList([{ id: 2 }]))
+    await flush()
+    expect(result.data.value).toEqual([{ id: 2 }])
+
+    // A 后返回——它的 signal 已被 abort，不应该覆盖 B 写入的状态。
+    resolveA(okList([{ id: 1 }]))
+    await flush()
+    expect(result.data.value).toEqual([{ id: 2 }])
+    stop()
+  })
+})
+
+describe('useStrapiList - debounce', () => {
+  it('短时间内多次参数变化只合并成一次请求', async () => {
+    vi.useFakeTimers()
+    get.mockResolvedValue(okList([]))
+    const search = ref('')
+    const { stop } = withScope(() =>
+      useStrapiList('events', () => ({ q: search.value }), { debounce: 200 }),
+    )
+    await flush()
+    expect(get).toHaveBeenCalledTimes(1) // 初次 immediate 请求不受 debounce 影响
+
+    search.value = 'a'
+    await flush()
+    search.value = 'ab'
+    await flush()
+    search.value = 'abc'
+    await flush()
+    expect(get).toHaveBeenCalledTimes(1) // 计时器还没到期，尚未真正发出新请求
+
+    await vi.advanceTimersByTimeAsync(200)
+    expect(get).toHaveBeenCalledTimes(2) // 三次参数变化只换来 1 次新请求
+    expect(get.mock.calls[1][1].params).toEqual({ q: 'abc' })
+    stop()
+  })
+
+  it('设置了 debounce 时，refresh() 仍立即发起请求，不排队等待', async () => {
+    vi.useFakeTimers()
+    get.mockResolvedValue(okList([]))
+    const { result, stop } = withScope(() => useStrapiList('events', {}, { debounce: 200 }))
+    await flush()
+    expect(get).toHaveBeenCalledTimes(1)
+
+    await result.refresh()
+    expect(get).toHaveBeenCalledTimes(2) // 不需要等待 200ms
+    stop()
+  })
+
+  it('销毁时若有排队中的 debounce 定时器，销毁后不再发起请求', async () => {
+    vi.useFakeTimers()
+    get.mockResolvedValue(okList([]))
+    const search = ref('')
+    const { stop } = withScope(() =>
+      useStrapiList('events', () => ({ q: search.value }), { debounce: 200 }),
+    )
+    await flush()
+    expect(get).toHaveBeenCalledTimes(1)
+
+    search.value = 'a'
+    await flush() // watcher 触发 refresh，排队等待 200ms 的定时器还没到期
+    stop() // 在定时器触发前销毁作用域
+
+    await vi.advanceTimersByTimeAsync(500)
+    expect(get).toHaveBeenCalledTimes(1) // 定时器应已被 onScopeDispose 清除，不会再发请求
+  })
 })
 
 describe('useStrapiOne', () => {

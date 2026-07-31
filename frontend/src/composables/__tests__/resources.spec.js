@@ -2,7 +2,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { effectScope, ref, nextTick } from 'vue'
 import { apiClient } from '@/composables/strapi'
 import { useEvents, useEvent } from '@/composables/useEvents'
-import { useProducts, useProduct, useProductsByIds } from '@/composables/useProducts'
+import {
+  useProducts,
+  useProduct,
+  useProductsByIds,
+  useRecommendedProducts,
+} from '@/composables/useProducts'
 import { useProjects, normalizeProjects } from '@/composables/useProjects'
 import { useConventions } from '@/composables/useConventions'
 
@@ -40,6 +45,13 @@ describe('useEvents', () => {
     const { stop } = withScope(() => useEvents({ limit: 3 }))
     await flush()
     expect(paramsOf()['pagination[limit]']).toBe(3)
+    stop()
+  })
+
+  it('limit 为 ref(0) 时不应该发送 pagination[limit]——不能用裸 Ref 做真值判断', async () => {
+    const { stop } = withScope(() => useEvents({ limit: ref(0) }))
+    await flush()
+    expect(paramsOf()['pagination[limit]']).toBeUndefined()
     stop()
   })
 
@@ -97,6 +109,13 @@ describe('useProducts', () => {
     expect(paramsOf().filters).toEqual({ category: { $eq: '音乐' } })
     stop()
   })
+
+  it('limit 为 ref(0) 时不应该发送 pagination[limit]——不能用裸 Ref 做真值判断', async () => {
+    const { stop } = withScope(() => useProducts({ limit: ref(0) }))
+    await flush()
+    expect(paramsOf()['pagination[limit]']).toBeUndefined()
+    stop()
+  })
 })
 
 describe('useProduct', () => {
@@ -125,6 +144,83 @@ describe('useProductsByIds', () => {
     expect(get).not.toHaveBeenCalled()
     stop()
   })
+
+  it('id 列表初始为空、之后填充时会发起请求——immediate 只在 setup 时判定一次，靠 params watcher 补上', async () => {
+    const ids = ref([])
+    const { stop } = withScope(() => useProductsByIds(ids))
+    await flush()
+    expect(get).not.toHaveBeenCalled()
+
+    ids.value = [1, 2]
+    await flush()
+    expect(get).toHaveBeenCalledTimes(1)
+    expect(paramsOf().filters).toEqual({ id: { $in: [1, 2] } })
+    stop()
+  })
+
+  it('id 列表为空时 isEmpty 不应为真——还没发起请求，不是查无结果', async () => {
+    const { result, stop } = withScope(() => useProductsByIds([]))
+    await flush()
+    expect(result.isEmpty.value).toBe(false)
+    stop()
+  })
+
+  it('byId 按 id 建立索引', async () => {
+    get.mockResolvedValueOnce({
+      data: {
+        data: [
+          { id: 3, title: 'a' },
+          { id: 5, title: 'b' },
+        ],
+        meta: null,
+      },
+    })
+    const { result, stop } = withScope(() => useProductsByIds([3, 5]))
+    await flush()
+    expect(result.byId.value).toEqual({
+      3: { id: 3, title: 'a' },
+      5: { id: 5, title: 'b' },
+    })
+    stop()
+  })
+})
+
+describe('useRecommendedProducts', () => {
+  it('排除当前条目并带 50 条上限', async () => {
+    const { stop } = withScope(() => useRecommendedProducts(42))
+    await flush()
+    expect(paramsOf().populate).toBe('coverImage')
+    expect(paramsOf()['filters[id][$ne]']).toBe(42)
+    expect(paramsOf()['pagination[limit]']).toBe(50)
+    stop()
+  })
+
+  it('结果按 count 截断，随机顺序通过 stub Math.random 保持确定性', async () => {
+    get.mockResolvedValueOnce({
+      data: {
+        data: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }],
+        meta: null,
+      },
+    })
+    vi.spyOn(Math, 'random').mockReturnValue(0)
+    const { result, stop } = withScope(() => useRecommendedProducts(0, 2))
+    await flush()
+    // Math.random 恒为 0 时，Fisher-Yates 洗牌把每一步的 j 都定为 0，
+    // 结果是确定的 [2, 3, 4, 5, 1]，截断到 count=2 后是 [2, 3]。
+    expect(result.data.value).toEqual([{ id: 2 }, { id: 3 }])
+    stop()
+  })
+
+  it('count 为 0 时，isEmpty 反映裁剪后的结果而非原始数据——原始池非空也应判空', async () => {
+    get.mockResolvedValueOnce({
+      data: { data: [{ id: 1 }, { id: 2 }], meta: null },
+    })
+    const { result, stop } = withScope(() => useRecommendedProducts(0, 0))
+    await flush()
+    expect(result.data.value).toEqual([])
+    expect(result.isEmpty.value).toBe(true)
+    stop()
+  })
 })
 
 describe('useProjects', () => {
@@ -135,6 +231,24 @@ describe('useProjects', () => {
     expect(paramsOf().populate).toBe('coverImage')
     expect(paramsOf().sort).toBe('date:desc')
     expect(paramsOf()['pagination[limit]']).toBe(6)
+    stop()
+  })
+
+  it('limit 为 ref(0) 时不应该发送 pagination[limit]——不能用裸 Ref 做真值判断', async () => {
+    const { stop } = withScope(() => useProjects({ limit: ref(0) }))
+    await flush()
+    expect(paramsOf()['pagination[limit]']).toBeUndefined()
+    stop()
+  })
+
+  it('脏数据被 normalizeProjects 过滤光后，isEmpty 要反映过滤后的结果而非原始 list.data', async () => {
+    get.mockResolvedValueOnce({
+      data: { data: [{ id: 1 }, { id: 2 }], meta: null }, // 均无 title，会被过滤成空
+    })
+    const { result, stop } = withScope(() => useProjects())
+    await flush()
+    expect(result.data.value).toEqual([])
+    expect(result.isEmpty.value).toBe(true)
     stop()
   })
 })
@@ -167,6 +281,21 @@ describe('useConventions', () => {
     const { stop } = withScope(() => useConventions())
     await flush()
     expect(paramsOf()['filters[date][$gte]']).toBeUndefined()
+    stop()
+  })
+
+  it('upcoming 为 ref(false) 时，排序与过滤条件必须一致——不能一处判裸 Ref 一处判 toValue', async () => {
+    const { stop } = withScope(() => useConventions({ upcoming: ref(false) }))
+    await flush()
+    expect(paramsOf().sort).toBe('date:desc')
+    expect(paramsOf()['filters[date][$gte]']).toBeUndefined()
+    stop()
+  })
+
+  it('limit 为 ref(0) 时不应该发送 pagination[limit]——不能用裸 Ref 做真值判断', async () => {
+    const { stop } = withScope(() => useConventions({ limit: ref(0) }))
+    await flush()
+    expect(paramsOf()['pagination[limit]']).toBeUndefined()
     stop()
   })
 })
