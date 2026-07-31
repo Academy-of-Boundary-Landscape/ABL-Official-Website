@@ -12,16 +12,16 @@
     <n-button size="small" ghost class="mt-3" @click="emit('retry')">&gt;&gt; 重试</n-button>
   </div>
 
-  <!-- 空态 -->
+  <!-- 空态：终端风纯文本，与 error 分支的 `>>` 前缀文案一致，不用 n-empty 的居中图标 -->
   <div v-else-if="empty" class="status-box">
-    <n-empty :description="emptyText" />
+    <p>{{ emptyText }}</p>
   </div>
 
   <slot v-else />
 </template>
 
 <script setup>
-import { NSkeleton, NEmpty, NButton } from 'naive-ui'
+import { NSkeleton, NButton } from 'naive-ui'
 
 defineProps({
   loading: { type: Boolean, default: false },

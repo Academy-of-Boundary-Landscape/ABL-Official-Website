@@ -190,6 +190,9 @@ export const themeOverrides = {
     colorEnd: colors.surfaceRaised,
   },
   // 空状态组件
+  // 注：全站当前无 n-empty 消费者（AsyncBoundary 已改回终端风纯文本，见
+  // components/AsyncBoundary.vue），这份配置暂无实际生效场景，保留供日后
+  // 若有页面重新引入 n-empty 时使用，避免误判为正在生效的配置。
   Empty: {
     iconColor: colors.inputPlaceholder,
     textColor: colors.menuArrow,
