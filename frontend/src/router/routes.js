@@ -1,3 +1,5 @@
+import { redirectRoutes } from './redirects'
+
 export const routes = [
   {
     path: '/',
@@ -8,11 +10,6 @@ export const routes = [
     path: '/recruitment',
     name: 'recruitment',
     component: () => import('../views/RecruitmentView.vue'),
-  },
-  {
-    path: '/project/zhu-yuanzhang',
-    name: 'zhu-yuanzhang',
-    component: () => import('../views/zyzView.vue'),
   },
   {
     path: '/products',
@@ -35,16 +32,6 @@ export const routes = [
     component: () => import('../views/EventDetail.vue'),
   },
   {
-    path: '/project/csd20',
-    name: 'csd20',
-    component: () => import('../views/projects/csd20.vue'),
-  },
-  {
-    path: '/project/csd20/music',
-    name: 'csd20music',
-    component: () => import('../views/projects/csd20music.vue'),
-  },
-  {
     path: '/works',
     name: 'works',
     component: () => import('../views/WorkList.vue'),
@@ -54,6 +41,7 @@ export const routes = [
     name: 'WorkDetail',
     component: () => import('../views/WorkDetail.vue'),
   },
+  ...redirectRoutes(),
 ]
 
 export default routes
