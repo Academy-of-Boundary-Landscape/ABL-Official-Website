@@ -47,10 +47,10 @@
 </template>
 
 <script setup>
-import { ref, h, computed, onMounted } from 'vue'
+import { ref, h, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { NLayoutHeader, NMenu, NButton, NIcon, NDrawer, NDrawerContent } from 'naive-ui'
-import { apiClient } from '@/composables/strapi'
+import { useProjects } from '@/composables/useProjects'
 
 // 控制移动端抽屉
 const showDrawer = ref(false)
@@ -58,7 +58,7 @@ const showDrawer = ref(false)
 // 当前激活的菜单项
 const activeKey = ref('')
 
-const projectMenuChildren = ref([])
+const { data: projects } = useProjects({ limit: 20 })
 
 const isExternalLink = (link = '') => /^https?:\/\//i.test(link)
 
@@ -68,17 +68,11 @@ const toInternalProjectPath = (link = '') => {
   return `/project/${link}`
 }
 
-const normalizeProjects = (items = []) =>
-  items
-    .map((item) => {
-      const attrs = item?.attributes || item
-      return {
-        id: item?.id ?? attrs?.id ?? attrs?.documentId ?? attrs?.title,
-        title: attrs?.title || '',
-        link: attrs?.link || '',
-      }
-    })
-    .filter((project) => project.title && project.link)
+// useProjects 只按 title 过滤脏数据；导航菜单还要求有 link 才能生成条目，
+// 这条额外过滤是本组件的菜单构造逻辑，保留在这里而不是资源层。
+const projectMenuChildren = computed(() =>
+  buildProjectMenuChildren(projects.value.filter((project) => project.link)),
+)
 
 const buildProjectMenuChildren = (projects = []) =>
   projects.map((project, index) => {
@@ -113,24 +107,6 @@ const buildProjectMenuChildren = (projects = []) =>
         ),
     }
   })
-
-const fetchProjectMenu = async () => {
-  try {
-    const response = await apiClient.get('/projects', {
-      params: {
-        sort: 'date:desc',
-        'pagination[limit]': 20,
-      },
-    })
-
-    const data = response.data?.data || response.data || []
-    const projects = normalizeProjects(data)
-    projectMenuChildren.value = buildProjectMenuChildren(projects)
-  } catch (error) {
-    console.error('无法获取导航项目菜单:', error)
-    projectMenuChildren.value = []
-  }
-}
 
 // 菜单选项
 const menuOptions = computed(() => [
@@ -208,8 +184,6 @@ const handleMobileMenuSelect = () => {
 const closeDrawer = () => {
   showDrawer.value = false
 }
-
-onMounted(fetchProjectMenu)
 </script>
 
 <style scoped>
@@ -298,11 +272,19 @@ onMounted(fetchProjectMenu)
   text-decoration: none;
 }
 
-/* Naive UI 菜单样式覆盖 */
-:deep(.n-menu) {
-  background-color: transparent !important;
-}
+/* Naive UI 菜单样式覆盖
+   注：原来这里还有一条 `:deep(.n-menu) { background-color: transparent !important; }`。
+   查过 naive-ui 的 Menu 主题源码（node_modules/naive-ui/lib/menu/styles/light.js，
+   dark 主题直接复用它），Menu 自身的 self.color 默认就是 '#0000'（全透明），
+   我们的 themeOverrides.Menu 从未覆盖过这个 color 字段，所以这条规则从写下的
+   那天起就没有产生过任何实际效果，删掉不会有任何视觉变化。 */
 
+/* 以下三处 :deep(.n-menu-item*) 把下划线（border-bottom）、发光文字阴影
+   （text-shadow）与文字颜色耦合在一起，是这个站点特有的"选中/悬停发光下划线"
+   效果。Naive 的 Menu 主题变量里没有 border-bottom / text-shadow 这类字段，
+   只把颜色部分单独搬进 themeOverrides 会把同一个视觉效果的颜色来源拆成两处
+   （一处在 theme.js，一处在这里的 text-shadow 硬编码色值），维护成本反而更高，
+   所以整体保留在这里而不拆分。*/
 :deep(.n-menu-item) {
   font-size: 0.86rem;
   border-bottom: 2px solid transparent;

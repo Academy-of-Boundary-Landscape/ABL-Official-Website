@@ -42,6 +42,7 @@ import { NLayoutFooter, NSpace, NButton } from 'naive-ui'
 }
 
 .beian-link:hover {
-  color: var(--color-primary) !important;
+  /* var(--color-primary) 从未被定义过，这条规则一直是空转；改用真实存在的 --color-accent */
+  color: var(--color-accent) !important;
 }
 </style>

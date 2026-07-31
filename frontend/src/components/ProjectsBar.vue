@@ -1,72 +1,81 @@
 <template>
   <n-card :bordered="false" class="projects-bar">
-    <div class="carousel-shell">
-      <n-carousel
-        v-model:current-index="currentIndex"
-        :autoplay="projects.length > 1"
-        :interval="6000"
-        show-arrow
-        dots-type="line"
-        class="projects-carousel"
-      >
-        <div
-          v-for="project in projects"
-          :key="project.id"
-          class="carousel-slide"
-          :style="{
-            backgroundImage: project.coverUrl ? `url(${project.coverUrl})` : undefined,
-          }"
+    <AsyncBoundary
+      :loading="loading"
+      :error="error"
+      :empty="isEmpty"
+      empty-text=">> 暂无线上项目。"
+      @retry="refresh"
+    >
+      <div class="carousel-shell">
+        <n-carousel
+          v-model:current-index="currentIndex"
+          :autoplay="projects.length > 1"
+          :interval="6000"
+          show-arrow
+          dots-type="line"
+          class="projects-carousel"
         >
-          <div class="slide-overlay"></div>
-          <div class="slide-content">
-            <span v-if="project.nowStatus" class="status-chip">
-              {{ project.nowStatusLabel }}
-            </span>
-            <h3>{{ project.title }}</h3>
-            <p v-if="project.date">{{ project.date }}</p>
-            <a
-              v-if="project.link && isExternalLink(project.link)"
-              :href="project.link"
-              class="slide-link"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              查看项目
-            </a>
-            <RouterLink
-              v-else-if="project.link"
-              :to="toInternalProjectPath(project.link)"
-              class="slide-link"
-            >
-              查看项目
-            </RouterLink>
+          <div
+            v-for="project in projects"
+            :key="project.id"
+            class="carousel-slide"
+            :style="{
+              backgroundImage: project.coverUrl ? `url(${project.coverUrl})` : undefined,
+            }"
+          >
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+              <span v-if="project.nowStatus" class="status-chip">
+                {{ project.nowStatusLabel }}
+              </span>
+              <h3>{{ project.title }}</h3>
+              <p v-if="project.date">{{ project.date }}</p>
+              <a
+                v-if="project.link && isExternalLink(project.link)"
+                :href="project.link"
+                class="slide-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                查看项目
+              </a>
+              <RouterLink
+                v-else-if="project.link"
+                :to="toInternalProjectPath(project.link)"
+                class="slide-link"
+              >
+                查看项目
+              </RouterLink>
+            </div>
           </div>
-        </div>
-      </n-carousel>
+        </n-carousel>
 
-      <div v-if="currentProject" class="project-summary">
-        <div class="summary-header">
-          <h4>{{ currentProject.title }}</h4>
-          <span v-if="currentProject.date" class="summary-date">{{ currentProject.date }}</span>
+        <div v-if="currentProject" class="project-summary">
+          <div class="summary-header">
+            <h4>{{ currentProject.title }}</h4>
+            <span v-if="currentProject.date" class="summary-date">{{ currentProject.date }}</span>
+          </div>
+          <p class="summary-content">
+            {{ currentProject.content || '暂无项目介绍。' }}
+          </p>
         </div>
-        <p class="summary-content">
-          {{ currentProject.content || '暂无项目介绍。' }}
-        </p>
+
+        <div v-else class="project-empty">暂无项目可展示。</div>
       </div>
-
-      <div v-else class="project-empty">暂无项目可展示。</div>
-    </div>
+    </AsyncBoundary>
   </n-card>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { NCard, NCarousel } from 'naive-ui'
-import { apiClient, getStrapiMedia } from '@/composables/strapi'
+import { getStrapiMedia } from '@/composables/strapi'
+import { useProjects } from '@/composables/useProjects'
+import AsyncBoundary from '@/components/AsyncBoundary.vue'
 
-const projects = ref([])
-const currentIndex = ref(0)
+const { data: rawProjects, loading, error, isEmpty, refresh } = useProjects({ limit: 6 })
 
 const statusLabels = {
   preview: '预告',
@@ -75,7 +84,28 @@ const statusLabels = {
   continuous: '持续更新',
 }
 
+// useProjects 只负责按 title 过滤脏数据；轮播需要的展示字段（封面 URL、
+// 状态中文标签等）是这个组件自己的表现层逻辑，留在这里而不是塞进资源层。
+const projects = computed(() =>
+  rawProjects.value.map((item) => ({
+    id: item.id,
+    title: item.title || '未命名项目',
+    date: item.date || '',
+    content: item.content || '',
+    link: item.link || '',
+    nowStatus: item.nowStatus || '',
+    nowStatusLabel: statusLabels[item.nowStatus] || item.nowStatus || '',
+    coverUrl: getStrapiMedia(item.coverImage),
+  })),
+)
+
+const currentIndex = ref(0)
 const currentProject = computed(() => projects.value[currentIndex.value])
+
+// 数据刷新后列表长度可能变化，重置到第一张避免索引越界
+watch(projects, () => {
+  currentIndex.value = 0
+})
 
 const isExternalLink = (link = '') => /^https?:\/\//i.test(link)
 
@@ -84,44 +114,6 @@ const toInternalProjectPath = (link = '') => {
   if (link.startsWith('/')) return link
   return `/project/${link}`
 }
-
-const normalizeProjects = (items = []) =>
-  items
-    .map((item) => {
-      const attrs = item?.attributes || item
-      return {
-        id: item?.id ?? attrs?.id ?? attrs?.documentId ?? attrs?.title,
-        title: attrs?.title || '未命名项目',
-        date: attrs?.date || '',
-        content: attrs?.content || '',
-        link: attrs?.link || '',
-        nowStatus: attrs?.nowStatus || '',
-        nowStatusLabel: statusLabels[attrs?.nowStatus] || attrs?.nowStatus || '',
-        coverUrl: getStrapiMedia(attrs?.coverImage),
-      }
-    })
-    .filter((project) => project.title)
-
-const fetchProjects = async () => {
-  try {
-    const response = await apiClient.get('/projects', {
-      params: {
-        sort: 'date:desc',
-        'pagination[limit]': 6,
-        populate: 'coverImage',
-      },
-    })
-
-    const data = response.data?.data || response.data || []
-    projects.value = normalizeProjects(data)
-    currentIndex.value = 0
-  } catch (error) {
-    console.error('无法获取项目数据:', error)
-    projects.value = []
-  }
-}
-
-onMounted(fetchProjects)
 </script>
 
 <style scoped>
