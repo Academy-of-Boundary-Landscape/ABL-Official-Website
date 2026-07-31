@@ -73,20 +73,6 @@
               > 未知</span>
             </p>
             </div>
-          <div v-if="product.purchaseLinks && product.purchaseLinks.length" class="purchase-section">
-            <h4 class="purchase-title">// 通贩地址</h4>
-            <a v-for="link in product.purchaseLinks" 
-               :key="link.id" 
-               :href="link.url" 
-               target="_blank" 
-               class="purchase-link"
-               :class="{ 'disabled': !link.isAvailable }"
-            >
-              {{ link.isAvailable ? `前往 ${link.platform}` : `${link.platform} (已完售)` }}
-            </a>
-          </div>
-          
-
         </aside>
       </div>
       <section v-if="recommended.length > 0" class="recommendation-section">
@@ -209,41 +195,10 @@ watch(
   margin-bottom: 0;
 }
 
-.purchase-section {
-  margin-top: 1.5rem;
-}
-
-.purchase-title, .tracklist-title {
+.tracklist-title {
   color: var(--color-heading);
   font-size: 1.2rem;
   margin-bottom: 1rem;
-}
-
-.purchase-link {
-  display: block;
-  margin-bottom: 0.75rem;
-  padding: 0.8rem 1rem;
-  background-color: rgba(var(--color-accent-rgb), 0.1);
-  border: 1px solid var(--color-border);
-  color: var(--color-accent);
-  text-align: center;
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-.purchase-link:hover {
-  background-color: var(--color-accent);
-  color: var(--color-background);
-  border-color: var(--color-accent);
-}
-.purchase-link.disabled {
-  background-color: var(--color-surface-sunken);
-  color: var(--color-text-muted);
-  border-color: var(--color-border);
-  cursor: not-allowed;
-}
-.purchase-link.disabled:hover {
-  background-color: var(--color-surface-sunken);
-  color: var(--color-text-muted);
 }
 
 /* Main Content Area styles */
