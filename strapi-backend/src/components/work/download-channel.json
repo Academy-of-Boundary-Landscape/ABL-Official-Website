@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_work_download_channels",
+  "info": {
+    "displayName": "downloadChannel",
+    "icon": "download"
+  },
+  "options": {},
+  "attributes": {
+    "channelName": {
+      "type": "string",
+      "required": true
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "config": {}
+}

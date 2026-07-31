@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2026-07-29T18:24:02.746Z"
+    "x-generation-date": "2026-07-31T15:13:35.079Z"
   },
   "x-strapi-config": {
     "plugins": [
@@ -24,7 +24,7 @@
   },
   "servers": [
     {
-      "url": "https://api.abl.secret-sealing.club/api",
+      "url": "http://localhost:1337/api",
       "description": "Development server"
     }
   ],
@@ -2062,6 +2062,512 @@
         "operationId": "delete/projects/{id}"
       }
     },
+    "/works": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Work"
+        ],
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sort by attributes ascending (asc) or descending (desc)",
+            "deprecated": false,
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagination[withCount]",
+            "in": "query",
+            "description": "Return page/pageSize (default: true)",
+            "deprecated": false,
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "pagination[page]",
+            "in": "query",
+            "description": "Page number (default: 0)",
+            "deprecated": false,
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pagination[pageSize]",
+            "in": "query",
+            "description": "Page size (default: 25)",
+            "deprecated": false,
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pagination[start]",
+            "in": "query",
+            "description": "Offset value (default: 0)",
+            "deprecated": false,
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pagination[limit]",
+            "in": "query",
+            "description": "Number of entities to return (default: 25)",
+            "deprecated": false,
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "description": "Fields to return (ex: title,author)",
+            "deprecated": false,
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "populate",
+            "in": "query",
+            "description": "Relations to return",
+            "deprecated": false,
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "description": "Filters to apply",
+            "deprecated": false,
+            "required": false,
+            "schema": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "style": "deepObject"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Locale to apply",
+            "deprecated": false,
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "operationId": "get/works"
+      },
+      "post": {
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Work"
+        ],
+        "parameters": [],
+        "operationId": "post/works",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/works/{id}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Work"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "operationId": "get/works/{id}"
+      },
+      "put": {
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Work"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "operationId": "put/works/{id}",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkRequest"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Work"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "deprecated": false,
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "operationId": "delete/works/{id}"
+      }
+    },
     "/upload": {
       "post": {
         "description": "Upload files",
@@ -4043,9 +4549,9 @@
               "category": {
                 "type": "string",
                 "enum": [
-                  "monthly-release",
-                  "new-project",
-                  "announcement"
+                  "devlog",
+                  "announcement",
+                  "release"
                 ]
               },
               "mainContent": {
@@ -4083,6 +4589,17 @@
                     "embedding.file-embed": "#/components/schemas/EmbeddingFileEmbedComponent"
                   }
                 }
+              },
+              "relatedWork": {
+                "oneOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "example": "string or id"
               },
               "locale": {
                 "type": "string"
@@ -4768,9 +5285,9 @@
           "category": {
             "type": "string",
             "enum": [
-              "monthly-release",
-              "new-project",
-              "announcement"
+              "devlog",
+              "announcement",
+              "release"
             ]
           },
           "mainContent": {
@@ -4806,6 +5323,573 @@
                 "embedding.link-embed": "#/components/schemas/EmbeddingLinkEmbedComponent",
                 "embedding.pdf-embed": "#/components/schemas/EmbeddingPdfEmbedComponent",
                 "embedding.file-embed": "#/components/schemas/EmbeddingFileEmbedComponent"
+              }
+            }
+          },
+          "relatedWork": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "documentId": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "workType": {
+                "type": "string",
+                "enum": [
+                  "game",
+                  "tool",
+                  "site",
+                  "publication"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "planned",
+                  "in-development",
+                  "released",
+                  "maintained",
+                  "ended",
+                  "discontinued"
+                ]
+              },
+              "recruiting": {
+                "type": "boolean"
+              },
+              "recruitingRoles": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/WorkRecruitingRoleComponent"
+                }
+              },
+              "summary": {
+                "type": "string"
+              },
+              "coverImage": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "documentId": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "alternativeText": {
+                    "type": "string"
+                  },
+                  "caption": {
+                    "type": "string"
+                  },
+                  "width": {
+                    "type": "integer"
+                  },
+                  "height": {
+                    "type": "integer"
+                  },
+                  "formats": {},
+                  "hash": {
+                    "type": "string"
+                  },
+                  "ext": {
+                    "type": "string"
+                  },
+                  "mime": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "type": "number",
+                    "format": "float"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "previewUrl": {
+                    "type": "string"
+                  },
+                  "provider": {
+                    "type": "string"
+                  },
+                  "provider_metadata": {},
+                  "related": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "folder": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "documentId": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "folderPath": {
+                    "type": "string"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "publishedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "createdBy": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "documentId": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "updatedBy": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "documentId": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "locale": {
+                    "type": "string"
+                  },
+                  "localizations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "body": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ContentBlockContentBlockComponent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EmbeddingLinkEmbedComponent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EmbeddingIframeEmbedComponent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EmbeddingFileEmbedComponent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EmbeddingAudioEmbedComponent"
+                    }
+                  ]
+                },
+                "discriminator": {
+                  "propertyName": "__component",
+                  "mapping": {
+                    "content-block.content-block": "#/components/schemas/ContentBlockContentBlockComponent",
+                    "embedding.link-embed": "#/components/schemas/EmbeddingLinkEmbedComponent",
+                    "embedding.iframe-embed": "#/components/schemas/EmbeddingIframeEmbedComponent",
+                    "embedding.file-embed": "#/components/schemas/EmbeddingFileEmbedComponent",
+                    "embedding.audio-embed": "#/components/schemas/EmbeddingAudioEmbedComponent"
+                  }
+                }
+              },
+              "staff": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/StaffStaffComponent"
+                }
+              },
+              "details": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/WorkGameDetailComponent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/WorkToolDetailComponent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/WorkSiteDetailComponent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/WorkPublicationDetailComponent"
+                    }
+                  ]
+                },
+                "discriminator": {
+                  "propertyName": "__component",
+                  "mapping": {
+                    "work.game-detail": "#/components/schemas/WorkGameDetailComponent",
+                    "work.tool-detail": "#/components/schemas/WorkToolDetailComponent",
+                    "work.site-detail": "#/components/schemas/WorkSiteDetailComponent",
+                    "work.publication-detail": "#/components/schemas/WorkPublicationDetailComponent"
+                  }
+                }
+              },
+              "startDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "featured": {
+                "type": "boolean"
+              },
+              "order": {
+                "type": "integer"
+              },
+              "news": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "documentId": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "date": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "coverImage": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "alternativeText": {
+                          "type": "string"
+                        },
+                        "caption": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "integer"
+                        },
+                        "height": {
+                          "type": "integer"
+                        },
+                        "formats": {},
+                        "hash": {
+                          "type": "string"
+                        },
+                        "ext": {
+                          "type": "string"
+                        },
+                        "mime": {
+                          "type": "string"
+                        },
+                        "size": {
+                          "type": "number",
+                          "format": "float"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "previewUrl": {
+                          "type": "string"
+                        },
+                        "provider": {
+                          "type": "string"
+                        },
+                        "provider_metadata": {},
+                        "related": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "number"
+                              },
+                              "documentId": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "folder": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "number"
+                            },
+                            "documentId": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "folderPath": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "publishedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "createdBy": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "number"
+                            },
+                            "documentId": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "updatedBy": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "number"
+                            },
+                            "documentId": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "locale": {
+                          "type": "string"
+                        },
+                        "localizations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "number"
+                              },
+                              "documentId": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "isUrgent": {
+                      "type": "boolean"
+                    },
+                    "category": {
+                      "type": "string",
+                      "enum": [
+                        "devlog",
+                        "announcement",
+                        "release"
+                      ]
+                    },
+                    "mainContent": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/components/schemas/EmbeddingProductEmbedComponent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/ContentBlockContentBlockComponent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/EmbeddingIframeEmbedComponent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/EmbeddingLinkEmbedComponent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/EmbeddingPdfEmbedComponent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/EmbeddingFileEmbedComponent"
+                          }
+                        ]
+                      },
+                      "discriminator": {
+                        "propertyName": "__component",
+                        "mapping": {
+                          "embedding.product-embed": "#/components/schemas/EmbeddingProductEmbedComponent",
+                          "content-block.content-block": "#/components/schemas/ContentBlockContentBlockComponent",
+                          "embedding.iframe-embed": "#/components/schemas/EmbeddingIframeEmbedComponent",
+                          "embedding.link-embed": "#/components/schemas/EmbeddingLinkEmbedComponent",
+                          "embedding.pdf-embed": "#/components/schemas/EmbeddingPdfEmbedComponent",
+                          "embedding.file-embed": "#/components/schemas/EmbeddingFileEmbedComponent"
+                        }
+                      }
+                    },
+                    "relatedWork": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "publishedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "createdBy": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "updatedBy": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "locale": {
+                      "type": "string"
+                    },
+                    "localizations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "documentId": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "publishedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "createdBy": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "documentId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "updatedBy": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "documentId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "locale": {
+                "type": "string"
+              },
+              "localizations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "documentId": {
+                      "type": "string"
+                    }
+                  }
+                }
               }
             }
           },
@@ -4856,6 +5940,45 @@
                 },
                 "documentId": {
                   "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "EventResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Event"
+          },
+          "meta": {
+            "type": "object"
+          }
+        }
+      },
+      "EmbeddingProductEmbedComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "__component": {
+            "type": "string",
+            "enum": [
+              "embedding.product-embed"
+            ]
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "documentId": {
+                  "type": "string"
                 },
                 "title": {
                   "type": "string"
@@ -4863,9 +5986,21 @@
                 "slug": {
                   "type": "string"
                 },
-                "date": {
+                "category": {
                   "type": "string",
-                  "format": "date"
+                  "enum": [
+                    "Kyomoneko",
+                    "Arclic",
+                    "Book",
+                    "Cloth",
+                    "Disc",
+                    "Electronic",
+                    "Figure",
+                    "Goods",
+                    "Plush",
+                    "Virtual",
+                    "Special"
+                  ]
                 },
                 "coverImage": {
                   "type": "object",
@@ -4996,52 +6131,31 @@
                     }
                   }
                 },
-                "isUrgent": {
-                  "type": "boolean"
-                },
-                "category": {
+                "releaseDate": {
                   "type": "string",
-                  "enum": [
-                    "monthly-release",
-                    "new-project",
-                    "announcement"
-                  ]
+                  "format": "date"
                 },
-                "mainContent": {
+                "releaseEvent": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "productStaff": {
                   "type": "array",
                   "items": {
-                    "anyOf": [
-                      {
-                        "$ref": "#/components/schemas/EmbeddingProductEmbedComponent"
-                      },
-                      {
-                        "$ref": "#/components/schemas/ContentBlockContentBlockComponent"
-                      },
-                      {
-                        "$ref": "#/components/schemas/EmbeddingIframeEmbedComponent"
-                      },
-                      {
-                        "$ref": "#/components/schemas/EmbeddingLinkEmbedComponent"
-                      },
-                      {
-                        "$ref": "#/components/schemas/EmbeddingPdfEmbedComponent"
-                      },
-                      {
-                        "$ref": "#/components/schemas/EmbeddingFileEmbedComponent"
-                      }
-                    ]
-                  },
-                  "discriminator": {
-                    "propertyName": "__component",
-                    "mapping": {
-                      "embedding.product-embed": "#/components/schemas/EmbeddingProductEmbedComponent",
-                      "content-block.content-block": "#/components/schemas/ContentBlockContentBlockComponent",
-                      "embedding.iframe-embed": "#/components/schemas/EmbeddingIframeEmbedComponent",
-                      "embedding.link-embed": "#/components/schemas/EmbeddingLinkEmbedComponent",
-                      "embedding.pdf-embed": "#/components/schemas/EmbeddingPdfEmbedComponent",
-                      "embedding.file-embed": "#/components/schemas/EmbeddingFileEmbedComponent"
-                    }
+                    "$ref": "#/components/schemas/StaffStaffComponent"
                   }
+                },
+                "available": {
+                  "type": "boolean"
+                },
+                "price": {
+                  "type": "number",
+                  "format": "float"
+                },
+                "storageId": {
+                  "type": "string"
                 },
                 "createdAt": {
                   "type": "string",
@@ -5093,45 +6207,6 @@
                       }
                     }
                   }
-                }
-              }
-            }
-          }
-        }
-      },
-      "EventResponse": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/Event"
-          },
-          "meta": {
-            "type": "object"
-          }
-        }
-      },
-      "EmbeddingProductEmbedComponent": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "__component": {
-            "type": "string",
-            "enum": [
-              "embedding.product-embed"
-            ]
-          },
-          "products": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "number"
-                },
-                "documentId": {
-                  "type": "string"
                 }
               }
             }
@@ -5504,6 +6579,433 @@
           },
           "role": {
             "type": "string"
+          }
+        }
+      },
+      "WorkRecruitingRoleComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "roleName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          }
+        }
+      },
+      "EmbeddingAudioEmbedComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "__component": {
+            "type": "string",
+            "enum": [
+              "embedding.audio-embed"
+            ]
+          },
+          "trackName": {
+            "type": "string"
+          },
+          "audioFile": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "documentId": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "alternativeText": {
+                "type": "string"
+              },
+              "caption": {
+                "type": "string"
+              },
+              "width": {
+                "type": "integer"
+              },
+              "height": {
+                "type": "integer"
+              },
+              "formats": {},
+              "hash": {
+                "type": "string"
+              },
+              "ext": {
+                "type": "string"
+              },
+              "mime": {
+                "type": "string"
+              },
+              "size": {
+                "type": "number",
+                "format": "float"
+              },
+              "url": {
+                "type": "string"
+              },
+              "previewUrl": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "provider_metadata": {},
+              "related": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "documentId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "folder": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "documentId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "folderPath": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "publishedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "createdBy": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "documentId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "updatedBy": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "documentId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "locale": {
+                "type": "string"
+              },
+              "localizations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "documentId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "WorkDownloadChannelComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "channelName": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "WorkGameDetailComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "__component": {
+            "type": "string",
+            "enum": [
+              "work.game-detail"
+            ]
+          },
+          "platforms": {
+            "type": "string"
+          },
+          "basedOn": {
+            "type": "string"
+          },
+          "engine": {
+            "type": "string"
+          },
+          "trailerUrl": {
+            "type": "string"
+          },
+          "screenshots": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "documentId": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "alternativeText": {
+                  "type": "string"
+                },
+                "caption": {
+                  "type": "string"
+                },
+                "width": {
+                  "type": "integer"
+                },
+                "height": {
+                  "type": "integer"
+                },
+                "formats": {},
+                "hash": {
+                  "type": "string"
+                },
+                "ext": {
+                  "type": "string"
+                },
+                "mime": {
+                  "type": "string"
+                },
+                "size": {
+                  "type": "number",
+                  "format": "float"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "previewUrl": {
+                  "type": "string"
+                },
+                "provider": {
+                  "type": "string"
+                },
+                "provider_metadata": {},
+                "related": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "documentId": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "folder": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "documentId": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "folderPath": {
+                  "type": "string"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "publishedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "createdBy": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "documentId": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "updatedBy": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "documentId": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "locale": {
+                  "type": "string"
+                },
+                "localizations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "documentId": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "downloads": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkDownloadChannelComponent"
+            }
+          }
+        }
+      },
+      "WorkToolDetailComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "__component": {
+            "type": "string",
+            "enum": [
+              "work.tool-detail"
+            ]
+          },
+          "repoUrl": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string"
+          },
+          "platforms": {
+            "type": "string"
+          },
+          "currentVersion": {
+            "type": "string"
+          },
+          "license": {
+            "type": "string"
+          },
+          "downloads": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkDownloadChannelComponent"
+            }
+          },
+          "changelog": {
+            "type": "string"
+          }
+        }
+      },
+      "WorkSiteDetailComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "__component": {
+            "type": "string",
+            "enum": [
+              "work.site-detail"
+            ]
+          },
+          "url": {
+            "type": "string"
+          },
+          "eventDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "participantCount": {
+            "type": "integer"
+          }
+        }
+      },
+      "WorkPublicationDetailComponent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "__component": {
+            "type": "string",
+            "enum": [
+              "work.publication-detail"
+            ]
+          },
+          "releaseDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "spec": {
+            "type": "string"
+          },
+          "contributorCount": {
+            "type": "integer"
           }
         }
       },
@@ -7615,6 +9117,1579 @@
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Project"
+          },
+          "meta": {
+            "type": "object"
+          }
+        }
+      },
+      "WorkRequest": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "required": [
+              "title",
+              "slug",
+              "workType",
+              "status",
+              "summary"
+            ],
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "workType": {
+                "type": "string",
+                "enum": [
+                  "game",
+                  "tool",
+                  "site",
+                  "publication"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "planned",
+                  "in-development",
+                  "released",
+                  "maintained",
+                  "ended",
+                  "discontinued"
+                ]
+              },
+              "recruiting": {
+                "type": "boolean"
+              },
+              "recruitingRoles": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/WorkRecruitingRoleComponent"
+                }
+              },
+              "summary": {
+                "type": "string"
+              },
+              "coverImage": {
+                "oneOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "example": "string or id"
+              },
+              "body": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ContentBlockContentBlockComponent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EmbeddingLinkEmbedComponent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EmbeddingIframeEmbedComponent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EmbeddingFileEmbedComponent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EmbeddingAudioEmbedComponent"
+                    }
+                  ]
+                },
+                "discriminator": {
+                  "propertyName": "__component",
+                  "mapping": {
+                    "content-block.content-block": "#/components/schemas/ContentBlockContentBlockComponent",
+                    "embedding.link-embed": "#/components/schemas/EmbeddingLinkEmbedComponent",
+                    "embedding.iframe-embed": "#/components/schemas/EmbeddingIframeEmbedComponent",
+                    "embedding.file-embed": "#/components/schemas/EmbeddingFileEmbedComponent",
+                    "embedding.audio-embed": "#/components/schemas/EmbeddingAudioEmbedComponent"
+                  }
+                }
+              },
+              "staff": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/StaffStaffComponent"
+                }
+              },
+              "details": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/WorkGameDetailComponent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/WorkToolDetailComponent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/WorkSiteDetailComponent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/WorkPublicationDetailComponent"
+                    }
+                  ]
+                },
+                "discriminator": {
+                  "propertyName": "__component",
+                  "mapping": {
+                    "work.game-detail": "#/components/schemas/WorkGameDetailComponent",
+                    "work.tool-detail": "#/components/schemas/WorkToolDetailComponent",
+                    "work.site-detail": "#/components/schemas/WorkSiteDetailComponent",
+                    "work.publication-detail": "#/components/schemas/WorkPublicationDetailComponent"
+                  }
+                }
+              },
+              "startDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "featured": {
+                "type": "boolean"
+              },
+              "order": {
+                "type": "integer"
+              },
+              "news": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  "example": "string or id"
+                }
+              },
+              "locale": {
+                "type": "string"
+              },
+              "localizations": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  "example": "string or id"
+                }
+              }
+            }
+          }
+        }
+      },
+      "WorkListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Work"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "pagination": {
+                "type": "object",
+                "properties": {
+                  "page": {
+                    "type": "integer"
+                  },
+                  "pageSize": {
+                    "type": "integer",
+                    "minimum": 25
+                  },
+                  "pageCount": {
+                    "type": "integer",
+                    "maximum": 1
+                  },
+                  "total": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Work": {
+        "type": "object",
+        "required": [
+          "title",
+          "slug",
+          "workType",
+          "status",
+          "summary"
+        ],
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "documentId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "workType": {
+            "type": "string",
+            "enum": [
+              "game",
+              "tool",
+              "site",
+              "publication"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "in-development",
+              "released",
+              "maintained",
+              "ended",
+              "discontinued"
+            ]
+          },
+          "recruiting": {
+            "type": "boolean"
+          },
+          "recruitingRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkRecruitingRoleComponent"
+            }
+          },
+          "summary": {
+            "type": "string"
+          },
+          "coverImage": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "documentId": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "alternativeText": {
+                "type": "string"
+              },
+              "caption": {
+                "type": "string"
+              },
+              "width": {
+                "type": "integer"
+              },
+              "height": {
+                "type": "integer"
+              },
+              "formats": {},
+              "hash": {
+                "type": "string"
+              },
+              "ext": {
+                "type": "string"
+              },
+              "mime": {
+                "type": "string"
+              },
+              "size": {
+                "type": "number",
+                "format": "float"
+              },
+              "url": {
+                "type": "string"
+              },
+              "previewUrl": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "provider_metadata": {},
+              "related": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "documentId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "folder": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "documentId": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "pathId": {
+                    "type": "integer"
+                  },
+                  "parent": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "documentId": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "children": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "alternativeText": {
+                          "type": "string"
+                        },
+                        "caption": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "integer"
+                        },
+                        "height": {
+                          "type": "integer"
+                        },
+                        "formats": {},
+                        "hash": {
+                          "type": "string"
+                        },
+                        "ext": {
+                          "type": "string"
+                        },
+                        "mime": {
+                          "type": "string"
+                        },
+                        "size": {
+                          "type": "number",
+                          "format": "float"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "previewUrl": {
+                          "type": "string"
+                        },
+                        "provider": {
+                          "type": "string"
+                        },
+                        "provider_metadata": {},
+                        "related": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "number"
+                              },
+                              "documentId": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "folder": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "number"
+                            },
+                            "documentId": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "folderPath": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "publishedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "createdBy": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "number"
+                            },
+                            "documentId": {
+                              "type": "string"
+                            },
+                            "firstname": {
+                              "type": "string"
+                            },
+                            "lastname": {
+                              "type": "string"
+                            },
+                            "username": {
+                              "type": "string"
+                            },
+                            "email": {
+                              "type": "string",
+                              "format": "email"
+                            },
+                            "resetPasswordToken": {
+                              "type": "string"
+                            },
+                            "registrationToken": {
+                              "type": "string"
+                            },
+                            "isActive": {
+                              "type": "boolean"
+                            },
+                            "roles": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "number"
+                                  },
+                                  "documentId": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "code": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "users": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "number"
+                                        },
+                                        "documentId": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "permissions": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "number"
+                                        },
+                                        "documentId": {
+                                          "type": "string"
+                                        },
+                                        "action": {
+                                          "type": "string"
+                                        },
+                                        "actionParameters": {},
+                                        "subject": {
+                                          "type": "string"
+                                        },
+                                        "properties": {},
+                                        "conditions": {},
+                                        "role": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "number"
+                                            },
+                                            "documentId": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "createdAt": {
+                                          "type": "string",
+                                          "format": "date-time"
+                                        },
+                                        "updatedAt": {
+                                          "type": "string",
+                                          "format": "date-time"
+                                        },
+                                        "publishedAt": {
+                                          "type": "string",
+                                          "format": "date-time"
+                                        },
+                                        "createdBy": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "number"
+                                            },
+                                            "documentId": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "updatedBy": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "number"
+                                            },
+                                            "documentId": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "locale": {
+                                          "type": "string"
+                                        },
+                                        "localizations": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "properties": {
+                                              "id": {
+                                                "type": "number"
+                                              },
+                                              "documentId": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  },
+                                  "publishedAt": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  },
+                                  "createdBy": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "number"
+                                      },
+                                      "documentId": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  "updatedBy": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "number"
+                                      },
+                                      "documentId": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  "locale": {
+                                    "type": "string"
+                                  },
+                                  "localizations": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "number"
+                                        },
+                                        "documentId": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "blocked": {
+                              "type": "boolean"
+                            },
+                            "preferedLanguage": {
+                              "type": "string"
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "publishedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "createdBy": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "number"
+                                },
+                                "documentId": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "updatedBy": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "number"
+                                },
+                                "documentId": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "locale": {
+                              "type": "string"
+                            },
+                            "localizations": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "number"
+                                  },
+                                  "documentId": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "updatedBy": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "number"
+                            },
+                            "documentId": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "locale": {
+                          "type": "string"
+                        },
+                        "localizations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "number"
+                              },
+                              "documentId": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "publishedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "createdBy": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "documentId": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "updatedBy": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "documentId": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "locale": {
+                    "type": "string"
+                  },
+                  "localizations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "folderPath": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "publishedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "createdBy": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "documentId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "updatedBy": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number"
+                  },
+                  "documentId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "locale": {
+                "type": "string"
+              },
+              "localizations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "documentId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "body": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ContentBlockContentBlockComponent"
+                },
+                {
+                  "$ref": "#/components/schemas/EmbeddingLinkEmbedComponent"
+                },
+                {
+                  "$ref": "#/components/schemas/EmbeddingIframeEmbedComponent"
+                },
+                {
+                  "$ref": "#/components/schemas/EmbeddingFileEmbedComponent"
+                },
+                {
+                  "$ref": "#/components/schemas/EmbeddingAudioEmbedComponent"
+                }
+              ]
+            },
+            "discriminator": {
+              "propertyName": "__component",
+              "mapping": {
+                "content-block.content-block": "#/components/schemas/ContentBlockContentBlockComponent",
+                "embedding.link-embed": "#/components/schemas/EmbeddingLinkEmbedComponent",
+                "embedding.iframe-embed": "#/components/schemas/EmbeddingIframeEmbedComponent",
+                "embedding.file-embed": "#/components/schemas/EmbeddingFileEmbedComponent",
+                "embedding.audio-embed": "#/components/schemas/EmbeddingAudioEmbedComponent"
+              }
+            }
+          },
+          "staff": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaffStaffComponent"
+            }
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/WorkGameDetailComponent"
+                },
+                {
+                  "$ref": "#/components/schemas/WorkToolDetailComponent"
+                },
+                {
+                  "$ref": "#/components/schemas/WorkSiteDetailComponent"
+                },
+                {
+                  "$ref": "#/components/schemas/WorkPublicationDetailComponent"
+                }
+              ]
+            },
+            "discriminator": {
+              "propertyName": "__component",
+              "mapping": {
+                "work.game-detail": "#/components/schemas/WorkGameDetailComponent",
+                "work.tool-detail": "#/components/schemas/WorkToolDetailComponent",
+                "work.site-detail": "#/components/schemas/WorkSiteDetailComponent",
+                "work.publication-detail": "#/components/schemas/WorkPublicationDetailComponent"
+              }
+            }
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "featured": {
+            "type": "boolean"
+          },
+          "order": {
+            "type": "integer"
+          },
+          "news": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "documentId": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                },
+                "date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "coverImage": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "documentId": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "alternativeText": {
+                      "type": "string"
+                    },
+                    "caption": {
+                      "type": "string"
+                    },
+                    "width": {
+                      "type": "integer"
+                    },
+                    "height": {
+                      "type": "integer"
+                    },
+                    "formats": {},
+                    "hash": {
+                      "type": "string"
+                    },
+                    "ext": {
+                      "type": "string"
+                    },
+                    "mime": {
+                      "type": "string"
+                    },
+                    "size": {
+                      "type": "number",
+                      "format": "float"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "previewUrl": {
+                      "type": "string"
+                    },
+                    "provider": {
+                      "type": "string"
+                    },
+                    "provider_metadata": {},
+                    "related": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "documentId": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "folder": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "folderPath": {
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "publishedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "createdBy": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "updatedBy": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "locale": {
+                      "type": "string"
+                    },
+                    "localizations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "documentId": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "isUrgent": {
+                  "type": "boolean"
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "devlog",
+                    "announcement",
+                    "release"
+                  ]
+                },
+                "mainContent": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/EmbeddingProductEmbedComponent"
+                      },
+                      {
+                        "$ref": "#/components/schemas/ContentBlockContentBlockComponent"
+                      },
+                      {
+                        "$ref": "#/components/schemas/EmbeddingIframeEmbedComponent"
+                      },
+                      {
+                        "$ref": "#/components/schemas/EmbeddingLinkEmbedComponent"
+                      },
+                      {
+                        "$ref": "#/components/schemas/EmbeddingPdfEmbedComponent"
+                      },
+                      {
+                        "$ref": "#/components/schemas/EmbeddingFileEmbedComponent"
+                      }
+                    ]
+                  },
+                  "discriminator": {
+                    "propertyName": "__component",
+                    "mapping": {
+                      "embedding.product-embed": "#/components/schemas/EmbeddingProductEmbedComponent",
+                      "content-block.content-block": "#/components/schemas/ContentBlockContentBlockComponent",
+                      "embedding.iframe-embed": "#/components/schemas/EmbeddingIframeEmbedComponent",
+                      "embedding.link-embed": "#/components/schemas/EmbeddingLinkEmbedComponent",
+                      "embedding.pdf-embed": "#/components/schemas/EmbeddingPdfEmbedComponent",
+                      "embedding.file-embed": "#/components/schemas/EmbeddingFileEmbedComponent"
+                    }
+                  }
+                },
+                "relatedWork": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "documentId": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "workType": {
+                      "type": "string",
+                      "enum": [
+                        "game",
+                        "tool",
+                        "site",
+                        "publication"
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "planned",
+                        "in-development",
+                        "released",
+                        "maintained",
+                        "ended",
+                        "discontinued"
+                      ]
+                    },
+                    "recruiting": {
+                      "type": "boolean"
+                    },
+                    "recruitingRoles": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/WorkRecruitingRoleComponent"
+                      }
+                    },
+                    "summary": {
+                      "type": "string"
+                    },
+                    "coverImage": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "alternativeText": {
+                          "type": "string"
+                        },
+                        "caption": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "integer"
+                        },
+                        "height": {
+                          "type": "integer"
+                        },
+                        "formats": {},
+                        "hash": {
+                          "type": "string"
+                        },
+                        "ext": {
+                          "type": "string"
+                        },
+                        "mime": {
+                          "type": "string"
+                        },
+                        "size": {
+                          "type": "number",
+                          "format": "float"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "previewUrl": {
+                          "type": "string"
+                        },
+                        "provider": {
+                          "type": "string"
+                        },
+                        "provider_metadata": {},
+                        "related": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "number"
+                              },
+                              "documentId": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "folder": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "number"
+                            },
+                            "documentId": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "folderPath": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "publishedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "createdBy": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "number"
+                            },
+                            "documentId": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "updatedBy": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "number"
+                            },
+                            "documentId": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "locale": {
+                          "type": "string"
+                        },
+                        "localizations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "number"
+                              },
+                              "documentId": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "body": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/components/schemas/ContentBlockContentBlockComponent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/EmbeddingLinkEmbedComponent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/EmbeddingIframeEmbedComponent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/EmbeddingFileEmbedComponent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/EmbeddingAudioEmbedComponent"
+                          }
+                        ]
+                      },
+                      "discriminator": {
+                        "propertyName": "__component",
+                        "mapping": {
+                          "content-block.content-block": "#/components/schemas/ContentBlockContentBlockComponent",
+                          "embedding.link-embed": "#/components/schemas/EmbeddingLinkEmbedComponent",
+                          "embedding.iframe-embed": "#/components/schemas/EmbeddingIframeEmbedComponent",
+                          "embedding.file-embed": "#/components/schemas/EmbeddingFileEmbedComponent",
+                          "embedding.audio-embed": "#/components/schemas/EmbeddingAudioEmbedComponent"
+                        }
+                      }
+                    },
+                    "staff": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/StaffStaffComponent"
+                      }
+                    },
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/components/schemas/WorkGameDetailComponent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/WorkToolDetailComponent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/WorkSiteDetailComponent"
+                          },
+                          {
+                            "$ref": "#/components/schemas/WorkPublicationDetailComponent"
+                          }
+                        ]
+                      },
+                      "discriminator": {
+                        "propertyName": "__component",
+                        "mapping": {
+                          "work.game-detail": "#/components/schemas/WorkGameDetailComponent",
+                          "work.tool-detail": "#/components/schemas/WorkToolDetailComponent",
+                          "work.site-detail": "#/components/schemas/WorkSiteDetailComponent",
+                          "work.publication-detail": "#/components/schemas/WorkPublicationDetailComponent"
+                        }
+                      }
+                    },
+                    "startDate": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "featured": {
+                      "type": "boolean"
+                    },
+                    "order": {
+                      "type": "integer"
+                    },
+                    "news": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "documentId": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "publishedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "createdBy": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "updatedBy": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "documentId": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "locale": {
+                      "type": "string"
+                    },
+                    "localizations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "documentId": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "publishedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "createdBy": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "documentId": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "updatedBy": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "documentId": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "locale": {
+                  "type": "string"
+                },
+                "localizations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "documentId": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "documentId": {
+                "type": "string"
+              }
+            }
+          },
+          "updatedBy": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "documentId": {
+                "type": "string"
+              }
+            }
+          },
+          "locale": {
+            "type": "string"
+          },
+          "localizations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "documentId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "WorkResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Work"
           },
           "meta": {
             "type": "object"

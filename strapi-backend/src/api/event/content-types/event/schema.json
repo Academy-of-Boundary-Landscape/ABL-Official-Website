@@ -36,11 +36,7 @@
     },
     "category": {
       "type": "enumeration",
-      "enum": [
-        "monthly-release",
-        "new-project",
-        "announcement"
-      ]
+      "enum": ["devlog", "announcement", "release"]
     },
     "mainContent": {
       "type": "dynamiczone",
@@ -52,6 +48,12 @@
         "embedding.pdf-embed",
         "embedding.file-embed"
       ]
+    },
+    "relatedWork": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::work.work",
+      "inversedBy": "news"
     }
   }
 }

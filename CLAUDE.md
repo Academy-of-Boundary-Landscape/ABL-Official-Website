@@ -177,13 +177,15 @@ UI/styling stack: **Naive UI** (component library), **UnoCSS** (`uno.config.js`)
 Path alias: `@` → `frontend/src`.
 
 ### Backend (Strapi) structure
-Content types live under `strapi-backend/src/api/<name>/content-types/<name>/schema.json` with default controllers/routes/services. Current collection types: **convention, event, product, project**.
+Content types live under `strapi-backend/src/api/<name>/content-types/<name>/schema.json` with default controllers/routes/services. Current collection types: **convention, event, product, project, work**. `work` 是转型后的作品实体（游戏/工具/活动站/出版物），`project` 已停止使用但保留集合以免生产库迁移风险。
 
 Reusable components under `strapi-backend/src/components/` (e.g. `embedding.*` embeds, `content-block.content-block`, `staff.*`). The `event` type's `mainContent` is a **dynamic zone** composing these embed components — the frontend must handle each `__component` variant.
 
 Database is env-driven (`config/database.ts`): **SQLite** in dev (`.tmp/data.db`), **PostgreSQL** in production (Docker container `abl-postgres`, exposed on host port 5433). Backend env lives in `strapi-backend/.env` (git-ignored); template at `strapi-backend/.env.dist`.
 
 The read-only API surface is documented in `simpler_documentation.md`; `strapi-backend/openapi.json` / `backend_ap.json` hold fuller OpenAPI specs.
+
+作品体系的设计见 `docs/superpowers/specs/2026-07-31-work-content-model-design.md`；内容录入清单见 `docs/content-migration/work-records.md`。
 
 ## Data-sync gotcha (important for onboarding)
 

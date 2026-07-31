@@ -1,0 +1,34 @@
+{
+  "collectionName": "components_work_tool_details",
+  "info": {
+    "displayName": "toolDetail",
+    "icon": "code"
+  },
+  "options": {},
+  "attributes": {
+    "repoUrl": {
+      "type": "string"
+    },
+    "homepage": {
+      "type": "string"
+    },
+    "platforms": {
+      "type": "string"
+    },
+    "currentVersion": {
+      "type": "string"
+    },
+    "license": {
+      "type": "string"
+    },
+    "downloads": {
+      "type": "component",
+      "repeatable": true,
+      "component": "work.download-channel"
+    },
+    "changelog": {
+      "type": "richtext"
+    }
+  },
+  "config": {}
+}
