@@ -86,3 +86,18 @@ describe('配置守卫：uno.config.js 与 colorTokens 同源', () => {
     expect(shortcutNames.filter((n) => conflicts.includes(n))).toEqual([])
   })
 })
+
+import { renderBlock } from '../../../scripts/sync-css-tokens.js'
+
+describe('配置守卫：base.css 与 colorTokens 同步', () => {
+  it('base.css 中的生成块与当前 colorTokens 一致', () => {
+    const css = readSource('../../assets/base.css')
+    expect(css).toContain(renderBlock())
+  })
+
+  it('生成块之外不再有手写的 --color-* 定义', () => {
+    const css = readSource('../../assets/base.css')
+    const outside = css.slice(css.indexOf('/* == END AUTO-GENERATED == */'))
+    expect(outside.match(/--color-[a-z-]+\s*:/g)).toBeNull()
+  })
+})
