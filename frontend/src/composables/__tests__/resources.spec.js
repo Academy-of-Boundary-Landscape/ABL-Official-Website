@@ -9,7 +9,6 @@ import {
   useRecommendedProducts,
   useProductByTitle,
 } from '@/composables/useProducts'
-import { useProjects, normalizeProjects } from '@/composables/useProjects'
 import { useConventions } from '@/composables/useConventions'
 
 const withScope = (fn) => {
@@ -267,49 +266,6 @@ describe('useRecommendedProducts', () => {
     await flush()
     expect(result.data.value.some((item) => item.id === 42)).toBe(false)
     stop()
-  })
-})
-
-describe('useProjects', () => {
-  it('固定 coverImage 与按日期倒序', async () => {
-    const { stop } = withScope(() => useProjects({ limit: 6 }))
-    await flush()
-    expect(pathOf()).toBe('/projects')
-    expect(paramsOf().populate).toBe('coverImage')
-    expect(paramsOf().sort).toBe('date:desc')
-    expect(paramsOf()['pagination[limit]']).toBe(6)
-    stop()
-  })
-
-  it('limit 为 ref(0) 时不应该发送 pagination[limit]——不能用裸 Ref 做真值判断', async () => {
-    const { stop } = withScope(() => useProjects({ limit: ref(0) }))
-    await flush()
-    expect(paramsOf()['pagination[limit]']).toBeUndefined()
-    stop()
-  })
-
-  it('脏数据被 normalizeProjects 过滤光后，isEmpty 要反映过滤后的结果而非原始 list.data', async () => {
-    get.mockResolvedValueOnce({
-      data: { data: [{ id: 1 }, { id: 2 }], meta: null }, // 均无 title，会被过滤成空
-    })
-    const { result, stop } = withScope(() => useProjects())
-    await flush()
-    expect(result.data.value).toEqual([])
-    expect(result.isEmpty.value).toBe(true)
-    stop()
-  })
-})
-
-describe('normalizeProjects', () => {
-  it('过滤掉没有 title 的脏数据', () => {
-    expect(normalizeProjects([{ id: 1, title: 'A' }, { id: 2 }, null])).toEqual([
-      { id: 1, title: 'A' },
-    ])
-  })
-
-  it('输入非数组时返回空数组，不抛错', () => {
-    expect(normalizeProjects(null)).toEqual([])
-    expect(normalizeProjects(undefined)).toEqual([])
   })
 })
 

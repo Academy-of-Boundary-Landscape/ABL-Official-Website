@@ -4,7 +4,7 @@
       :loading="loading"
       :error="error"
       :empty="isEmpty"
-      empty-text=">> 暂无线上项目。"
+      empty-text=">> 暂无作品。"
       @retry="refresh"
     >
       <div class="carousel-shell">
@@ -31,21 +31,8 @@
               </span>
               <h3>{{ project.title }}</h3>
               <p v-if="project.date">{{ project.date }}</p>
-              <a
-                v-if="project.link && isExternalLink(project.link)"
-                :href="project.link"
-                class="slide-link"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                查看项目
-              </a>
-              <RouterLink
-                v-else-if="project.link"
-                :to="toInternalProjectPath(project.link)"
-                class="slide-link"
-              >
-                查看项目
+              <RouterLink v-if="project.link" :to="project.link" class="slide-link">
+                查看作品
               </RouterLink>
             </div>
           </div>
@@ -57,11 +44,11 @@
             <span v-if="currentProject.date" class="summary-date">{{ currentProject.date }}</span>
           </div>
           <p class="summary-content">
-            {{ currentProject.content || '暂无项目介绍。' }}
+            {{ currentProject.content || '暂无作品介绍。' }}
           </p>
         </div>
 
-        <div v-else class="project-empty">暂无项目可展示。</div>
+        <div v-else class="project-empty">暂无作品可展示。</div>
       </div>
     </AsyncBoundary>
   </n-card>
@@ -72,29 +59,22 @@ import { computed, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { NCard, NCarousel } from 'naive-ui'
 import { getStrapiMedia } from '@/composables/strapi'
-import { useProjects } from '@/composables/useProjects'
+import { useWorkList } from '@/composables/useWorks'
+import { statusLabel } from '@/utils/work'
 import AsyncBoundary from '@/components/AsyncBoundary.vue'
 
-const { data: rawProjects, loading, error, isEmpty, refresh } = useProjects({ limit: 6 })
+const { data: rawProjects, loading, error, isEmpty, refresh } = useWorkList({ limit: 6 })
 
-const statusLabels = {
-  preview: '预告',
-  ongoing: '进行中',
-  ended: '已结束',
-  continuous: '持续更新',
-}
-
-// useProjects 只负责按 title 过滤脏数据；轮播需要的展示字段（封面 URL、
-// 状态中文标签等）是这个组件自己的表现层逻辑，留在这里而不是塞进资源层。
 const projects = computed(() =>
   rawProjects.value.map((item) => ({
     id: item.id,
-    title: item.title || '未命名项目',
-    date: item.date || '',
-    content: item.content || '',
-    link: item.link || '',
-    nowStatus: item.nowStatus || '',
-    nowStatusLabel: statusLabels[item.nowStatus] || item.nowStatus || '',
+    title: item.title || '未命名作品',
+    date: item.startDate || '',
+    content: item.summary || '',
+    // work 一律有 slug，站内路径可以直接拼，不再需要额外的路径拼接辅助函数
+    link: `/works/${item.slug}`,
+    nowStatus: item.status || '',
+    nowStatusLabel: statusLabel(item.status),
     coverUrl: getStrapiMedia(item.coverImage),
   })),
 )
@@ -106,14 +86,6 @@ const currentProject = computed(() => projects.value[currentIndex.value])
 watch(projects, () => {
   currentIndex.value = 0
 })
-
-const isExternalLink = (link = '') => /^https?:\/\//i.test(link)
-
-const toInternalProjectPath = (link = '') => {
-  if (!link) return '/project'
-  if (link.startsWith('/')) return link
-  return `/project/${link}`
-}
 </script>
 
 <style scoped>

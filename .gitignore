@@ -62,6 +62,9 @@ strapi-backend/database/*.db-journal
 # 如果团队强制要求类型同步，可以不忽略
 # strapi-backend/types/generated/
 
+# Strapi 版本检查缓存，每次启动都会变，不该进 git
+strapi-backend/.strapi-updater.json
+
 
 # 没用的设计素材
 design_reference/

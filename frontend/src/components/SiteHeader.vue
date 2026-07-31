@@ -50,7 +50,7 @@
 import { ref, h, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { NLayoutHeader, NMenu, NButton, NIcon, NDrawer, NDrawerContent } from 'naive-ui'
-import { useProjects } from '@/composables/useProjects'
+import { useWorkList } from '@/composables/useWorks'
 
 // 控制移动端抽屉
 const showDrawer = ref(false)
@@ -58,54 +58,29 @@ const showDrawer = ref(false)
 // 当前激活的菜单项
 const activeKey = ref('')
 
-// 导航栏对"企划"请求失败的降级是有意的：退化成禁用的「暂无项目」菜单项，
+// 导航栏对"作品"请求失败的降级是有意的：退化成禁用的「暂无作品」菜单项，
 // 不值得为一条导航菜单弹 AsyncBoundary 的错误态。但静默失败不等于没有观测——
-// 这里不单独打日志，是因为 useStrapiList（useProjects 的底座）在 I3 修复后
-// 已经在 catch 块里统一 console.error 了原始错误（带 /projects 资源名），
+// 这里不单独打日志，是因为 useStrapiList（useWorkList 的底座）在 I3 修复后
+// 已经在 catch 块里统一 console.error 了原始错误（带 /works 资源名），
 // 这条请求失败时同样会打印，不需要在这里重复记一遍。
-const { data: projects } = useProjects({ limit: 20 })
+const { data: projects } = useWorkList({ limit: 20 })
 
-const isExternalLink = (link = '') => /^https?:\/\//i.test(link)
-
-const toInternalProjectPath = (link = '') => {
-  if (!link) return '/project'
-  if (link.startsWith('/')) return link
-  return `/project/${link}`
-}
-
-// useProjects 只按 title 过滤脏数据；导航菜单还要求有 link 才能生成条目，
-// 这条额外过滤是本组件的菜单构造逻辑，保留在这里而不是资源层。
+// work 一律有 slug，导航菜单只需要过滤出有 slug 的条目；这条额外过滤是
+// 本组件的菜单构造逻辑，保留在这里而不是资源层。
 const projectMenuChildren = computed(() =>
-  buildProjectMenuChildren(projects.value.filter((project) => project.link)),
+  buildProjectMenuChildren(projects.value.filter((project) => project.slug)),
 )
 
 const buildProjectMenuChildren = (projects = []) =>
   projects.map((project, index) => {
     const key = `project-${project.id ?? index}`
 
-    if (isExternalLink(project.link)) {
-      return {
-        key,
-        label: () =>
-          h(
-            'a',
-            {
-              href: project.link,
-              class: 'menu-link',
-              target: '_blank',
-              rel: 'noopener noreferrer',
-            },
-            project.title,
-          ),
-      }
-    }
-
     return {
       key,
       label: () =>
         h(
           RouterLink,
-          { to: toInternalProjectPath(project.link), class: 'menu-link' },
+          { to: `/works/${project.slug}`, class: 'menu-link' },
           {
             default: () => project.title,
           },
@@ -160,14 +135,14 @@ const menuOptions = computed(() => [
     key: 'recruitment',
   },
   {
-    label: '企划 // Project',
+    label: '作品 // Works',
     key: 'project',
     children:
       projectMenuChildren.value.length > 0
         ? projectMenuChildren.value
         : [
             {
-              label: '暂无项目',
+              label: '暂无作品',
               key: 'project-empty',
               disabled: true,
             },

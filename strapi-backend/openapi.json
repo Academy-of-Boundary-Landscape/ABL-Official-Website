@@ -325,7 +325,7 @@
                           },
                           "publishedAt": {
                             "description": "A datetime field",
-                            "default": "2026-02-17T07:03:02.601Z",
+                            "default": "2026-07-31T15:13:34.646Z",
                             "type": "string"
                           }
                         },
@@ -490,7 +490,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:02.680Z",
+                          "default": "2026-07-31T15:13:34.658Z",
                           "type": "string"
                         }
                       },
@@ -568,7 +568,7 @@
                       },
                       "publishedAt": {
                         "description": "A datetime field",
-                        "default": "2026-02-17T07:03:07.001Z",
+                        "default": "2026-07-31T15:13:35.281Z",
                         "type": "string"
                       }
                     },
@@ -835,7 +835,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:02.651Z",
+                          "default": "2026-07-31T15:13:34.652Z",
                           "type": "string"
                         }
                       },
@@ -1011,7 +1011,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:02.746Z",
+                          "default": "2026-07-31T15:13:34.663Z",
                           "type": "string"
                         }
                       },
@@ -1089,7 +1089,7 @@
                       },
                       "publishedAt": {
                         "description": "A datetime field",
-                        "default": "2026-02-17T07:03:02.731Z",
+                        "default": "2026-07-31T15:13:34.661Z",
                         "type": "string"
                       }
                     },
@@ -1263,7 +1263,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:02.783Z",
+                          "default": "2026-07-31T15:13:34.666Z",
                           "type": "string"
                         }
                       },
@@ -1551,7 +1551,8 @@
                   "type": "string",
                   "enum": [
                     "coverImage",
-                    "mainContent"
+                    "mainContent",
+                    "relatedWork"
                   ]
                 },
                 {
@@ -1561,7 +1562,8 @@
                     "type": "string",
                     "enum": [
                       "coverImage",
-                      "mainContent"
+                      "mainContent",
+                      "relatedWork"
                     ]
                   }
                 }
@@ -1628,9 +1630,9 @@
                             "description": "An enum field",
                             "type": "string",
                             "enum": [
-                              "monthly-release",
-                              "new-project",
-                              "announcement"
+                              "devlog",
+                              "announcement",
+                              "release"
                             ]
                           },
                           "createdAt": {
@@ -1643,7 +1645,7 @@
                           },
                           "publishedAt": {
                             "description": "A datetime field",
-                            "default": "2026-02-17T07:03:02.879Z",
+                            "default": "2026-07-31T15:13:34.674Z",
                             "type": "string"
                           },
                           "coverImage": {
@@ -1654,6 +1656,10 @@
                             "description": "A dynamic zone field",
                             "type": "array",
                             "items": {}
+                          },
+                          "relatedWork": {
+                            "description": "A relational field",
+                            "$ref": "#/components/schemas/ApiWorkWorkDocument"
                           }
                         },
                         "required": [
@@ -1743,7 +1749,8 @@
                   "type": "string",
                   "enum": [
                     "coverImage",
-                    "mainContent"
+                    "mainContent",
+                    "relatedWork"
                   ]
                 },
                 {
@@ -1753,7 +1760,8 @@
                     "type": "string",
                     "enum": [
                       "coverImage",
-                      "mainContent"
+                      "mainContent",
+                      "relatedWork"
                     ]
                   }
                 }
@@ -1818,9 +1826,9 @@
                           "description": "An enum field",
                           "type": "string",
                           "enum": [
-                            "monthly-release",
-                            "new-project",
-                            "announcement"
+                            "devlog",
+                            "announcement",
+                            "release"
                           ]
                         },
                         "createdAt": {
@@ -1833,7 +1841,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:03.155Z",
+                          "default": "2026-07-31T15:13:34.701Z",
                           "type": "string"
                         },
                         "coverImage": {
@@ -1844,6 +1852,10 @@
                           "description": "A dynamic zone field",
                           "type": "array",
                           "items": {}
+                        },
+                        "relatedWork": {
+                          "description": "A relational field",
+                          "$ref": "#/components/schemas/ApiWorkWorkDocument"
                         }
                       },
                       "required": [
@@ -1922,14 +1934,14 @@
                         "description": "An enum field",
                         "type": "string",
                         "enum": [
-                          "monthly-release",
-                          "new-project",
-                          "announcement"
+                          "devlog",
+                          "announcement",
+                          "release"
                         ]
                       },
                       "publishedAt": {
                         "description": "A datetime field",
-                        "default": "2026-02-17T07:03:03.144Z",
+                        "default": "2026-07-31T15:13:34.699Z",
                         "type": "string"
                       },
                       "coverImage": {
@@ -1939,6 +1951,12 @@
                         "description": "A dynamic zone field",
                         "type": "array",
                         "items": {}
+                      },
+                      "relatedWork": {
+                        "description": "A relational field",
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$"
                       }
                     },
                     "required": [
@@ -2020,7 +2038,8 @@
                   "type": "string",
                   "enum": [
                     "coverImage",
-                    "mainContent"
+                    "mainContent",
+                    "relatedWork"
                   ]
                 },
                 {
@@ -2030,7 +2049,8 @@
                     "type": "string",
                     "enum": [
                       "coverImage",
-                      "mainContent"
+                      "mainContent",
+                      "relatedWork"
                     ]
                   }
                 }
@@ -2210,9 +2230,9 @@
                           "description": "An enum field",
                           "type": "string",
                           "enum": [
-                            "monthly-release",
-                            "new-project",
-                            "announcement"
+                            "devlog",
+                            "announcement",
+                            "release"
                           ]
                         },
                         "createdAt": {
@@ -2225,7 +2245,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:03.069Z",
+                          "default": "2026-07-31T15:13:34.696Z",
                           "type": "string"
                         },
                         "coverImage": {
@@ -2236,6 +2256,10 @@
                           "description": "A dynamic zone field",
                           "type": "array",
                           "items": {}
+                        },
+                        "relatedWork": {
+                          "description": "A relational field",
+                          "$ref": "#/components/schemas/ApiWorkWorkDocument"
                         }
                       },
                       "required": [
@@ -2336,7 +2360,8 @@
                   "type": "string",
                   "enum": [
                     "coverImage",
-                    "mainContent"
+                    "mainContent",
+                    "relatedWork"
                   ]
                 },
                 {
@@ -2346,7 +2371,8 @@
                     "type": "string",
                     "enum": [
                       "coverImage",
-                      "mainContent"
+                      "mainContent",
+                      "relatedWork"
                     ]
                   }
                 }
@@ -2411,9 +2437,9 @@
                           "description": "An enum field",
                           "type": "string",
                           "enum": [
-                            "monthly-release",
-                            "new-project",
-                            "announcement"
+                            "devlog",
+                            "announcement",
+                            "release"
                           ]
                         },
                         "createdAt": {
@@ -2426,7 +2452,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:03.203Z",
+                          "default": "2026-07-31T15:13:34.706Z",
                           "type": "string"
                         },
                         "coverImage": {
@@ -2437,6 +2463,10 @@
                           "description": "A dynamic zone field",
                           "type": "array",
                           "items": {}
+                        },
+                        "relatedWork": {
+                          "description": "A relational field",
+                          "$ref": "#/components/schemas/ApiWorkWorkDocument"
                         }
                       },
                       "required": [
@@ -2515,14 +2545,14 @@
                         "description": "An enum field",
                         "type": "string",
                         "enum": [
-                          "monthly-release",
-                          "new-project",
-                          "announcement"
+                          "devlog",
+                          "announcement",
+                          "release"
                         ]
                       },
                       "publishedAt": {
                         "description": "A datetime field",
-                        "default": "2026-02-17T07:03:03.194Z",
+                        "default": "2026-07-31T15:13:34.704Z",
                         "type": "string"
                       },
                       "coverImage": {
@@ -2532,6 +2562,12 @@
                         "description": "A dynamic zone field",
                         "type": "array",
                         "items": {}
+                      },
+                      "relatedWork": {
+                        "description": "A relational field",
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$"
                       }
                     },
                     "additionalProperties": false
@@ -2605,7 +2641,8 @@
                   "type": "string",
                   "enum": [
                     "coverImage",
-                    "mainContent"
+                    "mainContent",
+                    "relatedWork"
                   ]
                 },
                 {
@@ -2615,7 +2652,8 @@
                     "type": "string",
                     "enum": [
                       "coverImage",
-                      "mainContent"
+                      "mainContent",
+                      "relatedWork"
                     ]
                   }
                 }
@@ -2705,9 +2743,9 @@
                           "description": "An enum field",
                           "type": "string",
                           "enum": [
-                            "monthly-release",
-                            "new-project",
-                            "announcement"
+                            "devlog",
+                            "announcement",
+                            "release"
                           ]
                         },
                         "createdAt": {
@@ -2720,7 +2758,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:03.230Z",
+                          "default": "2026-07-31T15:13:34.709Z",
                           "type": "string"
                         },
                         "coverImage": {
@@ -2731,6 +2769,10 @@
                           "description": "A dynamic zone field",
                           "type": "array",
                           "items": {}
+                        },
+                        "relatedWork": {
+                          "description": "A relational field",
+                          "$ref": "#/components/schemas/ApiWorkWorkDocument"
                         }
                       },
                       "required": [
@@ -3158,7 +3200,7 @@
                           },
                           "publishedAt": {
                             "description": "A datetime field",
-                            "default": "2026-02-17T07:03:03.281Z",
+                            "default": "2026-07-31T15:13:34.722Z",
                             "type": "string"
                           },
                           "coverImage": {
@@ -3383,7 +3425,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:03.374Z",
+                          "default": "2026-07-31T15:13:34.734Z",
                           "type": "string"
                         },
                         "coverImage": {
@@ -3510,7 +3552,7 @@
                       },
                       "publishedAt": {
                         "description": "A datetime field",
-                        "default": "2026-02-17T07:03:03.366Z",
+                        "default": "2026-07-31T15:13:34.732Z",
                         "type": "string"
                       },
                       "coverImage": {
@@ -3859,7 +3901,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:03.337Z",
+                          "default": "2026-07-31T15:13:34.728Z",
                           "type": "string"
                         },
                         "coverImage": {
@@ -4095,7 +4137,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:03.432Z",
+                          "default": "2026-07-31T15:13:34.740Z",
                           "type": "string"
                         },
                         "coverImage": {
@@ -4222,7 +4264,7 @@
                       },
                       "publishedAt": {
                         "description": "A datetime field",
-                        "default": "2026-02-17T07:03:03.424Z",
+                        "default": "2026-07-31T15:13:34.737Z",
                         "type": "string"
                       },
                       "coverImage": {
@@ -4452,7 +4494,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:03.451Z",
+                          "default": "2026-07-31T15:13:34.744Z",
                           "type": "string"
                         },
                         "coverImage": {
@@ -4531,8 +4573,8 @@
                   "title",
                   "date",
                   "content",
-                  "slug",
                   "nowStatus",
+                  "link",
                   "createdAt",
                   "updatedAt",
                   "publishedAt"
@@ -4555,8 +4597,8 @@
                   "title",
                   "date",
                   "content",
-                  "slug",
                   "nowStatus",
+                  "link",
                   "createdAt",
                   "updatedAt",
                   "publishedAt"
@@ -4662,8 +4704,8 @@
                     "title",
                     "date",
                     "content",
-                    "slug",
                     "nowStatus",
+                    "link",
                     "createdAt",
                     "updatedAt",
                     "publishedAt"
@@ -4677,8 +4719,8 @@
                       "title",
                       "date",
                       "content",
-                      "slug",
                       "nowStatus",
+                      "link",
                       "createdAt",
                       "updatedAt",
                       "publishedAt"
@@ -4693,8 +4735,8 @@
                       "title",
                       "date",
                       "content",
-                      "slug",
                       "nowStatus",
+                      "link",
                       "createdAt",
                       "updatedAt",
                       "publishedAt"
@@ -4718,8 +4760,8 @@
                         "title",
                         "date",
                         "content",
-                        "slug",
                         "nowStatus",
+                        "link",
                         "createdAt",
                         "updatedAt",
                         "publishedAt"
@@ -4826,10 +4868,6 @@
                             "description": "A richtext field",
                             "type": "string"
                           },
-                          "slug": {
-                            "description": "A UID field",
-                            "type": "string"
-                          },
                           "nowStatus": {
                             "description": "An enum field",
                             "type": "string",
@@ -4839,6 +4877,10 @@
                               "ended",
                               "continuous"
                             ]
+                          },
+                          "link": {
+                            "description": "A string field",
+                            "type": "string"
                           },
                           "createdAt": {
                             "description": "A datetime field",
@@ -4850,7 +4892,7 @@
                           },
                           "publishedAt": {
                             "description": "A datetime field",
-                            "default": "2026-02-17T07:03:03.469Z",
+                            "default": "2026-07-31T15:13:34.756Z",
                             "type": "string"
                           },
                           "coverImage": {
@@ -4924,8 +4966,8 @@
                   "title",
                   "date",
                   "content",
-                  "slug",
                   "nowStatus",
+                  "link",
                   "createdAt",
                   "updatedAt",
                   "publishedAt"
@@ -5020,10 +5062,6 @@
                           "description": "A richtext field",
                           "type": "string"
                         },
-                        "slug": {
-                          "description": "A UID field",
-                          "type": "string"
-                        },
                         "nowStatus": {
                           "description": "An enum field",
                           "type": "string",
@@ -5033,6 +5071,10 @@
                             "ended",
                             "continuous"
                           ]
+                        },
+                        "link": {
+                          "description": "A string field",
+                          "type": "string"
                         },
                         "createdAt": {
                           "description": "A datetime field",
@@ -5044,7 +5086,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:03.508Z",
+                          "default": "2026-07-31T15:13:34.764Z",
                           "type": "string"
                         },
                         "coverImage": {
@@ -5120,10 +5162,6 @@
                         "description": "A richtext field",
                         "type": "string"
                       },
-                      "slug": {
-                        "description": "A UID field",
-                        "type": "string"
-                      },
                       "nowStatus": {
                         "description": "An enum field",
                         "type": "string",
@@ -5134,9 +5172,13 @@
                           "continuous"
                         ]
                       },
+                      "link": {
+                        "description": "A string field",
+                        "type": "string"
+                      },
                       "publishedAt": {
                         "description": "A datetime field",
-                        "default": "2026-02-17T07:03:03.485Z",
+                        "default": "2026-07-31T15:13:34.763Z",
                         "type": "string"
                       },
                       "coverImage": {
@@ -5199,8 +5241,8 @@
                   "title",
                   "date",
                   "content",
-                  "slug",
                   "nowStatus",
+                  "link",
                   "createdAt",
                   "updatedAt",
                   "publishedAt"
@@ -5260,8 +5302,8 @@
                   "title",
                   "date",
                   "content",
-                  "slug",
                   "nowStatus",
+                  "link",
                   "createdAt",
                   "updatedAt",
                   "publishedAt"
@@ -5285,8 +5327,8 @@
                     "title",
                     "date",
                     "content",
-                    "slug",
                     "nowStatus",
+                    "link",
                     "createdAt",
                     "updatedAt",
                     "publishedAt"
@@ -5300,8 +5342,8 @@
                       "title",
                       "date",
                       "content",
-                      "slug",
                       "nowStatus",
+                      "link",
                       "createdAt",
                       "updatedAt",
                       "publishedAt"
@@ -5316,8 +5358,8 @@
                       "title",
                       "date",
                       "content",
-                      "slug",
                       "nowStatus",
+                      "link",
                       "createdAt",
                       "updatedAt",
                       "publishedAt"
@@ -5341,8 +5383,8 @@
                         "title",
                         "date",
                         "content",
-                        "slug",
                         "nowStatus",
+                        "link",
                         "createdAt",
                         "updatedAt",
                         "publishedAt"
@@ -5410,10 +5452,6 @@
                           "description": "A richtext field",
                           "type": "string"
                         },
-                        "slug": {
-                          "description": "A UID field",
-                          "type": "string"
-                        },
                         "nowStatus": {
                           "description": "An enum field",
                           "type": "string",
@@ -5423,6 +5461,10 @@
                             "ended",
                             "continuous"
                           ]
+                        },
+                        "link": {
+                          "description": "A string field",
+                          "type": "string"
                         },
                         "createdAt": {
                           "description": "A datetime field",
@@ -5434,7 +5476,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:03.479Z",
+                          "default": "2026-07-31T15:13:34.760Z",
                           "type": "string"
                         },
                         "coverImage": {
@@ -5519,8 +5561,8 @@
                   "title",
                   "date",
                   "content",
-                  "slug",
                   "nowStatus",
+                  "link",
                   "createdAt",
                   "updatedAt",
                   "publishedAt"
@@ -5615,10 +5657,6 @@
                           "description": "A richtext field",
                           "type": "string"
                         },
-                        "slug": {
-                          "description": "A UID field",
-                          "type": "string"
-                        },
                         "nowStatus": {
                           "description": "An enum field",
                           "type": "string",
@@ -5628,6 +5666,10 @@
                             "ended",
                             "continuous"
                           ]
+                        },
+                        "link": {
+                          "description": "A string field",
+                          "type": "string"
                         },
                         "createdAt": {
                           "description": "A datetime field",
@@ -5639,7 +5681,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:03.535Z",
+                          "default": "2026-07-31T15:13:34.769Z",
                           "type": "string"
                         },
                         "coverImage": {
@@ -5715,10 +5757,6 @@
                         "description": "A richtext field",
                         "type": "string"
                       },
-                      "slug": {
-                        "description": "A UID field",
-                        "type": "string"
-                      },
                       "nowStatus": {
                         "description": "An enum field",
                         "type": "string",
@@ -5729,9 +5767,13 @@
                           "continuous"
                         ]
                       },
+                      "link": {
+                        "description": "A string field",
+                        "type": "string"
+                      },
                       "publishedAt": {
                         "description": "A datetime field",
-                        "default": "2026-02-17T07:03:03.522Z",
+                        "default": "2026-07-31T15:13:34.767Z",
                         "type": "string"
                       },
                       "coverImage": {
@@ -5785,8 +5827,8 @@
                   "title",
                   "date",
                   "content",
-                  "slug",
                   "nowStatus",
+                  "link",
                   "createdAt",
                   "updatedAt",
                   "publishedAt"
@@ -5846,8 +5888,8 @@
                   "title",
                   "date",
                   "content",
-                  "slug",
                   "nowStatus",
+                  "link",
                   "createdAt",
                   "updatedAt",
                   "publishedAt"
@@ -5906,10 +5948,6 @@
                           "description": "A richtext field",
                           "type": "string"
                         },
-                        "slug": {
-                          "description": "A UID field",
-                          "type": "string"
-                        },
                         "nowStatus": {
                           "description": "An enum field",
                           "type": "string",
@@ -5919,6 +5957,10 @@
                             "ended",
                             "continuous"
                           ]
+                        },
+                        "link": {
+                          "description": "A string field",
+                          "type": "string"
                         },
                         "createdAt": {
                           "description": "A datetime field",
@@ -5930,7 +5972,7 @@
                         },
                         "publishedAt": {
                           "description": "A datetime field",
-                          "default": "2026-02-17T07:03:03.551Z",
+                          "default": "2026-07-31T15:13:34.772Z",
                           "type": "string"
                         },
                         "coverImage": {
@@ -5983,6 +6025,2011 @@
         },
         "tags": [
           "project"
+        ]
+      }
+    },
+    "/works": {
+      "get": {
+        "operationId": "work/get/works",
+        "parameters": [
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "The fields to return, this doesn't include populatable fields like relations, components, files, or dynamic zones",
+              "readOnly": true,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "title",
+                  "slug",
+                  "workType",
+                  "status",
+                  "recruiting",
+                  "summary",
+                  "startDate",
+                  "featured",
+                  "order",
+                  "createdAt",
+                  "updatedAt",
+                  "publishedAt"
+                ]
+              }
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "Filters to apply to the query",
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "enum": [
+                  "title",
+                  "slug",
+                  "workType",
+                  "status",
+                  "recruiting",
+                  "summary",
+                  "startDate",
+                  "featured",
+                  "order",
+                  "createdAt",
+                  "updatedAt",
+                  "publishedAt"
+                ]
+              },
+              "additionalProperties": {}
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "_q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "type": "string"
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "pagination",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "Pagination parameters",
+              "allOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "withCount": {
+                      "description": "Include total count in response",
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                {
+                  "anyOf": [
+                    {
+                      "description": "Page-based pagination",
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "description": "Page number (1-based)",
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "pageSize": {
+                          "description": "Number of entries per page",
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "page",
+                        "pageSize"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "description": "Offset-based pagination",
+                      "type": "object",
+                      "properties": {
+                        "start": {
+                          "description": "Number of entries to skip",
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "limit": {
+                          "description": "Maximum number of entries to return",
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "start",
+                        "limit"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              ]
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "Sort the result",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "title",
+                    "slug",
+                    "workType",
+                    "status",
+                    "recruiting",
+                    "summary",
+                    "startDate",
+                    "featured",
+                    "order",
+                    "createdAt",
+                    "updatedAt",
+                    "publishedAt"
+                  ]
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "title",
+                      "slug",
+                      "workType",
+                      "status",
+                      "recruiting",
+                      "summary",
+                      "startDate",
+                      "featured",
+                      "order",
+                      "createdAt",
+                      "updatedAt",
+                      "publishedAt"
+                    ]
+                  }
+                },
+                {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "enum": [
+                      "title",
+                      "slug",
+                      "workType",
+                      "status",
+                      "recruiting",
+                      "summary",
+                      "startDate",
+                      "featured",
+                      "order",
+                      "createdAt",
+                      "updatedAt",
+                      "publishedAt"
+                    ]
+                  },
+                  "additionalProperties": {
+                    "type": "string",
+                    "enum": [
+                      "asc",
+                      "desc"
+                    ]
+                  }
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "enum": [
+                        "title",
+                        "slug",
+                        "workType",
+                        "status",
+                        "recruiting",
+                        "summary",
+                        "startDate",
+                        "featured",
+                        "order",
+                        "createdAt",
+                        "updatedAt",
+                        "publishedAt"
+                      ]
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "populate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "anyOf": [
+                {
+                  "description": "Populate all the first level relations, components, files, and dynamic zones for the entry",
+                  "readOnly": true,
+                  "type": "string",
+                  "const": "*"
+                },
+                {
+                  "description": "Populate a single relation, component, file, or dynamic zone",
+                  "readOnly": true,
+                  "type": "string",
+                  "enum": [
+                    "recruitingRoles",
+                    "coverImage",
+                    "body",
+                    "staff",
+                    "details",
+                    "news"
+                  ]
+                },
+                {
+                  "description": "Populate a selection of multiple relations, components, files, or dynamic zones",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "recruitingRoles",
+                      "coverImage",
+                      "body",
+                      "staff",
+                      "details",
+                      "news"
+                    ]
+                  }
+                }
+              ]
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "Fetch documents based on their status. Default to \"published\" if not specified.",
+              "type": "string",
+              "enum": [
+                "draft",
+                "published"
+              ]
+            },
+            "x-strapi-serialize": "querystring"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "documentId": {
+                            "description": "The document ID, represented by a UUID",
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$"
+                          },
+                          "id": {
+                            "type": "number"
+                          },
+                          "title": {
+                            "description": "A string field",
+                            "type": "string"
+                          },
+                          "slug": {
+                            "description": "A UID field",
+                            "type": "string"
+                          },
+                          "workType": {
+                            "description": "An enum field",
+                            "type": "string",
+                            "enum": [
+                              "game",
+                              "tool",
+                              "site",
+                              "publication"
+                            ]
+                          },
+                          "status": {
+                            "description": "An enum field",
+                            "type": "string",
+                            "enum": [
+                              "planned",
+                              "in-development",
+                              "released",
+                              "maintained",
+                              "ended",
+                              "discontinued"
+                            ]
+                          },
+                          "recruiting": {
+                            "description": "A boolean field",
+                            "default": false,
+                            "type": "boolean"
+                          },
+                          "summary": {
+                            "description": "A text field",
+                            "type": "string"
+                          },
+                          "startDate": {
+                            "description": "A date field",
+                            "type": "string"
+                          },
+                          "featured": {
+                            "description": "A boolean field",
+                            "default": false,
+                            "type": "boolean"
+                          },
+                          "order": {
+                            "description": "An integer field",
+                            "default": 0,
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "createdAt": {
+                            "description": "A datetime field",
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "description": "A datetime field",
+                            "type": "string"
+                          },
+                          "publishedAt": {
+                            "description": "A datetime field",
+                            "default": "2026-07-31T15:13:34.786Z",
+                            "type": "string"
+                          },
+                          "recruitingRoles": {
+                            "description": "A component field",
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/WorkRecruitingRoleEntry"
+                            }
+                          },
+                          "coverImage": {
+                            "description": "A media field",
+                            "$ref": "#/components/schemas/PluginUploadFileDocument"
+                          },
+                          "body": {
+                            "description": "A dynamic zone field",
+                            "type": "array",
+                            "items": {}
+                          },
+                          "staff": {
+                            "description": "A component field",
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/StaffStaffEntry"
+                            }
+                          },
+                          "details": {
+                            "description": "A dynamic zone field",
+                            "type": "array",
+                            "items": {}
+                          },
+                          "news": {
+                            "description": "A relational field",
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/ApiEventEventDocument"
+                            }
+                          }
+                        },
+                        "required": [
+                          "documentId",
+                          "id",
+                          "title",
+                          "slug",
+                          "workType",
+                          "status",
+                          "recruiting",
+                          "summary",
+                          "featured",
+                          "order",
+                          "publishedAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "tags": [
+          "work"
+        ]
+      },
+      "post": {
+        "operationId": "work/post/works",
+        "parameters": [
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "The fields to return, this doesn't include populatable fields like relations, components, files, or dynamic zones",
+              "readOnly": true,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "title",
+                  "slug",
+                  "workType",
+                  "status",
+                  "recruiting",
+                  "summary",
+                  "startDate",
+                  "featured",
+                  "order",
+                  "createdAt",
+                  "updatedAt",
+                  "publishedAt"
+                ]
+              }
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "populate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "anyOf": [
+                {
+                  "description": "Populate all the first level relations, components, files, and dynamic zones for the entry",
+                  "readOnly": true,
+                  "type": "string",
+                  "const": "*"
+                },
+                {
+                  "description": "Populate a single relation, component, file, or dynamic zone",
+                  "readOnly": true,
+                  "type": "string",
+                  "enum": [
+                    "recruitingRoles",
+                    "coverImage",
+                    "body",
+                    "staff",
+                    "details",
+                    "news"
+                  ]
+                },
+                {
+                  "description": "Populate a selection of multiple relations, components, files, or dynamic zones",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "recruitingRoles",
+                      "coverImage",
+                      "body",
+                      "staff",
+                      "details",
+                      "news"
+                    ]
+                  }
+                }
+              ]
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "Fetch documents based on their status. Default to \"published\" if not specified.",
+              "type": "string",
+              "enum": [
+                "draft",
+                "published"
+              ]
+            },
+            "x-strapi-serialize": "querystring"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "documentId": {
+                          "description": "The document ID, represented by a UUID",
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$"
+                        },
+                        "id": {
+                          "type": "number"
+                        },
+                        "title": {
+                          "description": "A string field",
+                          "type": "string"
+                        },
+                        "slug": {
+                          "description": "A UID field",
+                          "type": "string"
+                        },
+                        "workType": {
+                          "description": "An enum field",
+                          "type": "string",
+                          "enum": [
+                            "game",
+                            "tool",
+                            "site",
+                            "publication"
+                          ]
+                        },
+                        "status": {
+                          "description": "An enum field",
+                          "type": "string",
+                          "enum": [
+                            "planned",
+                            "in-development",
+                            "released",
+                            "maintained",
+                            "ended",
+                            "discontinued"
+                          ]
+                        },
+                        "recruiting": {
+                          "description": "A boolean field",
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "summary": {
+                          "description": "A text field",
+                          "type": "string"
+                        },
+                        "startDate": {
+                          "description": "A date field",
+                          "type": "string"
+                        },
+                        "featured": {
+                          "description": "A boolean field",
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "order": {
+                          "description": "An integer field",
+                          "default": 0,
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "createdAt": {
+                          "description": "A datetime field",
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "description": "A datetime field",
+                          "type": "string"
+                        },
+                        "publishedAt": {
+                          "description": "A datetime field",
+                          "default": "2026-07-31T15:13:34.799Z",
+                          "type": "string"
+                        },
+                        "recruitingRoles": {
+                          "description": "A component field",
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/WorkRecruitingRoleEntry"
+                          }
+                        },
+                        "coverImage": {
+                          "description": "A media field",
+                          "$ref": "#/components/schemas/PluginUploadFileDocument"
+                        },
+                        "body": {
+                          "description": "A dynamic zone field",
+                          "type": "array",
+                          "items": {}
+                        },
+                        "staff": {
+                          "description": "A component field",
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/StaffStaffEntry"
+                          }
+                        },
+                        "details": {
+                          "description": "A dynamic zone field",
+                          "type": "array",
+                          "items": {}
+                        },
+                        "news": {
+                          "description": "A relational field",
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ApiEventEventDocument"
+                          }
+                        }
+                      },
+                      "required": [
+                        "documentId",
+                        "id",
+                        "title",
+                        "slug",
+                        "workType",
+                        "status",
+                        "recruiting",
+                        "summary",
+                        "featured",
+                        "order",
+                        "publishedAt"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "tags": [
+          "work"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "description": "A string field",
+                        "type": "string"
+                      },
+                      "slug": {
+                        "description": "A UID field",
+                        "type": "string"
+                      },
+                      "workType": {
+                        "description": "An enum field",
+                        "type": "string",
+                        "enum": [
+                          "game",
+                          "tool",
+                          "site",
+                          "publication"
+                        ]
+                      },
+                      "status": {
+                        "description": "An enum field",
+                        "type": "string",
+                        "enum": [
+                          "planned",
+                          "in-development",
+                          "released",
+                          "maintained",
+                          "ended",
+                          "discontinued"
+                        ]
+                      },
+                      "recruiting": {
+                        "description": "A boolean field",
+                        "default": false,
+                        "type": "string",
+                        "enum": [
+                          "0",
+                          "1",
+                          "t",
+                          "true",
+                          "f",
+                          "false"
+                        ]
+                      },
+                      "summary": {
+                        "description": "A text field",
+                        "type": "string"
+                      },
+                      "startDate": {
+                        "description": "A date field",
+                        "type": "string"
+                      },
+                      "featured": {
+                        "description": "A boolean field",
+                        "default": false,
+                        "type": "string",
+                        "enum": [
+                          "0",
+                          "1",
+                          "t",
+                          "true",
+                          "f",
+                          "false"
+                        ]
+                      },
+                      "order": {
+                        "description": "A float field",
+                        "default": 0,
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      "publishedAt": {
+                        "description": "A datetime field",
+                        "default": "2026-07-31T15:13:34.796Z",
+                        "type": "string"
+                      },
+                      "recruitingRoles": {
+                        "description": "A component field",
+                        "type": "array",
+                        "items": {}
+                      },
+                      "coverImage": {
+                        "description": "A media field"
+                      },
+                      "body": {
+                        "description": "A dynamic zone field",
+                        "type": "array",
+                        "items": {}
+                      },
+                      "staff": {
+                        "description": "A component field",
+                        "type": "array",
+                        "items": {}
+                      },
+                      "details": {
+                        "description": "A dynamic zone field",
+                        "type": "array",
+                        "items": {}
+                      },
+                      "news": {
+                        "description": "A relational field",
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$"
+                        }
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "slug",
+                      "workType",
+                      "status",
+                      "recruiting",
+                      "summary",
+                      "featured",
+                      "order",
+                      "publishedAt"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "data"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/works/{id}": {
+      "get": {
+        "operationId": "work/get/works_by_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "The document ID, represented by a UUID",
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "The fields to return, this doesn't include populatable fields like relations, components, files, or dynamic zones",
+              "readOnly": true,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "title",
+                  "slug",
+                  "workType",
+                  "status",
+                  "recruiting",
+                  "summary",
+                  "startDate",
+                  "featured",
+                  "order",
+                  "createdAt",
+                  "updatedAt",
+                  "publishedAt"
+                ]
+              }
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "populate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "anyOf": [
+                {
+                  "description": "Populate all the first level relations, components, files, and dynamic zones for the entry",
+                  "readOnly": true,
+                  "type": "string",
+                  "const": "*"
+                },
+                {
+                  "description": "Populate a single relation, component, file, or dynamic zone",
+                  "readOnly": true,
+                  "type": "string",
+                  "enum": [
+                    "recruitingRoles",
+                    "coverImage",
+                    "body",
+                    "staff",
+                    "details",
+                    "news"
+                  ]
+                },
+                {
+                  "description": "Populate a selection of multiple relations, components, files, or dynamic zones",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "recruitingRoles",
+                      "coverImage",
+                      "body",
+                      "staff",
+                      "details",
+                      "news"
+                    ]
+                  }
+                }
+              ]
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "Filters to apply to the query",
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "enum": [
+                  "title",
+                  "slug",
+                  "workType",
+                  "status",
+                  "recruiting",
+                  "summary",
+                  "startDate",
+                  "featured",
+                  "order",
+                  "createdAt",
+                  "updatedAt",
+                  "publishedAt"
+                ]
+              },
+              "additionalProperties": {}
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "Sort the result",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "title",
+                    "slug",
+                    "workType",
+                    "status",
+                    "recruiting",
+                    "summary",
+                    "startDate",
+                    "featured",
+                    "order",
+                    "createdAt",
+                    "updatedAt",
+                    "publishedAt"
+                  ]
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "title",
+                      "slug",
+                      "workType",
+                      "status",
+                      "recruiting",
+                      "summary",
+                      "startDate",
+                      "featured",
+                      "order",
+                      "createdAt",
+                      "updatedAt",
+                      "publishedAt"
+                    ]
+                  }
+                },
+                {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "enum": [
+                      "title",
+                      "slug",
+                      "workType",
+                      "status",
+                      "recruiting",
+                      "summary",
+                      "startDate",
+                      "featured",
+                      "order",
+                      "createdAt",
+                      "updatedAt",
+                      "publishedAt"
+                    ]
+                  },
+                  "additionalProperties": {
+                    "type": "string",
+                    "enum": [
+                      "asc",
+                      "desc"
+                    ]
+                  }
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "enum": [
+                        "title",
+                        "slug",
+                        "workType",
+                        "status",
+                        "recruiting",
+                        "summary",
+                        "startDate",
+                        "featured",
+                        "order",
+                        "createdAt",
+                        "updatedAt",
+                        "publishedAt"
+                      ]
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "Fetch documents based on their status. Default to \"published\" if not specified.",
+              "type": "string",
+              "enum": [
+                "draft",
+                "published"
+              ]
+            },
+            "x-strapi-serialize": "querystring"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "documentId": {
+                          "description": "The document ID, represented by a UUID",
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$"
+                        },
+                        "id": {
+                          "type": "number"
+                        },
+                        "title": {
+                          "description": "A string field",
+                          "type": "string"
+                        },
+                        "slug": {
+                          "description": "A UID field",
+                          "type": "string"
+                        },
+                        "workType": {
+                          "description": "An enum field",
+                          "type": "string",
+                          "enum": [
+                            "game",
+                            "tool",
+                            "site",
+                            "publication"
+                          ]
+                        },
+                        "status": {
+                          "description": "An enum field",
+                          "type": "string",
+                          "enum": [
+                            "planned",
+                            "in-development",
+                            "released",
+                            "maintained",
+                            "ended",
+                            "discontinued"
+                          ]
+                        },
+                        "recruiting": {
+                          "description": "A boolean field",
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "summary": {
+                          "description": "A text field",
+                          "type": "string"
+                        },
+                        "startDate": {
+                          "description": "A date field",
+                          "type": "string"
+                        },
+                        "featured": {
+                          "description": "A boolean field",
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "order": {
+                          "description": "An integer field",
+                          "default": 0,
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "createdAt": {
+                          "description": "A datetime field",
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "description": "A datetime field",
+                          "type": "string"
+                        },
+                        "publishedAt": {
+                          "description": "A datetime field",
+                          "default": "2026-07-31T15:13:34.792Z",
+                          "type": "string"
+                        },
+                        "recruitingRoles": {
+                          "description": "A component field",
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/WorkRecruitingRoleEntry"
+                          }
+                        },
+                        "coverImage": {
+                          "description": "A media field",
+                          "$ref": "#/components/schemas/PluginUploadFileDocument"
+                        },
+                        "body": {
+                          "description": "A dynamic zone field",
+                          "type": "array",
+                          "items": {}
+                        },
+                        "staff": {
+                          "description": "A component field",
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/StaffStaffEntry"
+                          }
+                        },
+                        "details": {
+                          "description": "A dynamic zone field",
+                          "type": "array",
+                          "items": {}
+                        },
+                        "news": {
+                          "description": "A relational field",
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ApiEventEventDocument"
+                          }
+                        }
+                      },
+                      "required": [
+                        "documentId",
+                        "id",
+                        "title",
+                        "slug",
+                        "workType",
+                        "status",
+                        "recruiting",
+                        "summary",
+                        "featured",
+                        "order",
+                        "publishedAt"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "tags": [
+          "work"
+        ]
+      },
+      "put": {
+        "operationId": "work/put/works_by_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "The document ID, represented by a UUID",
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "The fields to return, this doesn't include populatable fields like relations, components, files, or dynamic zones",
+              "readOnly": true,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "title",
+                  "slug",
+                  "workType",
+                  "status",
+                  "recruiting",
+                  "summary",
+                  "startDate",
+                  "featured",
+                  "order",
+                  "createdAt",
+                  "updatedAt",
+                  "publishedAt"
+                ]
+              }
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "populate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "anyOf": [
+                {
+                  "description": "Populate all the first level relations, components, files, and dynamic zones for the entry",
+                  "readOnly": true,
+                  "type": "string",
+                  "const": "*"
+                },
+                {
+                  "description": "Populate a single relation, component, file, or dynamic zone",
+                  "readOnly": true,
+                  "type": "string",
+                  "enum": [
+                    "recruitingRoles",
+                    "coverImage",
+                    "body",
+                    "staff",
+                    "details",
+                    "news"
+                  ]
+                },
+                {
+                  "description": "Populate a selection of multiple relations, components, files, or dynamic zones",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "recruitingRoles",
+                      "coverImage",
+                      "body",
+                      "staff",
+                      "details",
+                      "news"
+                    ]
+                  }
+                }
+              ]
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "Fetch documents based on their status. Default to \"published\" if not specified.",
+              "type": "string",
+              "enum": [
+                "draft",
+                "published"
+              ]
+            },
+            "x-strapi-serialize": "querystring"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "documentId": {
+                          "description": "The document ID, represented by a UUID",
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$"
+                        },
+                        "id": {
+                          "type": "number"
+                        },
+                        "title": {
+                          "description": "A string field",
+                          "type": "string"
+                        },
+                        "slug": {
+                          "description": "A UID field",
+                          "type": "string"
+                        },
+                        "workType": {
+                          "description": "An enum field",
+                          "type": "string",
+                          "enum": [
+                            "game",
+                            "tool",
+                            "site",
+                            "publication"
+                          ]
+                        },
+                        "status": {
+                          "description": "An enum field",
+                          "type": "string",
+                          "enum": [
+                            "planned",
+                            "in-development",
+                            "released",
+                            "maintained",
+                            "ended",
+                            "discontinued"
+                          ]
+                        },
+                        "recruiting": {
+                          "description": "A boolean field",
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "summary": {
+                          "description": "A text field",
+                          "type": "string"
+                        },
+                        "startDate": {
+                          "description": "A date field",
+                          "type": "string"
+                        },
+                        "featured": {
+                          "description": "A boolean field",
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "order": {
+                          "description": "An integer field",
+                          "default": 0,
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "createdAt": {
+                          "description": "A datetime field",
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "description": "A datetime field",
+                          "type": "string"
+                        },
+                        "publishedAt": {
+                          "description": "A datetime field",
+                          "default": "2026-07-31T15:13:34.806Z",
+                          "type": "string"
+                        },
+                        "recruitingRoles": {
+                          "description": "A component field",
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/WorkRecruitingRoleEntry"
+                          }
+                        },
+                        "coverImage": {
+                          "description": "A media field",
+                          "$ref": "#/components/schemas/PluginUploadFileDocument"
+                        },
+                        "body": {
+                          "description": "A dynamic zone field",
+                          "type": "array",
+                          "items": {}
+                        },
+                        "staff": {
+                          "description": "A component field",
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/StaffStaffEntry"
+                          }
+                        },
+                        "details": {
+                          "description": "A dynamic zone field",
+                          "type": "array",
+                          "items": {}
+                        },
+                        "news": {
+                          "description": "A relational field",
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ApiEventEventDocument"
+                          }
+                        }
+                      },
+                      "required": [
+                        "documentId",
+                        "id",
+                        "title",
+                        "slug",
+                        "workType",
+                        "status",
+                        "recruiting",
+                        "summary",
+                        "featured",
+                        "order",
+                        "publishedAt"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "tags": [
+          "work"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "description": "A string field",
+                        "type": "string"
+                      },
+                      "slug": {
+                        "description": "A UID field",
+                        "type": "string"
+                      },
+                      "workType": {
+                        "description": "An enum field",
+                        "type": "string",
+                        "enum": [
+                          "game",
+                          "tool",
+                          "site",
+                          "publication"
+                        ]
+                      },
+                      "status": {
+                        "description": "An enum field",
+                        "type": "string",
+                        "enum": [
+                          "planned",
+                          "in-development",
+                          "released",
+                          "maintained",
+                          "ended",
+                          "discontinued"
+                        ]
+                      },
+                      "recruiting": {
+                        "description": "A boolean field",
+                        "default": false,
+                        "type": "string",
+                        "enum": [
+                          "0",
+                          "1",
+                          "t",
+                          "true",
+                          "f",
+                          "false"
+                        ]
+                      },
+                      "summary": {
+                        "description": "A text field",
+                        "type": "string"
+                      },
+                      "startDate": {
+                        "description": "A date field",
+                        "type": "string"
+                      },
+                      "featured": {
+                        "description": "A boolean field",
+                        "default": false,
+                        "type": "string",
+                        "enum": [
+                          "0",
+                          "1",
+                          "t",
+                          "true",
+                          "f",
+                          "false"
+                        ]
+                      },
+                      "order": {
+                        "description": "A float field",
+                        "default": 0,
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      "publishedAt": {
+                        "description": "A datetime field",
+                        "default": "2026-07-31T15:13:34.803Z",
+                        "type": "string"
+                      },
+                      "recruitingRoles": {
+                        "description": "A component field",
+                        "type": "array",
+                        "items": {}
+                      },
+                      "coverImage": {
+                        "description": "A media field"
+                      },
+                      "body": {
+                        "description": "A dynamic zone field",
+                        "type": "array",
+                        "items": {}
+                      },
+                      "staff": {
+                        "description": "A component field",
+                        "type": "array",
+                        "items": {}
+                      },
+                      "details": {
+                        "description": "A dynamic zone field",
+                        "type": "array",
+                        "items": {}
+                      },
+                      "news": {
+                        "description": "A relational field",
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$"
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "data"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "work/delete/works_by_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "The document ID, represented by a UUID",
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "The fields to return, this doesn't include populatable fields like relations, components, files, or dynamic zones",
+              "readOnly": true,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "title",
+                  "slug",
+                  "workType",
+                  "status",
+                  "recruiting",
+                  "summary",
+                  "startDate",
+                  "featured",
+                  "order",
+                  "createdAt",
+                  "updatedAt",
+                  "publishedAt"
+                ]
+              }
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "populate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "anyOf": [
+                {
+                  "description": "Populate all the first level relations, components, files, and dynamic zones for the entry",
+                  "readOnly": true,
+                  "type": "string",
+                  "const": "*"
+                },
+                {
+                  "description": "Populate a single relation, component, file, or dynamic zone",
+                  "readOnly": true,
+                  "type": "string",
+                  "enum": [
+                    "recruitingRoles",
+                    "coverImage",
+                    "body",
+                    "staff",
+                    "details",
+                    "news"
+                  ]
+                },
+                {
+                  "description": "Populate a selection of multiple relations, components, files, or dynamic zones",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "recruitingRoles",
+                      "coverImage",
+                      "body",
+                      "staff",
+                      "details",
+                      "news"
+                    ]
+                  }
+                }
+              ]
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "Filters to apply to the query",
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "enum": [
+                  "title",
+                  "slug",
+                  "workType",
+                  "status",
+                  "recruiting",
+                  "summary",
+                  "startDate",
+                  "featured",
+                  "order",
+                  "createdAt",
+                  "updatedAt",
+                  "publishedAt"
+                ]
+              },
+              "additionalProperties": {}
+            },
+            "x-strapi-serialize": "querystring"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "description": "Fetch documents based on their status. Default to \"published\" if not specified.",
+              "type": "string",
+              "enum": [
+                "draft",
+                "published"
+              ]
+            },
+            "x-strapi-serialize": "querystring"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "documentId": {
+                          "description": "The document ID, represented by a UUID",
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$"
+                        },
+                        "id": {
+                          "type": "number"
+                        },
+                        "title": {
+                          "description": "A string field",
+                          "type": "string"
+                        },
+                        "slug": {
+                          "description": "A UID field",
+                          "type": "string"
+                        },
+                        "workType": {
+                          "description": "An enum field",
+                          "type": "string",
+                          "enum": [
+                            "game",
+                            "tool",
+                            "site",
+                            "publication"
+                          ]
+                        },
+                        "status": {
+                          "description": "An enum field",
+                          "type": "string",
+                          "enum": [
+                            "planned",
+                            "in-development",
+                            "released",
+                            "maintained",
+                            "ended",
+                            "discontinued"
+                          ]
+                        },
+                        "recruiting": {
+                          "description": "A boolean field",
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "summary": {
+                          "description": "A text field",
+                          "type": "string"
+                        },
+                        "startDate": {
+                          "description": "A date field",
+                          "type": "string"
+                        },
+                        "featured": {
+                          "description": "A boolean field",
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "order": {
+                          "description": "An integer field",
+                          "default": 0,
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "createdAt": {
+                          "description": "A datetime field",
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "description": "A datetime field",
+                          "type": "string"
+                        },
+                        "publishedAt": {
+                          "description": "A datetime field",
+                          "default": "2026-07-31T15:13:34.816Z",
+                          "type": "string"
+                        },
+                        "recruitingRoles": {
+                          "description": "A component field",
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/WorkRecruitingRoleEntry"
+                          }
+                        },
+                        "coverImage": {
+                          "description": "A media field",
+                          "$ref": "#/components/schemas/PluginUploadFileDocument"
+                        },
+                        "body": {
+                          "description": "A dynamic zone field",
+                          "type": "array",
+                          "items": {}
+                        },
+                        "staff": {
+                          "description": "A component field",
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/StaffStaffEntry"
+                          }
+                        },
+                        "details": {
+                          "description": "A dynamic zone field",
+                          "type": "array",
+                          "items": {}
+                        },
+                        "news": {
+                          "description": "A relational field",
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ApiEventEventDocument"
+                          }
+                        }
+                      },
+                      "required": [
+                        "documentId",
+                        "id",
+                        "title",
+                        "slug",
+                        "workType",
+                        "status",
+                        "recruiting",
+                        "summary",
+                        "featured",
+                        "order",
+                        "publishedAt"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "tags": [
+          "work"
         ]
       }
     },
@@ -11847,7 +13894,7 @@
           },
           "publishedAt": {
             "description": "A datetime field",
-            "default": "2026-02-17T07:03:03.002Z",
+            "default": "2026-07-31T15:13:34.683Z",
             "type": "string"
           },
           "related": {}
@@ -11867,6 +13914,31 @@
         "additionalProperties": false,
         "id": "PluginUploadFileDocument"
       },
+      "WorkRecruitingRoleEntry": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "roleName": {
+            "description": "A string field",
+            "type": "string"
+          },
+          "description": {
+            "description": "A text field",
+            "type": "string"
+          },
+          "count": {
+            "description": "An integer field",
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "roleName"
+        ],
+        "additionalProperties": false,
+        "id": "WorkRecruitingRoleEntry"
+      },
       "StaffStaffEntry": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
@@ -11882,6 +13954,215 @@
         },
         "additionalProperties": false,
         "id": "StaffStaffEntry"
+      },
+      "ApiEventEventDocument": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "documentId": {
+            "description": "The document ID, represented by a UUID",
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$"
+          },
+          "id": {
+            "type": "number"
+          },
+          "title": {
+            "description": "A string field",
+            "type": "string"
+          },
+          "slug": {
+            "description": "A UID field",
+            "type": "string"
+          },
+          "date": {
+            "description": "A date field",
+            "type": "string"
+          },
+          "isUrgent": {
+            "description": "A boolean field",
+            "type": "boolean"
+          },
+          "category": {
+            "description": "An enum field",
+            "type": "string",
+            "enum": [
+              "devlog",
+              "announcement",
+              "release"
+            ]
+          },
+          "createdAt": {
+            "description": "A datetime field",
+            "type": "string"
+          },
+          "updatedAt": {
+            "description": "A datetime field",
+            "type": "string"
+          },
+          "publishedAt": {
+            "description": "A datetime field",
+            "default": "2026-07-31T15:13:34.690Z",
+            "type": "string"
+          },
+          "coverImage": {
+            "description": "A media field",
+            "$ref": "#/components/schemas/PluginUploadFileDocument"
+          },
+          "mainContent": {
+            "description": "A dynamic zone field",
+            "type": "array",
+            "items": {}
+          },
+          "relatedWork": {
+            "description": "A relational field",
+            "$ref": "#/components/schemas/ApiWorkWorkDocument"
+          }
+        },
+        "required": [
+          "documentId",
+          "id",
+          "title",
+          "slug",
+          "date",
+          "publishedAt"
+        ],
+        "additionalProperties": false,
+        "id": "ApiEventEventDocument"
+      },
+      "ApiWorkWorkDocument": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "documentId": {
+            "description": "The document ID, represented by a UUID",
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$"
+          },
+          "id": {
+            "type": "number"
+          },
+          "title": {
+            "description": "A string field",
+            "type": "string"
+          },
+          "slug": {
+            "description": "A UID field",
+            "type": "string"
+          },
+          "workType": {
+            "description": "An enum field",
+            "type": "string",
+            "enum": [
+              "game",
+              "tool",
+              "site",
+              "publication"
+            ]
+          },
+          "status": {
+            "description": "An enum field",
+            "type": "string",
+            "enum": [
+              "planned",
+              "in-development",
+              "released",
+              "maintained",
+              "ended",
+              "discontinued"
+            ]
+          },
+          "recruiting": {
+            "description": "A boolean field",
+            "default": false,
+            "type": "boolean"
+          },
+          "summary": {
+            "description": "A text field",
+            "type": "string"
+          },
+          "startDate": {
+            "description": "A date field",
+            "type": "string"
+          },
+          "featured": {
+            "description": "A boolean field",
+            "default": false,
+            "type": "boolean"
+          },
+          "order": {
+            "description": "An integer field",
+            "default": 0,
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "createdAt": {
+            "description": "A datetime field",
+            "type": "string"
+          },
+          "updatedAt": {
+            "description": "A datetime field",
+            "type": "string"
+          },
+          "publishedAt": {
+            "description": "A datetime field",
+            "default": "2026-07-31T15:13:34.687Z",
+            "type": "string"
+          },
+          "recruitingRoles": {
+            "description": "A component field",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkRecruitingRoleEntry"
+            }
+          },
+          "coverImage": {
+            "description": "A media field",
+            "$ref": "#/components/schemas/PluginUploadFileDocument"
+          },
+          "body": {
+            "description": "A dynamic zone field",
+            "type": "array",
+            "items": {}
+          },
+          "staff": {
+            "description": "A component field",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaffStaffEntry"
+            }
+          },
+          "details": {
+            "description": "A dynamic zone field",
+            "type": "array",
+            "items": {}
+          },
+          "news": {
+            "description": "A relational field",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiEventEventDocument"
+            }
+          }
+        },
+        "required": [
+          "documentId",
+          "id",
+          "title",
+          "slug",
+          "workType",
+          "status",
+          "recruiting",
+          "summary",
+          "featured",
+          "order",
+          "publishedAt"
+        ],
+        "additionalProperties": false,
+        "id": "ApiWorkWorkDocument"
       }
     }
   }
