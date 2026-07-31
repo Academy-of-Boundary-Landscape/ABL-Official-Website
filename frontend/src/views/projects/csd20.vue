@@ -2,7 +2,7 @@
     <div class="csd20View">
         <section class="music-link-section" style="text-align:center;margin-top:2rem;">
             <router-link to="/project/csd20/music">
-                <button class="music-btn" style="padding:0.75em 2em;font-size:1.2em;background:#4f8cff;color:#fff;border:none;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;">
+                <button class="music-btn" style="padding:0.75em 2em;font-size:1.2em;background:#4f8cff;color:var(--color-heading);border:none;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;">
                     🎵 查看画册音乐特典
                 </button>
             </router-link>
@@ -161,9 +161,9 @@
 }
 </style>
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import ProductCard from '@/components/ProductCard.vue';
-import { apiClient } from '@/composables/strapi';
+import { useProductByTitle } from '@/composables/useProducts';
 
 import coverImg from '@/assets/images/csd20related/csd_20_title.png';
 import previewImg1 from '@/assets/images/csd20related/宣传图12.png';
@@ -179,23 +179,6 @@ const previews = ref([
 ]);
 const showCoverModal = ref(false);
 
-const csd20Product = ref(null);
-
-const fetchCsd20Product = async () => {
-    try {
-        const response = await apiClient.get('/products', {
-            params: {
-                filters: { title: { '$eq': '梦违科学世纪20周年合同志' } },
-                populate: 'coverImage'
-            }
-        });
-        csd20Product.value = response.data.data?.[0] || response.data?.[0] || null;
-    } catch (e) {
-        csd20Product.value = null;
-    }
-};
-
-onMounted(() => {
-    fetchCsd20Product();
-});
+// 临时方案：按标题硬匹配，见 useProducts.js 里 useProductByTitle 的注释
+const { data: csd20Product } = useProductByTitle('梦违科学世纪20周年合同志');
 </script>

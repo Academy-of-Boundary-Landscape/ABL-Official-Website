@@ -7,6 +7,7 @@ import {
   useProduct,
   useProductsByIds,
   useRecommendedProducts,
+  useProductByTitle,
 } from '@/composables/useProducts'
 import { useProjects, normalizeProjects } from '@/composables/useProjects'
 import { useConventions } from '@/composables/useConventions'
@@ -143,6 +144,17 @@ describe('useProduct', () => {
     await flush()
     expect(paramsOf().filters).toEqual({ slug: { $eq: 'cd-01' } })
     expect(paramsOf().populate).toBe('*')
+    stop()
+  })
+})
+
+describe('useProductByTitle', () => {
+  it('按标题精确匹配并 populate 封面——csd20 页面的临时方案', async () => {
+    const { stop } = withScope(() => useProductByTitle('梦违科学世纪20周年合同志'))
+    await flush()
+    expect(pathOf()).toBe('/products')
+    expect(paramsOf().filters).toEqual({ title: { $eq: '梦违科学世纪20周年合同志' } })
+    expect(paramsOf().populate).toBe('coverImage')
     stop()
   })
 })

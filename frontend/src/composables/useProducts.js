@@ -30,6 +30,19 @@ export function useProduct(slug) {
 }
 
 /**
+ * 临时方案：csd20 页面按标题硬匹配制品。
+ * 后台改一个字这里就会空。正确做法是给该制品一个稳定的 slug 或标识字段，
+ * 需要改 Strapi Content-Type 与生产库既有内容，本轮不做。
+ * 见 docs/superpowers/specs/2026-07-31-frontend-upgrade-design.md 第 5 节。
+ */
+export function useProductByTitle(title) {
+  return useStrapiOne('products', () => ({
+    filters: { title: { $eq: toValue(title) } },
+    populate: 'coverImage',
+  }))
+}
+
+/**
  * EventDetail 的动态区里 product 嵌入块只带 id，需要二次批量补全。
  * 用 $in 一次取回，不要在循环里逐个请求。
  */

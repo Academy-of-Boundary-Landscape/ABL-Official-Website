@@ -61,20 +61,3 @@
 <script setup>
 import musicUrl from '@/assets/images/csd20related/csd20_theme.mp3';
 </script>
-
-<style scoped>
-.download-btn {
-  display: inline-block;
-  margin-top: 0.5rem;
-  padding: 0.5rem 1.2rem;
-  background: var(--color-accent, #4e7cff);
-  color: #fff;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background 0.2s;
-}
-.download-btn:hover {
-  background: #355bb3;
-}
-</style>
