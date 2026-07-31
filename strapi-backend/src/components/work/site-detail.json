@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_work_site_details",
+  "info": {
+    "displayName": "siteDetail",
+    "icon": "globe"
+  },
+  "options": {},
+  "attributes": {
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "eventDate": {
+      "type": "date"
+    },
+    "participantCount": {
+      "type": "integer"
+    }
+  },
+  "config": {}
+}

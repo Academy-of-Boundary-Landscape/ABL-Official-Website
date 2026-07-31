@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_work_game_details",
+  "info": {
+    "displayName": "gameDetail",
+    "icon": "puzzle"
+  },
+  "options": {},
+  "attributes": {
+    "platforms": {
+      "type": "string"
+    },
+    "basedOn": {
+      "type": "string"
+    },
+    "engine": {
+      "type": "string"
+    },
+    "trailerUrl": {
+      "type": "string"
+    },
+    "screenshots": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
+    },
+    "downloads": {
+      "type": "component",
+      "repeatable": true,
+      "component": "work.download-channel"
+    }
+  },
+  "config": {}
+}

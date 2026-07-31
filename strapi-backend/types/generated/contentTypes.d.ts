@@ -410,7 +410,7 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
     draftAndPublish: true
   }
   attributes: {
-    category: Schema.Attribute.Enumeration<['monthly-release', 'new-project', 'announcement']>
+    category: Schema.Attribute.Enumeration<['devlog', 'announcement', 'release']>
     coverImage: Schema.Attribute.Media<'images' | 'files'>
     createdAt: Schema.Attribute.DateTime
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> & Schema.Attribute.Private
@@ -430,6 +430,7 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
       ]
     >
     publishedAt: Schema.Attribute.DateTime
+    relatedWork: Schema.Attribute.Relation<'manyToOne', 'api::work.work'>
     slug: Schema.Attribute.UID & Schema.Attribute.Required
     title: Schema.Attribute.String & Schema.Attribute.Required
     updatedAt: Schema.Attribute.DateTime
@@ -510,6 +511,63 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
     title: Schema.Attribute.String & Schema.Attribute.Required
     updatedAt: Schema.Attribute.DateTime
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> & Schema.Attribute.Private
+  }
+}
+
+export interface ApiWorkWork extends Struct.CollectionTypeSchema {
+  collectionName: 'works'
+  info: {
+    displayName: 'work'
+    pluralName: 'works'
+    singularName: 'work'
+  }
+  options: {
+    draftAndPublish: true
+  }
+  attributes: {
+    body: Schema.Attribute.DynamicZone<
+      [
+        'content-block.content-block',
+        'embedding.link-embed',
+        'embedding.iframe-embed',
+        'embedding.file-embed',
+        'embedding.audio-embed',
+      ]
+    >
+    coverImage: Schema.Attribute.Media<'images'>
+    createdAt: Schema.Attribute.DateTime
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> & Schema.Attribute.Private
+    details: Schema.Attribute.DynamicZone<
+      ['work.game-detail', 'work.tool-detail', 'work.site-detail', 'work.publication-detail']
+    > &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 1
+        },
+        number
+      >
+    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>
+    locale: Schema.Attribute.String & Schema.Attribute.Private
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::work.work'> &
+      Schema.Attribute.Private
+    news: Schema.Attribute.Relation<'oneToMany', 'api::event.event'>
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>
+    publishedAt: Schema.Attribute.DateTime
+    recruiting: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>
+    recruitingRoles: Schema.Attribute.Component<'work.recruiting-role', true>
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required
+    staff: Schema.Attribute.Component<'staff.staff', true>
+    startDate: Schema.Attribute.Date
+    status: Schema.Attribute.Enumeration<
+      ['planned', 'in-development', 'released', 'maintained', 'ended', 'discontinued']
+    > &
+      Schema.Attribute.Required
+    summary: Schema.Attribute.Text & Schema.Attribute.Required
+    title: Schema.Attribute.String & Schema.Attribute.Required
+    updatedAt: Schema.Attribute.DateTime
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> & Schema.Attribute.Private
+    workType: Schema.Attribute.Enumeration<['game', 'tool', 'site', 'publication']> &
+      Schema.Attribute.Required
   }
 }
 
@@ -945,6 +1003,7 @@ declare module '@strapi/strapi' {
       'api::event.event': ApiEventEvent
       'api::product.product': ApiProductProduct
       'api::project.project': ApiProjectProject
+      'api::work.work': ApiWorkWork
       'plugin::content-releases.release': PluginContentReleasesRelease
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction
       'plugin::i18n.locale': PluginI18NLocale

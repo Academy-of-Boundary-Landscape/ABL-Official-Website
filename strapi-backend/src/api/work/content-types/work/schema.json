@@ -1,0 +1,101 @@
+{
+  "kind": "collectionType",
+  "collectionName": "works",
+  "info": {
+    "singularName": "work",
+    "pluralName": "works",
+    "displayName": "work"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "workType": {
+      "type": "enumeration",
+      "enum": ["game", "tool", "site", "publication"],
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "planned",
+        "in-development",
+        "released",
+        "maintained",
+        "ended",
+        "discontinued"
+      ],
+      "required": true
+    },
+    "recruiting": {
+      "type": "boolean",
+      "default": false
+    },
+    "recruitingRoles": {
+      "type": "component",
+      "repeatable": true,
+      "component": "work.recruiting-role"
+    },
+    "summary": {
+      "type": "text",
+      "required": true
+    },
+    "coverImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "body": {
+      "type": "dynamiczone",
+      "components": [
+        "content-block.content-block",
+        "embedding.link-embed",
+        "embedding.iframe-embed",
+        "embedding.file-embed",
+        "embedding.audio-embed"
+      ]
+    },
+    "staff": {
+      "type": "component",
+      "repeatable": true,
+      "component": "staff.staff"
+    },
+    "details": {
+      "type": "dynamiczone",
+      "max": 1,
+      "components": [
+        "work.game-detail",
+        "work.tool-detail",
+        "work.site-detail",
+        "work.publication-detail"
+      ]
+    },
+    "startDate": {
+      "type": "date"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    },
+    "news": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::event.event",
+      "mappedBy": "relatedWork"
+    }
+  }
+}

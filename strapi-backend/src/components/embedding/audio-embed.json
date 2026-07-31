@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_embedding_audio_embeds",
+  "info": {
+    "displayName": "audioEmbed",
+    "icon": "music"
+  },
+  "options": {},
+  "attributes": {
+    "trackName": {
+      "type": "string"
+    },
+    "audioFile": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["audios", "files"],
+      "required": true
+    }
+  },
+  "config": {}
+}

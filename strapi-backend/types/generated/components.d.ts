@@ -11,6 +11,18 @@ export interface ContentBlockContentBlock extends Struct.ComponentSchema {
   }
 }
 
+export interface EmbeddingAudioEmbed extends Struct.ComponentSchema {
+  collectionName: 'components_embedding_audio_embeds'
+  info: {
+    displayName: 'audioEmbed'
+    icon: 'music'
+  }
+  attributes: {
+    audioFile: Schema.Attribute.Media<'audios' | 'files'> & Schema.Attribute.Required
+    trackName: Schema.Attribute.String
+  }
+}
+
 export interface EmbeddingFileEmbed extends Struct.ComponentSchema {
   collectionName: 'components_embedding_file_embeds'
   info: {
@@ -103,10 +115,95 @@ export interface StaffStaff extends Struct.ComponentSchema {
   }
 }
 
+export interface WorkDownloadChannel extends Struct.ComponentSchema {
+  collectionName: 'components_work_download_channels'
+  info: {
+    displayName: 'downloadChannel'
+    icon: 'download'
+  }
+  attributes: {
+    channelName: Schema.Attribute.String & Schema.Attribute.Required
+    url: Schema.Attribute.String & Schema.Attribute.Required
+  }
+}
+
+export interface WorkGameDetail extends Struct.ComponentSchema {
+  collectionName: 'components_work_game_details'
+  info: {
+    displayName: 'gameDetail'
+    icon: 'puzzle'
+  }
+  attributes: {
+    basedOn: Schema.Attribute.String
+    downloads: Schema.Attribute.Component<'work.download-channel', true>
+    engine: Schema.Attribute.String
+    platforms: Schema.Attribute.String
+    screenshots: Schema.Attribute.Media<'images', true>
+    trailerUrl: Schema.Attribute.String
+  }
+}
+
+export interface WorkPublicationDetail extends Struct.ComponentSchema {
+  collectionName: 'components_work_publication_details'
+  info: {
+    displayName: 'publicationDetail'
+    icon: 'book'
+  }
+  attributes: {
+    contributorCount: Schema.Attribute.Integer
+    releaseDate: Schema.Attribute.Date
+    spec: Schema.Attribute.String
+  }
+}
+
+export interface WorkRecruitingRole extends Struct.ComponentSchema {
+  collectionName: 'components_work_recruiting_roles'
+  info: {
+    displayName: 'recruitingRole'
+    icon: 'user'
+  }
+  attributes: {
+    count: Schema.Attribute.Integer
+    description: Schema.Attribute.Text
+    roleName: Schema.Attribute.String & Schema.Attribute.Required
+  }
+}
+
+export interface WorkSiteDetail extends Struct.ComponentSchema {
+  collectionName: 'components_work_site_details'
+  info: {
+    displayName: 'siteDetail'
+    icon: 'globe'
+  }
+  attributes: {
+    eventDate: Schema.Attribute.Date
+    participantCount: Schema.Attribute.Integer
+    url: Schema.Attribute.String & Schema.Attribute.Required
+  }
+}
+
+export interface WorkToolDetail extends Struct.ComponentSchema {
+  collectionName: 'components_work_tool_details'
+  info: {
+    displayName: 'toolDetail'
+    icon: 'code'
+  }
+  attributes: {
+    changelog: Schema.Attribute.RichText
+    currentVersion: Schema.Attribute.String
+    downloads: Schema.Attribute.Component<'work.download-channel', true>
+    homepage: Schema.Attribute.String
+    license: Schema.Attribute.String
+    platforms: Schema.Attribute.String
+    repoUrl: Schema.Attribute.String
+  }
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'content-block.content-block': ContentBlockContentBlock
+      'embedding.audio-embed': EmbeddingAudioEmbed
       'embedding.file-embed': EmbeddingFileEmbed
       'embedding.iframe-embed': EmbeddingIframeEmbed
       'embedding.link-embed': EmbeddingLinkEmbed
@@ -115,6 +212,12 @@ declare module '@strapi/strapi' {
       'project-embed.product-embed': ProjectEmbedProductEmbed
       'staff.project-staff': StaffProjectStaff
       'staff.staff': StaffStaff
+      'work.download-channel': WorkDownloadChannel
+      'work.game-detail': WorkGameDetail
+      'work.publication-detail': WorkPublicationDetail
+      'work.recruiting-role': WorkRecruitingRole
+      'work.site-detail': WorkSiteDetail
+      'work.tool-detail': WorkToolDetail
     }
   }
 }

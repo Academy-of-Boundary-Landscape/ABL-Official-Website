@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_work_recruiting_roles",
+  "info": {
+    "displayName": "recruitingRole",
+    "icon": "user"
+  },
+  "options": {},
+  "attributes": {
+    "roleName": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "count": {
+      "type": "integer"
+    }
+  },
+  "config": {}
+}
