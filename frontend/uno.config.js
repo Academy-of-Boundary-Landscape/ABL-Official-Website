@@ -34,8 +34,9 @@ export default defineConfig({
     },
   },
   // 与 main.css 中真实存在且在用的全局类同名的 shortcut 已全部移除
-  // （container / tech-box / page-header / section-title），
-  // card-base 无人引用一并删除。此处刻意留空。
+  // （container / tech-box / page-header / section-title）。
+  // card-base 仍被 ProductCard.vue / EventCard.vue 引用，不能直接删——
+  // 已原样迁移为 main.css 中的 .card-base 规则（见该文件），此处不再重复定义。
   shortcuts: {},
   rules: [
     [
