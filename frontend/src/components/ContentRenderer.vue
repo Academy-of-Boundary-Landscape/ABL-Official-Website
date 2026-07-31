@@ -22,9 +22,9 @@
         ↓↓↓ 核心逻辑：如果是我们自定义的组件 ↓↓↓
       -->
       <div v-if="block.type === 'component' && block.component === 'default.product-embed'" class="embedded-product">
-        <!-- 
+        <!--
           直接在这里使用 ProductCard 组件！
-          注意：我们需要确保关联的制品数据已经被 populate 了。
+          注意：block.product 需要是接口已经关联展开过的完整制品对象。
         -->
         <ProductCard v-if="block.product" :product="block.product" />
       </div>
