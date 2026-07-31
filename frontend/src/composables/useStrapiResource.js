@@ -16,7 +16,13 @@ export const normalizeStrapiError = (e) => {
   const status = e?.response?.status ?? null
   const message =
     STATUS_MESSAGE[status] ?? (status ? `请求失败（HTTP ${status}）` : '连接超时或服务器错误。')
-  return { status, message }
+  const normalized = { status, message }
+  // 原始 axios 错误（含 Strapi 的 error.details）不能就这么丢掉——之前 8 个
+  // call site 各自 console.error 过原始错误，归一化之后这条观测能力消失了。
+  // 用非可枚举属性挂载，不出现在 JSON.stringify / 默认对象展开里，
+  // 也不会污染依赖 { status, message } 两个字段做相等比较的既有测试。
+  Object.defineProperty(normalized, 'cause', { value: e, enumerable: false })
+  return normalized
 }
 
 export function useStrapiList(resource, params = {}, options = {}) {
@@ -55,7 +61,12 @@ export function useStrapiList(resource, params = {}, options = {}) {
     } catch (e) {
       if (mine.signal.aborted || disposed) return
       const normalized = normalizeStrapiError(e)
-      if (normalized) error.value = normalized
+      if (normalized) {
+        // 开发库是空的，这些错误路径第一次真正跑起来大概率是在生产环境——
+        // 把原始 axios 错误打到控制台，不能让排障时只剩一句归一化文案可看。
+        console.error(`[strapi] GET /${resource} 失败：`, e)
+        error.value = normalized
+      }
     } finally {
       if (!mine.signal.aborted && !disposed) loading.value = false
     }
