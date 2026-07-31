@@ -1,5 +1,48 @@
-/* 字体加载已收拢到 index.html 的 <link>（Orbitron / Roboto Mono / Space Grotesk），
-   不再在此重复 @import，省掉一轮阻塞渲染的往返请求。 */
+/* 自托管字体：不再依赖 Google Fonts 的可达性，并省去两次跨域握手。
+   字族与字重与此前 <link> 加载的完全一致，未增删。
+   仅 latin 子集——中文由系统字体承担，这三个字族本身不含 CJK 字形。 */
+@font-face {
+  font-family: 'Orbitron';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/orbitron-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Orbitron';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/orbitron-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/roboto-mono-400.woff2') format('woff2');
+}
 
 /* == AUTO-GENERATED FROM src/config/colorTokens.js — 勿手改，改后跑 npm run tokens:sync == */
 :root {
