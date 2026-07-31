@@ -54,7 +54,8 @@
 | `src/router/index.js` | 改：消费 `routes.js`，保留既有 `onError` |
 | `src/components/work/StatusBadge.vue` | `status` + `recruiting` 徽标 |
 | `src/components/work/WorkCard.vue` | 列表卡片，**必须处理无封面的预告态** |
-| `src/components/work/ContentBlocks.vue` | `body` 动态区渲染（Markdown / 链接 / iframe / 文件四种块），自带样式 |
+| `src/components/work/detail-shared.css` | 六个作品组件共用的展示样式，经 `<style scoped src>` 引入，避免逐字重复 |
+| `src/components/work/ContentBlocks.vue` | `body` 动态区渲染（Markdown / 链接 / iframe / 文件 / 音频五种块） |
 | `src/components/work/GameDetail.vue` | 游戏专属区块 |
 | `src/components/work/ToolDetail.vue` | 工具专属区块（多渠道下载、更新日志） |
 | `src/components/work/SiteDetail.vue` | 活动站专属区块 |
@@ -1417,6 +1418,7 @@ git commit -m "feat: :sparkles: 作品列表页与状态徽标，路由表抽出
 ### Task 4: 作品详情页与四个类型专属区块
 
 **Files:**
+- Create: `frontend/src/components/work/detail-shared.css`
 - Create: `frontend/src/components/work/ContentBlocks.vue`
 - Create: `frontend/src/components/work/GameDetail.vue`
 - Create: `frontend/src/components/work/ToolDetail.vue`
@@ -1428,6 +1430,108 @@ git commit -m "feat: :sparkles: 作品列表页与状态徽标，路由表抽出
 **Interfaces:**
 - Consumes: Task 2 的 `useWorkBySlug` / `useWorkNews` / `resolveDetailBlock` / `parsePlatforms` / `typeLabel`；既有 `AsyncBoundary`、`getStrapiMedia`。
 - Produces: 路由 name `WorkDetail`（`/works/:slug`）；四个 detail 组件统一 props `{ block: Object }`。
+
+- [ ] **Step 0: 写 `src/components/work/detail-shared.css`**
+
+本任务要建的六个组件（四个 detail 区块 + `ContentBlocks` + `WorkDetail`）共用同一套展示样式。写成一个文件，各组件用 `<style scoped src="./detail-shared.css"></style>` 引入——**仍然是 scoped**，每个组件有自己的作用域 id，样式不会泄漏成全局类，但也不必在六个文件里各抄一遍。
+
+```css
+/* 作品相关组件共用的展示样式。
+   由 <style scoped src="./detail-shared.css"> 引入，保持作用域隔离。
+   组件自己的 <style scoped> 块写在引入之后，同特异性下可覆盖这里的取值。 */
+
+.detail-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.detail-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.4rem 1.5rem;
+  margin: 0;
+}
+
+.detail-facts dt {
+  font-family: var(--font-family-mono);
+  font-size: 0.85rem;
+  color: var(--color-text-subtle);
+}
+
+.detail-facts dd {
+  margin: 0;
+  color: var(--color-text);
+}
+
+.detail-subtitle {
+  font-size: 1rem;
+  color: var(--color-heading);
+  margin: 0 0 0.75rem;
+}
+
+.detail-downloads {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.download-channel,
+.external-link {
+  display: inline-flex;
+  padding: 0.45rem 1.1rem;
+  border: 1px solid var(--color-border-soft);
+  color: var(--color-text);
+  text-decoration: none;
+  font-family: var(--font-family-mono);
+  font-size: 0.9rem;
+}
+
+.download-channel:hover,
+.external-link:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.detail-primary-link {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 0.5rem 1.2rem;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  text-decoration: none;
+  font-family: var(--font-family-mono);
+}
+
+.detail-primary-link:hover {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.markdown-block {
+  color: var(--color-text);
+  line-height: 1.8;
+}
+
+.markdown-block :deep(h1),
+.markdown-block :deep(h2),
+.markdown-block :deep(h3) {
+  color: var(--color-heading);
+}
+
+.markdown-block :deep(a) {
+  color: var(--color-accent);
+}
+
+.markdown-block :deep(img) {
+  max-width: 100%;
+  height: auto;
+}
+```
+
+**下面五个组件的 `<style>` 块都写成两块**：先 `<style scoped src="./detail-shared.css"></style>`，再一个 `<style scoped>` 放该组件独有的规则。只有独有规则在下面各步中给出。
 
 - [ ] **Step 1: 写 `src/components/work/ToolDetail.vue`**
 
@@ -1496,32 +1600,9 @@ const downloads = computed(() => props.block?.downloads ?? [])
 const renderedChangelog = computed(() => marked(props.block?.changelog ?? ''))
 </script>
 
+<style scoped src="./detail-shared.css"></style>
+
 <style scoped>
-.detail-block {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  margin: 2rem 0;
-}
-
-.detail-facts {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.4rem 1.5rem;
-  margin: 0;
-}
-
-.detail-facts dt {
-  font-family: var(--font-family-mono);
-  font-size: 0.85rem;
-  color: var(--color-text-subtle);
-}
-
-.detail-facts dd {
-  margin: 0;
-  color: var(--color-text);
-}
-
 .detail-links {
   display: flex;
   gap: 1rem;
@@ -1536,49 +1617,6 @@ const renderedChangelog = computed(() => marked(props.block?.changelog ?? ''))
 
 .detail-links a:hover {
   color: var(--color-accent-hover);
-}
-
-.detail-subtitle {
-  font-size: 1rem;
-  color: var(--color-heading);
-  margin: 0 0 0.75rem;
-}
-
-.detail-downloads {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
-.download-channel {
-  display: inline-flex;
-  padding: 0.45rem 1.1rem;
-  border: 1px solid var(--color-border-soft);
-  color: var(--color-text);
-  text-decoration: none;
-  font-family: var(--font-family-mono);
-  font-size: 0.9rem;
-}
-
-.download-channel:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
-.markdown-block {
-  color: var(--color-text);
-  line-height: 1.8;
-}
-
-.markdown-block :deep(h1),
-.markdown-block :deep(h2),
-.markdown-block :deep(h3) {
-  color: var(--color-heading);
-}
-
-.markdown-block :deep(a) {
-  color: var(--color-accent);
 }
 </style>
 ```
@@ -1657,43 +1695,14 @@ const downloads = computed(() => props.block?.downloads ?? [])
 const urlOf = (shot) => getStrapiMedia(shot)
 </script>
 
+<style scoped src="./detail-shared.css"></style>
+
 <style scoped>
-.detail-block {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  margin: 2rem 0;
-}
-
-.detail-facts {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.4rem 1.5rem;
-  margin: 0;
-}
-
-.detail-facts dt {
-  font-family: var(--font-family-mono);
-  font-size: 0.85rem;
-  color: var(--color-text-subtle);
-}
-
-.detail-facts dd {
-  margin: 0;
-  color: var(--color-text);
-}
-
 .detail-trailer {
   align-self: flex-start;
   font-family: var(--font-family-mono);
   color: var(--color-accent);
   text-decoration: none;
-}
-
-.detail-subtitle {
-  font-size: 1rem;
-  color: var(--color-heading);
-  margin: 0 0 0.75rem;
 }
 
 .screenshot-grid {
@@ -1708,32 +1717,11 @@ const urlOf = (shot) => getStrapiMedia(shot)
   border: 1px solid var(--color-border-soft);
 }
 
+/* 移动优先：窄屏单列，md 起两列 */
 @screen md {
   .screenshot-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-}
-
-.detail-downloads {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
-.download-channel {
-  display: inline-flex;
-  padding: 0.45rem 1.1rem;
-  border: 1px solid var(--color-border-soft);
-  color: var(--color-text);
-  text-decoration: none;
-  font-family: var(--font-family-mono);
-  font-size: 0.9rem;
-}
-
-.download-channel:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
 }
 </style>
 ```
@@ -1772,47 +1760,10 @@ defineProps({
 })
 </script>
 
-<style scoped>
-.detail-block {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  margin: 2rem 0;
-}
-
-.detail-facts {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.4rem 1.5rem;
-  margin: 0;
-}
-
-.detail-facts dt {
-  font-family: var(--font-family-mono);
-  font-size: 0.85rem;
-  color: var(--color-text-subtle);
-}
-
-.detail-facts dd {
-  margin: 0;
-  color: var(--color-text);
-}
-
-.detail-primary-link {
-  align-self: flex-start;
-  padding: 0.5rem 1.2rem;
-  border: 1px solid var(--color-accent);
-  color: var(--color-accent);
-  text-decoration: none;
-  font-family: var(--font-family-mono);
-}
-
-.detail-primary-link:hover {
-  background: var(--color-accent);
-  color: var(--color-on-accent);
-}
-</style>
+<style scoped src="./detail-shared.css"></style>
 ```
+
+`SiteDetail` 没有任何独有样式——`.detail-block`、`.detail-facts`、`.detail-primary-link` 三个类全在共用文件里，所以只有引入那一块，不写第二个 `<style scoped>`。
 
 - [ ] **Step 4: 写 `src/components/work/PublicationDetail.vue`**
 
@@ -1842,30 +1793,10 @@ defineProps({
 })
 </script>
 
-<style scoped>
-.detail-block {
-  margin: 2rem 0;
-}
-
-.detail-facts {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.4rem 1.5rem;
-  margin: 0;
-}
-
-.detail-facts dt {
-  font-family: var(--font-family-mono);
-  font-size: 0.85rem;
-  color: var(--color-text-subtle);
-}
-
-.detail-facts dd {
-  margin: 0;
-  color: var(--color-text);
-}
-</style>
+<style scoped src="./detail-shared.css"></style>
 ```
+
+`PublicationDetail` 同样没有独有样式，只引入共用文件。
 
 - [ ] **Step 5: 写 `src/views/WorkDetail.vue`**
 
@@ -2005,10 +1936,9 @@ const detailComponent = computed(() => DETAIL_COMPONENTS[work.value?.workType] ?
   margin-bottom: 2rem;
 }
 
+/* 详情页的小标题比区块内的略大一号，覆盖共用文件里的 1rem */
 .detail-subtitle {
   font-size: 1.1rem;
-  color: var(--color-heading);
-  margin: 0 0 0.75rem;
 }
 
 .work-recruiting,
@@ -2071,22 +2001,10 @@ const detailComponent = computed(() => DETAIL_COMPONENTS[work.value?.workType] ?
   font-family: var(--font-family-mono);
   font-size: 0.85rem;
 }
-
-.detail-primary-link {
-  display: inline-flex;
-  padding: 0.5rem 1.2rem;
-  border: 1px solid var(--color-accent);
-  color: var(--color-accent);
-  text-decoration: none;
-  font-family: var(--font-family-mono);
-}
-
-.detail-primary-link:hover {
-  background: var(--color-accent);
-  color: var(--color-on-accent);
-}
 </style>
 ```
+
+`WorkDetail.vue` 的 `<style>` 同样是两块：先 `<style scoped src="../components/work/detail-shared.css"></style>`（注意 `WorkDetail.vue` 在 `src/views/` 下，相对路径要退一级），再上面这块独有规则。
 
 上面 import 的 `ContentBlocks` 需要新建，路径是 `src/components/work/ContentBlocks.vue`（注意在 `work/` 子目录下，不是 `components/` 根目录）。
 
@@ -2160,47 +2078,14 @@ const renderMarkdown = (markdownText) => marked(markdownText || '')
 const fileUrl = (file) => getStrapiMedia(file)
 </script>
 
+<style scoped src="./detail-shared.css"></style>
+
 <style scoped>
 .content-blocks {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   margin: 2rem 0;
-}
-
-.markdown-block {
-  color: var(--color-text);
-  line-height: 1.8;
-}
-
-.markdown-block :deep(h1),
-.markdown-block :deep(h2),
-.markdown-block :deep(h3) {
-  color: var(--color-heading);
-}
-
-.markdown-block :deep(a) {
-  color: var(--color-accent);
-}
-
-.markdown-block :deep(img) {
-  max-width: 100%;
-  height: auto;
-}
-
-.external-link {
-  display: inline-flex;
-  padding: 0.45rem 1.1rem;
-  border: 1px solid var(--color-border-soft);
-  color: var(--color-text);
-  text-decoration: none;
-  font-family: var(--font-family-mono);
-  font-size: 0.9rem;
-}
-
-.external-link:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
 }
 
 .embedded-iframe {
