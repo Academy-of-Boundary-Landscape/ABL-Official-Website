@@ -48,7 +48,8 @@ strapi-backend/.env.*
 !strapi-backend/.env.dev
 
 # Strapi 上传的媒体文件 (建议忽略，改用云存储，详见下文)
-strapi-backend/public/uploads/
+# 注意：这里必须写 /* 而不是 /，否则父目录被整体排除，下面的 .gitkeep 例外不生效
+strapi-backend/public/uploads/*
 # 保留 .gitkeep 以防止文件夹丢失，但忽略里面的内容
 !strapi-backend/public/uploads/.gitkeep
 
