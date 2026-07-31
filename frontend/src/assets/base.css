@@ -1,56 +1,119 @@
 /* 自托管字体：不再依赖 Google Fonts 的可达性，并省去两次跨域握手。
+   字体文件放在 src/assets/fonts/ 而非 public/，用相对路径引用——这样它们
+   经 Vite 处理，产物里带内容哈希落进 /assets/，自动继承 nginx.conf 里
+   /assets/ 的 immutable 缓存规则；一个写错的路径在这里是构建期报错，
+   而不是 public/ 那种在生产环境被 SPA fallback 悄悄吞成 200 的运行时故障。
    字族与字重与此前 <link> 加载的完全一致，未增删。
-   仅 latin 子集——中文由系统字体承担，这三个字族本身不含 CJK 字形。
    Orbitron 与 Space Grotesk 在 Google Fonts 上本身是可变字体（variable font，
-   内含一个 wght 轴覆盖所需字重区间），所以下面每个字族的多条 @font-face 声明
-   刻意共享同一个物理文件（orbitron-variable.woff2 / space-grotesk-variable.woff2），
-   仅 font-weight 不同——这与 Google 自己签发的 CSS 完全一致，浏览器按需在同一份
-   文件内实例化对应字重，而每个字族只需下载一次，不会因为声明了多个字重就重复拉取。
+   内含一个 wght 轴覆盖所需字重区间），所以下面每个字族同一子集的多条 @font-face
+   声明刻意共享同一个物理文件（如 space-grotesk-variable.woff2），仅 font-weight
+   不同——这与 Google 自己签发的 CSS 完全一致，浏览器按需在同一份文件内实例化
+   对应字重，不会因为声明了多个字重就重复拉取。
    Roboto Mono 只有一个字重，roboto-mono-400.woff2 是真正的静态文件。
-   不要把同字族的多条声明合并成一条 font-weight: 400 600 的区间声明——
-   区间声明会改变浏览器选字重/插值的方式，六条离散声明共享一个 URL
-   才是保持渲染与此前一致的写法。 */
+   不要把同字族同子集的多条声明合并成一条 font-weight: 400 600 的区间声明——
+   区间声明会改变浏览器选字重/插值的方式，离散声明共享一个 URL
+   才是保持渲染与此前一致的写法。
+
+   子集：Google 把每个字族按 Unicode 区块拆成 latin / latin-ext（/ vietnamese 等）
+   多个文件，各带 unicode-range，浏览器只在页面实际出现该区块字符时才下载对应文件。
+   Orbitron 在 Google Fonts 上只签发了 latin 一个子集，没有 latin-ext。
+   Space Grotesk 额外提供 latin-ext（覆盖 ō/ū/č/é 等拉丁扩展字符，本站可能出现在
+   罗马字日文如 "Tōhō" 里），本次一并自托管；vietnamese 子集本站用不到，不取。
+   Roboto Mono 仍只取 latin。每条声明的 unicode-range 均逐字复制自 Google 签发的
+   CSS，不是随手写的近似值——范围错了会导致浏览器该下载时不下载、或不该下载时
+   多下载，且默认无浏览器环境下测不出来。 */
 @font-face {
   font-family: 'Orbitron';
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('/fonts/orbitron-variable.woff2') format('woff2');
+  src: url('./fonts/orbitron-variable.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
   font-family: 'Orbitron';
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url('/fonts/orbitron-variable.woff2') format('woff2');
+  src: url('./fonts/orbitron-variable.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
   font-family: 'Space Grotesk';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/space-grotesk-variable.woff2') format('woff2');
+  src: url('./fonts/space-grotesk-variable.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/space-grotesk-variable-latin-ext.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
 }
 @font-face {
   font-family: 'Space Grotesk';
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('/fonts/space-grotesk-variable.woff2') format('woff2');
+  src: url('./fonts/space-grotesk-variable.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/space-grotesk-variable-latin-ext.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
 }
 @font-face {
   font-family: 'Space Grotesk';
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url('/fonts/space-grotesk-variable.woff2') format('woff2');
+  src: url('./fonts/space-grotesk-variable.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/space-grotesk-variable-latin-ext.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
 }
 @font-face {
   font-family: 'Roboto Mono';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/roboto-mono-400.woff2') format('woff2');
+  src: url('./fonts/roboto-mono-400.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 /* == AUTO-GENERATED FROM src/config/colorTokens.js — 勿手改，改后跑 npm run tokens:sync == */
