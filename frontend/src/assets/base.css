@@ -30,8 +30,12 @@
   --color-border-glow: rgba(255, 255, 255, 0.6);
   --color-accent-glow: rgba(0, 168, 255, 0.5);
   --color-box-glow: rgba(255, 255, 255, 0.08);
+  --color-box-glow-strong: rgba(255, 255, 255, 0.14);
   --color-glow-cyan: rgba(89, 216, 255, 0.18);
   --color-glow-cyan-soft: rgba(89, 216, 255, 0.12);
+  --color-surface-translucent: rgba(10, 15, 26, 0.6);
+  --color-error-border: rgba(255, 82, 82, 0.4);
+  --color-error-glow: rgba(255, 82, 82, 0.2);
   --color-hover-border: #9ac0ff;
   --color-hover-border-accent: #b09dff;
   --color-hover-corner: #a5b6ff;

@@ -36,8 +36,17 @@ export const colorTokens = {
   borderGlow: 'rgba(255, 255, 255, 0.6)',
   accentGlow: 'rgba(0, 168, 255, 0.5)',
   boxGlow: 'rgba(255, 255, 255, 0.08)',
+  boxGlowStrong: 'rgba(255, 255, 255, 0.14)', // .status-box 辉光，比 boxGlow 强
   glowCyan: 'rgba(89, 216, 255, 0.18)',
   glowCyanSoft: 'rgba(89, 216, 255, 0.12)',
+
+  // --- AsyncBoundary .status-box 专用的半透明变体 ---
+  // 这四个是从 main.css 里原样保留下来的字面量值，不是新设计的颜色——
+  // 之前误用不透明的 surface/error token 替换，导致背景变实心、辉光变色（见
+  // batch-4-report.md Task 18 的修复记录）。
+  surfaceTranslucent: 'rgba(10, 15, 26, 0.6)', // .status-box 背景，半透明是刻意的
+  errorBorder: 'rgba(255, 82, 82, 0.4)', // 错误态边框，半透明红
+  errorGlow: 'rgba(255, 82, 82, 0.2)', // 错误态辉光，低透明红
 
   // --- hover 态的蓝紫描边（原散落在 main.css 与 HomeView） ---
   hoverBorder: '#9ac0ff',

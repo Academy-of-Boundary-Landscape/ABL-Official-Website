@@ -54,7 +54,10 @@ const emit = defineEmits(['retry'])
 }
 
 /* 原 main.css 里全局的 .status-box / .status-box.error，
-   使用点已全部收进本组件，随迁移一起搬过来。 */
+   使用点已全部收进本组件，随迁移一起搬过来。
+   背景/边框/辉光四处都是半透明的字面量值，直接换成不透明的既有 token 会
+   丢失 alpha（背景变实心方块、辉光变色）——改用下面四个专门保留原始
+   半透明数值的 token，渲染结果与原 main.css 字节级一致。 */
 .status-box {
   text-align: center;
   margin: 4rem 0;
@@ -62,15 +65,15 @@ const emit = defineEmits(['retry'])
   font-size: 1.2rem;
   color: var(--color-heading);
   border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  box-shadow: 0 0 12px var(--color-box-glow);
+  background: var(--color-surface-translucent);
+  box-shadow: 0 0 12px var(--color-box-glow-strong);
   border-radius: 0;
   clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
 }
 
 .status-box.error {
   color: var(--color-error-strong);
-  border-color: var(--color-error);
-  box-shadow: 0 0 20px var(--color-accent-glow);
+  border-color: var(--color-error-border);
+  box-shadow: 0 0 20px var(--color-error-glow);
 }
 </style>
