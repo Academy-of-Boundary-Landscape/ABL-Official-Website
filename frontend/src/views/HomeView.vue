@@ -258,7 +258,7 @@ const {
 
 .floating-recruit-btn {
   position: fixed;
-  /* --- 响应式处理：以下 7 项窄屏为默认值，lg: 断点覆盖为桌面值（原 @media (max-width: 992px) 内容） --- */
+  /* --- 响应式处理：以下 7 项窄屏为默认值，lg: 断点覆盖为桌面值（原手写 max-width:992px 查询内容） --- */
   right: 10px;
   top: auto;
   bottom: 84px;
@@ -303,7 +303,7 @@ const {
     inset 0 0 24px rgba(132, 176, 255, 0.12);
 }
 
-/* 桌面（lg 及以上，1024px+）覆盖：原 @media (max-width: 992px) 之外的默认桌面值，
+/* 桌面（lg 及以上，1024px+）覆盖：原手写 max-width:992px 查询之外的默认桌面值，
    现归并到 992px→1024px（接受微差），改写为 UnoCSS 移动优先断点 */
 @screen lg {
   .floating-recruit-btn {
