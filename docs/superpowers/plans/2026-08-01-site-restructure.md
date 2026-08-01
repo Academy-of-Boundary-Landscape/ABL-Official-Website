@@ -691,7 +691,33 @@ export default routes
 
 **`/news` 与 `/news/:slug` 直接指向既有的 `EventList.vue` / `EventDetail.vue`，组件不改名。** 与 spec §3.1 一致：Strapi 集合仍叫 `event`、API 仍是 `/api/events`，前端组件跟着后端命名走，只有用户可见的路由改成 `/news`。
 
-- [ ] **Step 6: 跑测试与构建**
+- [ ] **Step 6: 把站内指向旧路径的链接改成新路径**
+
+重定向是给**站外**引用兜底的。站内自己还指着旧路径的话，每次点击都白白多跳一次，而且这些链接迟早会被当成"还在用旧路由"的证据。六处，全部实测确认存在：
+
+| 文件:行 | 改前 | 改后 |
+|---|---|---|
+| `src/components/ProductCard.vue:62` | `router.push(\`/products/${props.product.slug}\`)` | `router.push(\`/archive/products/${props.product.slug}\`)` |
+| `src/components/EventCard.vue:92` | `router.push(\`/events/${props.event.slug}\`)` | `router.push(\`/news/${props.event.slug}\`)` |
+| `src/views/EventDetail.vue:13` | `to="/events"` | `to="/news"` |
+| `src/views/ProductDetail.vue:15` | `to="/products"` | `to="/archive/products"` |
+| `src/views/WorkDetail.vue:36` | `to="/recruitment"` | `to="/join"` |
+| `src/views/WorkDetail.vue:58` | `` :to="`/events/${item.slug}`" `` | `` :to="`/news/${item.slug}`" `` |
+
+`SiteHeader.vue` 里的三处由 Task 4 处理，`HomeView.vue` 的浮动按钮由 Task 5 随整块删除，本步不动它们。
+
+**`src/composables/useEventAPI.js` 里的 `/events` 不要改**——那些是 Strapi 的 **API 路径**不是前端路由，而且该文件已废弃（CLAUDE.md 明确标注，且实测零引用）。它的清理列在 Task 7。
+
+验证：
+
+```bash
+cd frontend && grep -rn "'/events\|\`/events\|'/products\|\`/products\|'/recruitment" src \
+  --include=*.vue | grep -v 'SiteHeader\|HomeView' || echo "  站内旧链接已清理 ✓"
+```
+
+Expected：`站内旧链接已清理 ✓`（`SiteHeader` 与 `HomeView` 留给后面的 Task）。
+
+- [ ] **Step 7: 跑测试与构建**
 
 ```bash
 cd frontend && npm test && npm run build && npx eslint . ; echo "eslint exit=$?"
@@ -699,11 +725,11 @@ cd frontend && npm test && npm run build && npx eslint . ; echo "eslint exit=$?"
 
 Expected：重定向测试全绿（含新增的带参数用例）；构建成功；eslint 退出码 0。
 
-- [ ] **Step 7: 提交**
+- [ ] **Step 8: 提交**
 
 ```bash
-git add frontend/src/router frontend/src/views/PlaceholderView.vue
-git commit -m "feat: :truck: 新增 /news /join /about /archive 路由与五条重定向"
+git add frontend/src
+git commit -m "feat: :truck: 新增 /news /join /about /archive 路由与五条重定向，站内链接同步"
 ```
 
 ---
@@ -1511,6 +1537,14 @@ export function useProductsByIds(ids) {
 顶部 import 补上 `computed`：`import { computed, toValue } from 'vue'`。
 
 **删掉的**：`useProductByTitle`（Spec 1 起即为死代码）、`useRecommendedProducts`（推荐位删除后无调用方）、`useProducts` 的 `category` / `search` / `sort` 三个参数。
+
+**顺带删掉 `src/composables/useEventAPI.js`**（206 行）。CLAUDE.md 早已标注它废弃、被 `strapi.js` 取代，实测**零引用**。它还带着一整套 `POST` / `PUT` / `DELETE` / 批量删除 / 导出的方法，对着一个只读的公开站点——留着只会误导后来的人以为站点有写接口。
+
+```bash
+cd /data/sunyunbo/www/ABL-Official-Website
+git rm frontend/src/composables/useEventAPI.js
+grep -rn 'useEventAPI' frontend/src && echo "还有引用" || echo "零引用 ✓"
+```
 
 同步删掉 `src/composables/__tests__/resources.spec.js` 里针对这两个函数与那三个参数的全部用例。**测试总数会下降，这是预期内的**，不是回归。
 
