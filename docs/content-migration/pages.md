@@ -28,8 +28,13 @@
 
 #### 联系我们 / CONTACT
 
+⚠️ **录入前必须确认：本页第 32 行的邮箱与「记录二：join」第 134 行的邮箱不一致**
+（`contact@secret-sealing.club` vs `contact@abl.secret-sealing.club`），两条分别逐字
+抄自两个本就不一致的源组件。**不要自行选择其中一个**，请社团方确认以哪个为准，
+两处一起改。
+
 - QQ群: 748966747
-- Email: contact@secret-sealing.club
+- Email: contact@secret-sealing.club ⚠️ 与下方「记录二」邮箱不一致，录入前需社团方确认
 
 #### 社团设定 / SETTINGS
 
@@ -131,9 +136,11 @@
 
 确定申请意向后，请将相关信息发送至：
 
-contact@abl.secret-sealing.club
+contact@abl.secret-sealing.club ⚠️ 与上方「记录一」联系邮箱不一致，录入前需社团方确认以哪个为准
 
-QQ 群：**待社团方填写**（按设计文档 §2 要求，本节需补充 QQ 群号，源组件未包含此信息，不属于逐字提取范围）
+<!-- ⚠️ 录入前必须替换：QQ 群号待社团方填写。源组件未包含此信息，不属于逐字提取范围，
+     按设计文档 §2 要求需在本节补充。下面这行是占位符，绝不能原样发布到 join 正文里。
+     QQ 群：（待社团方填写具体群号） -->
 
 ##### 邮件里建议包含
 

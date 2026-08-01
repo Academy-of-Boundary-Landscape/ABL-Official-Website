@@ -1,9 +1,10 @@
 <template>
   <div class="event-list-view container">
-    <!-- 1. 页面头部，复用全局 .page-header 样式 -->
+    <!-- 1. 页面头部，与其余一级导航目的地（/works /about /join /archive/products）统一：
+         section-title 样式，标记 `//` 由 CSS ::before 提供，文本不重复写 -->
     <section class="page-header">
-      <h1 class="title">// 社团动态与通知</h1>
-      <p class="subtitle">>> Latest updates, announcements, and news from the club.</p>
+      <h1 class="section-title">动态 // News</h1>
+      <p class="page-lead">Latest updates, announcements, and news from the club.</p>
     </section>
     <div class="controls-wrapper tech-box">
       <div class="search-group">
@@ -51,6 +52,12 @@ const {
 /*
   这个页面的样式非常简洁，因为它大量复用了全局样式和子组件样式。
 */
+.page-lead {
+  color: var(--color-text-muted);
+  max-width: 42rem;
+  line-height: 1.8;
+}
+
 .controls-wrapper {
   display: flex;
   flex-wrap: wrap;

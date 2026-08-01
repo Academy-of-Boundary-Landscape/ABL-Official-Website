@@ -1,7 +1,7 @@
 <template>
   <div class="home-view container">
     <section class="page-header flex flex-col items-center text-center gap-4 lg:flex-row lg:gap-8">
-      <div class="header-content">
+      <div>
         <h1 class="title">境界景观学会</h1>
         <p class="subtitle">In search of the vacua where phantasm resides.</p>
       </div>
@@ -22,9 +22,10 @@
       <div v-if="gridWorks.length" class="work-grid">
         <WorkCard v-for="work in gridWorks" :key="work.id" :work="work" />
       </div>
+      <RouterLink to="/works" class="section-more-link">&gt;&gt; 查看全部作品</RouterLink>
     </AsyncBoundary>
 
-    <TechSection title="最新动态 / NEWS" custom-class="event-section">
+    <TechSection title="最新动态 / NEWS">
       <AsyncBoundary
         :loading="eventsLoading"
         :error="eventsError"
@@ -35,6 +36,7 @@
         <div class="events-compact-list">
           <EventCard v-for="event in recentEvents" :key="event.id" :event="event" />
         </div>
+        <RouterLink to="/news" class="section-more-link">&gt;&gt; 查看全部动态</RouterLink>
       </AsyncBoundary>
     </TechSection>
   </div>
@@ -42,6 +44,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
 import EventCard from '@/components/EventCard.vue'
 import TechSection from '@/components/TechSection.vue'
 import AsyncBoundary from '@/components/AsyncBoundary.vue'
@@ -54,13 +57,15 @@ import { usePageBySlug } from '@/composables/usePages'
 
 // 排序第一条占大图位（featured:desc, order:desc, startDate:desc），
 // 其余走网格。featured 的职责由此具体化为「谁占大图位」。
+// limit 7 = hero 占一条 + 网格 6 条，正好铺满两行三列；同时不把全部 11
+// 条作品里的 9 条都堆在首页，给 /works 留下继续点进去看的理由。
 const {
   data: works,
   loading: worksLoading,
   error: worksError,
   isEmpty: worksEmpty,
   refresh: refreshWorks,
-} = useWorkList({ limit: 9 })
+} = useWorkList({ limit: 7 })
 
 const heroWork = computed(() => works.value?.[0] ?? null)
 const gridWorks = computed(() => (works.value ?? []).slice(1))
@@ -131,5 +136,19 @@ const homeBlocks = computed(() => homePage.value?.body ?? [])
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* --- 区块末尾的终端风"更多"入口，风格照 WorkDetail.vue 里 >> 前缀的写法 --- */
+.section-more-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--color-accent);
+  font-family: var(--font-family-mono);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.section-more-link:hover {
+  text-decoration: underline;
 }
 </style>

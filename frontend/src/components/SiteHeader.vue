@@ -47,18 +47,38 @@
 </template>
 
 <script setup>
-import { ref, h, computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { ref, h, watch } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
 import { NLayoutHeader, NMenu, NButton, NIcon, NDrawer, NDrawerContent } from 'naive-ui'
+
+const route = useRoute()
 
 // 控制移动端抽屉
 const showDrawer = ref(false)
 
-// 当前激活的菜单项
+// 当前激活的菜单项。菜单 key 与路由 path 的映射见下方 ROUTE_KEY_MAP。
 const activeKey = ref('')
 
-// 菜单选项
-const menuOptions = computed(() => [
+const ROUTE_KEY_MAP = {
+  '/': 'home',
+  '/works': 'works',
+  '/news': 'news',
+  '/join': 'join',
+  '/about': 'about',
+}
+
+// 直接输入 URL 或刷新页面时，没有任何点击事件触发 v-model:value，菜单项
+// 不会高亮；用 watch 把 activeKey 和当前路由同步起来，immediate 覆盖首次渲染。
+watch(
+  () => route.path,
+  (path) => {
+    activeKey.value = ROUTE_KEY_MAP[path] ?? ''
+  },
+  { immediate: true },
+)
+
+// 菜单选项：没有任何响应式依赖（不依赖 works 数据等），不需要 computed
+const menuOptions = [
   {
     label: () =>
       h(
@@ -114,7 +134,7 @@ const menuOptions = computed(() => [
       ),
     key: 'about',
   },
-])
+]
 
 // 桌面端菜单选择处理
 const handleMenuSelect = () => {

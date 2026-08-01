@@ -97,12 +97,16 @@ npm run dev                # http://localhost:5173, HMR hot reload
 # 本地
 cd strapi-backend && npm run develop
 # → Admin 面板改 Content-Type
-# → git diff 看 schema.json 变了
-# → git commit + push
+# → 改完务必让 develop 服务器跑完一轮自动重载（autoReload 会重新生成
+#   types/generated/），再停掉；直接改完 schema.json 就切走会漏掉这步
+# → git diff 看 schema.json 和 types/generated/ 是否都变了
+# → git commit + push（两者一起提交，见下方 ⚠️）
 
 # 服务器
 ssh root@server 'bash /home/deploy/abl_website/update-strapi.sh'
 ```
+
+**⚠️ 改完 Content-Type 一定要跑一次 `npm run develop` 并把重新生成的 `types/generated/` 一并提交。** Spec 1 把 `work.status` 改名为 `workStatus` 时漏了这一步：`schema.json` 改了，但 `types/generated/contentTypes.d.ts` 没跟着重新生成、没人发现，类型定义漂移了一整轮才被注意到——因为枚举守卫测试读的是 `schema.json` 本身，不读生成出来的类型文件，测试照样全绿。改 Content-Type 后先确认 `git status` 里 `types/generated/` 也有变化，再提交。
 
 **⚠️ 不要只 `pm2 restart strapi-main`——那样什么都不会生效。**
 
@@ -210,7 +214,7 @@ Strapi API conventions that bite: endpoints are **not public by default** (403 u
 
 ### Frontend structure
 - `src/main.js` — entry; loads global CSS + `uno.css`, applies color tokens via `applyColorTokensToCssVars()`, registers Naive UI + router.
-- `src/router/index.js` — all routes are statically imported (no lazy loading). Detail pages use `:slug` params (`/products/:slug`, `/events/:slug`); some project pages are hardcoded one-off views under `src/views/projects/`.
+- `src/router/routes.js` — all routes are lazy-loaded (`() => import(...)`). Detail pages use `:slug` params against the unified `work`/`event`/`product` entities: `/works/:slug`, `/news/:slug`, `/archive/products/:slug`. `/products/:slug` and `/events/:slug` are legacy paths that now redirect (see `src/router/redirects.js`) rather than resolving directly; there is no `src/views/projects/` directory anymore (removed in Spec 1) and no route renders a work/project-specific one-off view — all works share `WorkDetail.vue`.
 - `src/views/` — page-level components. `src/components/` — reusable presentational components.
 - `src/config/` — `theme.js` (Naive UI theme + overrides, consumed by `App.vue`'s `n-config-provider`) and `colorTokens.js` (design tokens pushed into CSS vars).
 - `ContentRenderer.vue` renders Strapi's structured/dynamic-zone content blocks (paragraphs, headings, and custom embeds like `product-embed`) into components.
