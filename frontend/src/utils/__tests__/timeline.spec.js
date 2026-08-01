@@ -26,11 +26,22 @@ describe('mergeTimeline', () => {
   })
 
   it('缺日期的条目排在最后，不抛错', () => {
-    const out = mergeTimeline([conv('无日期展会', null)], [work('有日期', '2025-01-01')])
-    expect(out.map((x) => x.title)).toEqual(['有日期', '无日期展会'])
+    // 缺日期的条目必须排在**全部**有日期的条目之后。
+    // 用 4 条而不是 2 条：两条时 null 与日期串的 < 比较恒为 false，
+    // 配合 V8 小数组排序会"碰巧"给出正确顺序，把两行 null 守卫删掉
+    // 测试照样绿——那就不是守卫了。
+    const out = mergeTimeline(
+      [conv('无日期展会', null), conv('有日期展会', '2025-03-03')],
+      [work('无日期作品', null), work('有日期作品', '2025-06-06')],
+    )
+    expect(out.slice(0, 2).map((x) => x.title)).toEqual(['有日期作品', '有日期展会'])
+    expect(out.slice(2).map((x) => x.title).sort()).toEqual(['无日期作品', '无日期展会'])
   })
 
   it('同日期时展会排在作品之前——那天先出展，才有后来的产出', () => {
+    // 这条测试的鉴别力依赖 mergeTimeline 里"作品先入数组"的刻意安排：
+    // 插入顺序给出的是 work 在前，只有 tie-break 才能翻成 convention 在前。
+    // 把 tie-break 改成 return 0，这条会红。
     const out = mergeTimeline([conv('同日展会', '2025-05-05')], [work('同日作品', '2025-05-05')])
     expect(out.map((x) => x.kind)).toEqual(['convention', 'work'])
   })

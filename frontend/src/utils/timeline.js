@@ -13,18 +13,10 @@ import { typeLabel } from './work'
 export const mergeTimeline = (conventions, works) => {
   const items = []
 
-  for (const c of Array.isArray(conventions) ? conventions : []) {
-    if (!c?.name) continue
-    items.push({
-      key: `convention-${c.id}`,
-      date: c.date ?? null,
-      kind: 'convention',
-      title: c.name,
-      label: '出展',
-      to: null,
-    })
-  }
-
+  // 作品先入数组、展会后入——刻意与最终期望的同日期顺序相反。
+  // Array.prototype.sort 是稳定的，若两者按"期望顺序"入数组，下面那条
+  // 同日期 tie-break 就成了不可达的死逻辑：删掉它输出也不变，守它的测试
+  // 会永远是绿的。反着放，tie-break 才真正承重、才测得出来。
   for (const w of Array.isArray(works) ? works : []) {
     if (!w?.title) continue
     items.push({
@@ -34,6 +26,18 @@ export const mergeTimeline = (conventions, works) => {
       title: w.title,
       label: typeLabel(w.workType),
       to: w.slug ? `/works/${w.slug}` : null,
+    })
+  }
+
+  for (const c of Array.isArray(conventions) ? conventions : []) {
+    if (!c?.name) continue
+    items.push({
+      key: `convention-${c.id}`,
+      date: c.date ?? null,
+      kind: 'convention',
+      title: c.name,
+      label: '出展',
+      to: null,
     })
   }
 
