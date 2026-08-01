@@ -9,10 +9,9 @@
 // 为什么要这个文件：
 //   原来的进程是 `pm2 start npm --name strapi-main --cwd ... -- run start`
 //   这样临时创建的，进程定义只存在于服务器的 pm2 dump 里，不在 git 中——
-//   谁也说不清它到底带着什么环境变量。2026-08-01 就因此踩了坑：
-//   NODE_ENV 从没被设置过，生产一直跑在 development 模式下，
-//   Content-Type Builder 在生产后台是开着的（在那里改结构会写回服务器的
-//   src/，下次 git pull 必然冲突）。
+//   谁也说不清它到底带着什么环境变量、cwd 是什么、重启策略如何。
+//   2026-08-01 排障时就因此绕了弯路：日志里写着 Environment: development，
+//   而没有任何地方能查到这个进程是怎么被创建的。
 module.exports = {
   apps: [
     {
@@ -21,11 +20,13 @@ module.exports = {
       script: 'npm',
       args: 'run start',
 
-      // ↓ 这就是以前缺的。production 模式会禁用 Content-Type Builder，
-      //   数据结构只能从代码走（本地 develop 改 → 提交 → update-strapi.sh）。
-      //
-      //   注意：本项目没有 config/env/production/ 目录，所以切换 NODE_ENV
-      //   不会改变数据库或服务器配置——那些全部来自 .env，与 NODE_ENV 无关。
+      // NODE_ENV 在本项目里是整洁项，不是安全边界——2026-08-01 实测：
+      //   · Content-Type Builder 的开关是 strapi develop vs strapi start
+      //     （autoReload），不是 NODE_ENV。两种 NODE_ENV 下 CTB 路由都注册。
+      //   · 校验错误的响应体两种模式逐字节相同。
+      //   · 本项目没有 config/env/production/，所有配置来自 .env。
+      // 设成 production 的实际收益：排障时不会被"生产写着 development"误导，
+      // 以及将来若真加了 config/env/production/ 不至于静默失效。
       env: {
         NODE_ENV: 'production',
       },

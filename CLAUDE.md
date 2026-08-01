@@ -91,7 +91,7 @@ npm run dev                # http://localhost:5173, HMR hot reload
 
 ### Changing Content-Types (important!)
 
-**只能在 `develop` 模式下改**（production 模式禁用了 Content-Type Builder）：
+**只能在本地 `npm run develop` 下改。** 开关是 `strapi develop` 与 `strapi start` 的区别（前者启用 `autoReload`），**不是 `NODE_ENV`**——2026-08-01 实测：`strapi start` 下无论 `NODE_ENV` 是 development 还是 production，Content-Type Builder 的路由注册情况完全一样。生产跑的是 `strapi start`，所以生产后台本来就改不了结构。
 
 ```bash
 # 本地
@@ -165,11 +165,23 @@ Key config files for production:
 - `update-strapi.sh` — **改了 `strapi-backend/src/` 走这个**（pull + build + restart + 验证端点）
 - `deploy.sh` / `update.sh` — 前端与 Docker 服务
 
-### 为什么生产必须是 `NODE_ENV=production`
+### 关于 `NODE_ENV=production`
 
-development 模式下 Strapi 的 **Content-Type Builder 是开着的**——有人能直接在生产后台改数据结构，而那会写回服务器的 `strapi-backend/src/`，下次 `git pull` 必然冲突。数据结构只有一条合法路径：本地 `npm run develop` 改 → 提交 → `update-strapi.sh`。
+**实测结论（2026-08-01，别再重复这个弯路）**：在本项目里切换 `NODE_ENV` 几乎什么都不改变。
 
-本项目没有 `config/env/production/` 目录，所有配置都来自 `.env`，所以切换 `NODE_ENV` **不会**改变数据库或服务器配置——它唯一的作用就是关掉 Content-Type Builder 与其他 dev 专用行为。
+| | development | production |
+|---|---|---|
+| Content-Type Builder 路由 | 401（已注册） | 401（已注册） |
+| 校验错误响应体 | 逐字节相同 | 逐字节相同 |
+
+- **CTB 的开关不是 `NODE_ENV`，是 `strapi develop` vs `strapi start`**（前者启用 `autoReload`）。生产跑 `strapi start`，所以生产后台本来就改不了结构。
+- 本项目**没有** `config/env/production/` 目录，所有配置都来自 `.env`，所以切换不影响数据库与服务器配置。
+
+因此设 `NODE_ENV=production` 只是整洁项，不是安全边界：唯一实际收益是排障时不会被"生产写着 development"误导，以及将来若真加了 `config/env/production/` 不至于静默失效。
+
+**真正不能做的是：把生产改成 `strapi develop`。** 那样确实能拿到 CTB，但在生产后台改结构会写回服务器的 `strapi-backend/src/`（git 跟踪的文件）→ 下次 `git pull` 冲突，且改动只存在于服务器、本地仓库不知道，下次从本地推 schema 时可能直接覆盖掉。数据结构只有一条合法路径：**本地 `npm run develop` 改 → 提交 → `update-strapi.sh`**。
+
+用 `ecosystem.config.js` 管理进程的价值与 `NODE_ENV` 无关——它把进程定义纳入 git，不再依赖服务器上那个命令行临时创建、谁也说不清带着什么环境变量的进程。
 
 首次切换（root）：
 
