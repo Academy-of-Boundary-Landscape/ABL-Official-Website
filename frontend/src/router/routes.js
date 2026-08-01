@@ -7,31 +7,6 @@ export const routes = [
     component: () => import('../views/HomeView.vue'),
   },
   {
-    path: '/recruitment',
-    name: 'recruitment',
-    component: () => import('../views/RecruitmentView.vue'),
-  },
-  {
-    path: '/products',
-    name: 'products',
-    component: () => import('../views/ProductList.vue'),
-  },
-  {
-    path: '/products/:slug',
-    name: 'ProductDetail',
-    component: () => import('../views/ProductDetail.vue'),
-  },
-  {
-    path: '/events',
-    name: 'EventList',
-    component: () => import('../views/EventList.vue'),
-  },
-  {
-    path: '/events/:slug',
-    name: 'EventDetail',
-    component: () => import('../views/EventDetail.vue'),
-  },
-  {
     path: '/works',
     name: 'works',
     component: () => import('../views/WorkList.vue'),
@@ -40,6 +15,36 @@ export const routes = [
     path: '/works/:slug',
     name: 'WorkDetail',
     component: () => import('../views/WorkDetail.vue'),
+  },
+  {
+    path: '/news',
+    name: 'news',
+    component: () => import('../views/EventList.vue'),
+  },
+  {
+    path: '/news/:slug',
+    name: 'NewsDetail',
+    component: () => import('../views/EventDetail.vue'),
+  },
+  {
+    path: '/join',
+    name: 'join',
+    component: () => import('../views/PlaceholderView.vue'),
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: () => import('../views/PlaceholderView.vue'),
+  },
+  {
+    path: '/archive/products',
+    name: 'archiveProducts',
+    component: () => import('../views/PlaceholderView.vue'),
+  },
+  {
+    path: '/archive/products/:slug',
+    name: 'archiveProductDetail',
+    component: () => import('../views/ProductDetail.vue'),
   },
   ...redirectRoutes(),
 ]

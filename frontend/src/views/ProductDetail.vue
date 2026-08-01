@@ -12,7 +12,7 @@
       <article v-if="product">
         <!-- Page Header using the global style -->
         <section class="page-header">
-          <router-link to="/products" class="back-button">&lt; 返回制品列表</router-link>
+          <router-link to="/archive/products" class="back-button">&lt; 返回制品列表</router-link>
           <h1 class="title">// {{ product.title }}</h1>
           <p class="subtitle">
             >> 制品编号: {{ product.storageId }} // 发布于: {{ product.releaseDate }}

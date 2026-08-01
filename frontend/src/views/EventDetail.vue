@@ -10,7 +10,7 @@
     >
       <article>
         <section class="page-header">
-          <router-link to="/events" class="back-button">&lt; 返回动态列表</router-link>
+          <router-link to="/news" class="back-button">&lt; 返回动态列表</router-link>
           <h1 class="title">// {{ event.title }}</h1>
           <div class="subtitle-wrapper">
             <span class="category-badge">{{ event.category }}</span>
