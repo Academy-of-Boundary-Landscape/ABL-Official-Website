@@ -33,7 +33,7 @@
               <p v-if="role.description">{{ role.description }}</p>
             </li>
           </ul>
-          <RouterLink to="/recruitment" class="detail-primary-link">&gt;&gt; 联系我们</RouterLink>
+          <RouterLink to="/join" class="detail-primary-link">&gt;&gt; 联系我们</RouterLink>
         </section>
 
         <!-- 类型专属区块：类型不匹配或动态区为空时 detailBlock 为 null，整块不渲染 -->
@@ -55,7 +55,7 @@
           <h2 class="detail-subtitle">开发日志与动态</h2>
           <ul class="news-list">
             <li v-for="item in news" :key="item.id">
-              <RouterLink :to="`/events/${item.slug}`">
+              <RouterLink :to="`/news/${item.slug}`">
                 <span class="news-date">{{ item.date }}</span>
                 <span class="news-title">{{ item.title }}</span>
               </RouterLink>

@@ -47,49 +47,38 @@
 </template>
 
 <script setup>
-import { ref, h, computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { ref, h, watch } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
 import { NLayoutHeader, NMenu, NButton, NIcon, NDrawer, NDrawerContent } from 'naive-ui'
-import { useWorkList } from '@/composables/useWorks'
+
+const route = useRoute()
 
 // 控制移动端抽屉
 const showDrawer = ref(false)
 
-// 当前激活的菜单项
+// 当前激活的菜单项。菜单 key 与路由 path 的映射见下方 ROUTE_KEY_MAP。
 const activeKey = ref('')
 
-// 导航栏对"作品"请求失败的降级是有意的：退化成禁用的「暂无作品」菜单项，
-// 不值得为一条导航菜单弹 AsyncBoundary 的错误态。但静默失败不等于没有观测——
-// 这里不单独打日志，是因为 useStrapiList（useWorkList 的底座）在 I3 修复后
-// 已经在 catch 块里统一 console.error 了原始错误（带 /works 资源名），
-// 这条请求失败时同样会打印，不需要在这里重复记一遍。
-const { data: projects } = useWorkList({ limit: 20 })
+const ROUTE_KEY_MAP = {
+  '/': 'home',
+  '/works': 'works',
+  '/news': 'news',
+  '/join': 'join',
+  '/about': 'about',
+}
 
-// work 一律有 slug，导航菜单只需要过滤出有 slug 的条目；这条额外过滤是
-// 本组件的菜单构造逻辑，保留在这里而不是资源层。
-const projectMenuChildren = computed(() =>
-  buildProjectMenuChildren(projects.value.filter((project) => project.slug)),
+// 直接输入 URL 或刷新页面时，没有任何点击事件触发 v-model:value，菜单项
+// 不会高亮；用 watch 把 activeKey 和当前路由同步起来，immediate 覆盖首次渲染。
+watch(
+  () => route.path,
+  (path) => {
+    activeKey.value = ROUTE_KEY_MAP[path] ?? ''
+  },
+  { immediate: true },
 )
 
-const buildProjectMenuChildren = (projects = []) =>
-  projects.map((project, index) => {
-    const key = `project-${project.id ?? index}`
-
-    return {
-      key,
-      label: () =>
-        h(
-          RouterLink,
-          { to: `/works/${project.slug}`, class: 'menu-link' },
-          {
-            default: () => project.title,
-          },
-        ),
-    }
-  })
-
-// 菜单选项
-const menuOptions = computed(() => [
+// 菜单选项：没有任何响应式依赖（不依赖 works 数据等），不需要 computed
+const menuOptions = [
   {
     label: () =>
       h(
@@ -105,62 +94,47 @@ const menuOptions = computed(() => [
     label: () =>
       h(
         RouterLink,
-        { to: '/events', class: 'menu-link' },
+        { to: '/works', class: 'menu-link' },
         {
-          default: () => '动态 // Events',
+          default: () => '作品 // Works',
         },
       ),
-    key: 'events',
+    key: 'works',
   },
   {
     label: () =>
       h(
         RouterLink,
-        { to: '/products', class: 'menu-link' },
+        { to: '/news', class: 'menu-link' },
         {
-          default: () => '制品 // Products',
+          default: () => '动态 // News',
         },
       ),
-    key: 'products',
+    key: 'news',
   },
   {
     label: () =>
       h(
         RouterLink,
-        { to: '/recruitment', class: 'menu-link' },
+        { to: '/join', class: 'menu-link' },
         {
-          default: () => '招募 // Join',
+          default: () => '加入我们 // Join',
         },
       ),
-    key: 'recruitment',
+    key: 'join',
   },
   {
-    label: '作品 // Works',
-    key: 'project',
-    children: [
-      {
-        key: 'project-all',
-        label: () =>
-          h(
-            RouterLink,
-            { to: '/works', class: 'menu-link' },
-            {
-              default: () => '全部作品',
-            },
-          ),
-      },
-      ...(projectMenuChildren.value.length > 0
-        ? projectMenuChildren.value
-        : [
-            {
-              label: '暂无作品',
-              key: 'project-empty',
-              disabled: true,
-            },
-          ]),
-    ],
+    label: () =>
+      h(
+        RouterLink,
+        { to: '/about', class: 'menu-link' },
+        {
+          default: () => '关于 // About',
+        },
+      ),
+    key: 'about',
   },
-])
+]
 
 // 桌面端菜单选择处理
 const handleMenuSelect = () => {

@@ -1,21 +1,19 @@
 import { computed, toValue } from 'vue'
 import { useStrapiList, useStrapiOne } from './useStrapiResource'
 
-export function useProducts({ limit, category, search, sort } = {}, options = {}) {
+/**
+ * 制品列表。归档页不筛选、不搜索、不排序——那些是贩售运营功能，
+ * 而贩售已经停止。默认排序 releaseDate:desc 保留，归档正需要它。
+ */
+export function useProducts({ limit } = {}, options = {}) {
   return useStrapiList(
     'products',
     () => {
-      const cat = String(toValue(category) ?? '').trim()
-      const keyword = String(toValue(search) ?? '').trim()
       const lim = toValue(limit)
-      const filters = {}
-      if (cat && cat !== '全部') filters.category = { $eq: cat }
-      if (keyword) filters.title = { $containsi: keyword }
       return {
         populate: 'coverImage',
-        sort: toValue(sort) || 'releaseDate:desc',
+        sort: 'releaseDate:desc',
         ...(lim ? { 'pagination[limit]': lim } : {}),
-        ...(Object.keys(filters).length ? { filters } : {}),
       }
     },
     options,
@@ -26,19 +24,6 @@ export function useProduct(slug) {
   return useStrapiOne('products', () => ({
     filters: { slug: { $eq: toValue(slug) } },
     populate: '*',
-  }))
-}
-
-/**
- * 临时方案：csd20 页面按标题硬匹配制品。
- * 后台改一个字这里就会空。正确做法是给该制品一个稳定的 slug 或标识字段，
- * 需要改 Strapi Content-Type 与生产库既有内容，本轮不做。
- * 见 docs/superpowers/specs/2026-07-31-frontend-upgrade-design.md 第 5 节。
- */
-export function useProductByTitle(title) {
-  return useStrapiOne('products', () => ({
-    filters: { title: { $eq: toValue(title) } },
-    populate: 'coverImage',
   }))
 }
 
@@ -64,36 +49,4 @@ export function useProductsByIds(ids) {
   const isEmpty = computed(() => (toValue(ids)?.length ?? 0) > 0 && list.isEmpty.value)
 
   return { ...list, byId, isEmpty }
-}
-
-/** ProductDetail 的推荐位。行为与改造前一致：排除当前条目后随机取若干。 */
-export function useRecommendedProducts(excludeId, count = 3) {
-  const list = useStrapiList('products', () => ({
-    populate: 'coverImage',
-    'filters[id][$ne]': toValue(excludeId),
-    'pagination[limit]': 50,
-  }))
-
-  const picked = computed(() => {
-    // 防御性排除：setup 阶段 excludeId 通常还是 undefined（依赖父组件的 product
-    // 请求先落地才有值），而 useStrapiList 的首次请求是 immediate 的，会带着
-    // filters[id][$ne]=undefined 出去——axios 会丢掉这个 undefined 参数，
-    // 实际发出的是不带过滤条件的请求。如果这次响应先于父组件的 product 请求
-    // 落地，服务端过滤形同虚设，"当前条目"就可能出现在推荐池里。这里在裁剪
-    // 阶段再排一次当前 id，与服务端过滤结果无关，任何响应顺序下都成立。
-    const currentId = toValue(excludeId)
-    const pool = (list.data.value ?? []).filter((item) => item?.id !== currentId)
-    for (let i = pool.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[pool[i], pool[j]] = [pool[j], pool[i]]
-    }
-    return pool.slice(0, count)
-  })
-
-  // isEmpty 要看裁剪后的 picked，不是原始 list.data——否则原始池非空但裁剪结果为空时会误判非空。
-  const isEmpty = computed(
-    () => !list.loading.value && !list.error.value && picked.value.length === 0,
-  )
-
-  return { ...list, data: picked, isEmpty }
 }

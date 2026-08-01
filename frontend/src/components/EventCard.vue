@@ -89,7 +89,7 @@ const placeholderBadge = computed(() => {
 // 导航到详情页
 const navigateToDetail = () => {
   if (props.event?.slug) {
-    router.push(`/events/${props.event.slug}`)
+    router.push(`/news/${props.event.slug}`)
   }
 }
 </script>

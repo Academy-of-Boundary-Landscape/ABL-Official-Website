@@ -10,7 +10,7 @@
     >
       <article>
         <section class="page-header">
-          <router-link to="/events" class="back-button">&lt; 返回动态列表</router-link>
+          <router-link to="/news" class="back-button">&lt; 返回动态列表</router-link>
           <h1 class="title">// {{ event.title }}</h1>
           <div class="subtitle-wrapper">
             <span class="category-badge">{{ event.category }}</span>
@@ -249,7 +249,7 @@ const renderMarkdown = (markdownText) => {
 .embedded-product-card {
   /* 关键：防止卡片被压缩，保持其原始设定的最小宽度 */
   flex-shrink: 0;
-  width: 220px; /* 与 ProductList 中设置的宽度保持一致 */
+  width: 220px; /* 与制品卡片的设定宽度保持一致 */
 }
 
 /* --- Markdown 渲染样式（科技化 + 原子化） --- */

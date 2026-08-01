@@ -438,6 +438,39 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
   }
 }
 
+export interface ApiPagePage extends Struct.CollectionTypeSchema {
+  collectionName: 'pages'
+  info: {
+    displayName: 'page'
+    pluralName: 'pages'
+    singularName: 'page'
+  }
+  options: {
+    draftAndPublish: true
+  }
+  attributes: {
+    body: Schema.Attribute.DynamicZone<
+      [
+        'content-block.content-block',
+        'embedding.link-embed',
+        'embedding.iframe-embed',
+        'embedding.file-embed',
+        'embedding.audio-embed',
+      ]
+    >
+    createdAt: Schema.Attribute.DateTime
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> & Schema.Attribute.Private
+    locale: Schema.Attribute.String & Schema.Attribute.Private
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::page.page'> &
+      Schema.Attribute.Private
+    publishedAt: Schema.Attribute.DateTime
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required
+    title: Schema.Attribute.String & Schema.Attribute.Required
+    updatedAt: Schema.Attribute.DateTime
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> & Schema.Attribute.Private
+  }
+}
+
 export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   collectionName: 'products'
   info: {
@@ -558,14 +591,14 @@ export interface ApiWorkWork extends Struct.CollectionTypeSchema {
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required
     staff: Schema.Attribute.Component<'staff.staff', true>
     startDate: Schema.Attribute.Date
-    status: Schema.Attribute.Enumeration<
-      ['planned', 'in-development', 'released', 'maintained', 'ended', 'discontinued']
-    > &
-      Schema.Attribute.Required
     summary: Schema.Attribute.Text & Schema.Attribute.Required
     title: Schema.Attribute.String & Schema.Attribute.Required
     updatedAt: Schema.Attribute.DateTime
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> & Schema.Attribute.Private
+    workStatus: Schema.Attribute.Enumeration<
+      ['planned', 'in-development', 'released', 'maintained', 'ended', 'discontinued']
+    > &
+      Schema.Attribute.Required
     workType: Schema.Attribute.Enumeration<['game', 'tool', 'site', 'publication']> &
       Schema.Attribute.Required
   }
@@ -1001,6 +1034,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser
       'api::convention.convention': ApiConventionConvention
       'api::event.event': ApiEventEvent
+      'api::page.page': ApiPagePage
       'api::product.product': ApiProductProduct
       'api::project.project': ApiProjectProject
       'api::work.work': ApiWorkWork

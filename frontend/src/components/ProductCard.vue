@@ -59,7 +59,7 @@ const formattedDate = computed(() => {
 
 const navigateToDetail = () => {
   if (props.product?.slug) {
-    router.push(`/products/${props.product.slug}`)
+    router.push(`/archive/products/${props.product.slug}`)
   }
 }
 </script>

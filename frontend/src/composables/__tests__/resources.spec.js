@@ -2,13 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { effectScope, ref, nextTick } from 'vue'
 import { apiClient } from '@/composables/strapi'
 import { useEvents, useEvent } from '@/composables/useEvents'
-import {
-  useProducts,
-  useProduct,
-  useProductsByIds,
-  useRecommendedProducts,
-  useProductByTitle,
-} from '@/composables/useProducts'
+import { useProducts, useProduct, useProductsByIds } from '@/composables/useProducts'
 import { useConventions } from '@/composables/useConventions'
 
 const withScope = (fn) => {
@@ -96,43 +90,10 @@ describe('useProducts', () => {
     stop()
   })
 
-  it('category 为「全部」或空时不加过滤条件', async () => {
-    const { stop } = withScope(() => useProducts({ category: '' }))
-    await flush()
-    expect(paramsOf().filters).toBeUndefined()
-    stop()
-  })
-
-  it('指定 category 时加等值过滤', async () => {
-    const { stop } = withScope(() => useProducts({ category: '音乐' }))
-    await flush()
-    expect(paramsOf().filters).toEqual({ category: { $eq: '音乐' } })
-    stop()
-  })
-
   it('limit 为 ref(0) 时不应该发送 pagination[limit]——不能用裸 Ref 做真值判断', async () => {
     const { stop } = withScope(() => useProducts({ limit: ref(0) }))
     await flush()
     expect(paramsOf()['pagination[limit]']).toBeUndefined()
-    stop()
-  })
-
-  it('传入 sort 时覆盖默认排序——ProductList 的排序切换按钮靠这个实现', async () => {
-    const sort = ref('releaseDate:asc')
-    const { stop } = withScope(() => useProducts({ sort }))
-    await flush()
-    expect(paramsOf().sort).toBe('releaseDate:asc')
-
-    sort.value = 'releaseDate:desc'
-    await flush()
-    expect(paramsOf(1).sort).toBe('releaseDate:desc')
-    stop()
-  })
-
-  it('不传 sort 时回退到默认的按发布日倒序', async () => {
-    const { stop } = withScope(() => useProducts())
-    await flush()
-    expect(paramsOf().sort).toBe('releaseDate:desc')
     stop()
   })
 })
@@ -143,17 +104,6 @@ describe('useProduct', () => {
     await flush()
     expect(paramsOf().filters).toEqual({ slug: { $eq: 'cd-01' } })
     expect(paramsOf().populate).toBe('*')
-    stop()
-  })
-})
-
-describe('useProductByTitle', () => {
-  it('按标题精确匹配并 populate 封面——csd20 页面的临时方案', async () => {
-    const { stop } = withScope(() => useProductByTitle('梦违科学世纪20周年合同志'))
-    await flush()
-    expect(pathOf()).toBe('/products')
-    expect(paramsOf().filters).toEqual({ title: { $eq: '梦违科学世纪20周年合同志' } })
-    expect(paramsOf().populate).toBe('coverImage')
     stop()
   })
 })
@@ -211,60 +161,6 @@ describe('useProductsByIds', () => {
       3: { id: 3, title: 'a' },
       5: { id: 5, title: 'b' },
     })
-    stop()
-  })
-})
-
-describe('useRecommendedProducts', () => {
-  it('排除当前条目并带 50 条上限', async () => {
-    const { stop } = withScope(() => useRecommendedProducts(42))
-    await flush()
-    expect(paramsOf().populate).toBe('coverImage')
-    expect(paramsOf()['filters[id][$ne]']).toBe(42)
-    expect(paramsOf()['pagination[limit]']).toBe(50)
-    stop()
-  })
-
-  it('结果按 count 截断，随机顺序通过 stub Math.random 保持确定性', async () => {
-    get.mockResolvedValueOnce({
-      data: {
-        data: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }],
-        meta: null,
-      },
-    })
-    vi.spyOn(Math, 'random').mockReturnValue(0)
-    const { result, stop } = withScope(() => useRecommendedProducts(0, 2))
-    await flush()
-    // Math.random 恒为 0 时，Fisher-Yates 洗牌把每一步的 j 都定为 0，
-    // 结果是确定的 [2, 3, 4, 5, 1]，截断到 count=2 后是 [2, 3]。
-    expect(result.data.value).toEqual([{ id: 2 }, { id: 3 }])
-    stop()
-  })
-
-  it('count 为 0 时，isEmpty 反映裁剪后的结果而非原始数据——原始池非空也应判空', async () => {
-    get.mockResolvedValueOnce({
-      data: { data: [{ id: 1 }, { id: 2 }], meta: null },
-    })
-    const { result, stop } = withScope(() => useRecommendedProducts(0, 0))
-    await flush()
-    expect(result.data.value).toEqual([])
-    expect(result.isEmpty.value).toBe(true)
-    stop()
-  })
-
-  it('即使服务端过滤失效、响应里混入了当前条目，裁剪结果也绝不包含它', async () => {
-    // 复现 I2：excludeId 在 setup 时是 undefined，首次 immediate 请求带的
-    // filters[id][$ne]=undefined 会被 axios 丢弃参数，等价于不过滤——
-    // mock 直接返回一个包含"当前条目"（id: 42）的池子，模拟这种服务端未过滤的响应。
-    get.mockResolvedValueOnce({
-      data: {
-        data: [{ id: 42 }, { id: 1 }, { id: 2 }, { id: 3 }],
-        meta: null,
-      },
-    })
-    const { result, stop } = withScope(() => useRecommendedProducts(42, 3))
-    await flush()
-    expect(result.data.value.some((item) => item.id === 42)).toBe(false)
     stop()
   })
 })

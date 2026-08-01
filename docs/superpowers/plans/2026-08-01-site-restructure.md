@@ -280,11 +280,22 @@ describe('mergeTimeline', () => {
     expect(out[1]).toMatchObject({ kind: 'convention', label: '出展', to: null })
   })
 
+  // 缺日期的条目必须排在**全部**有日期的条目之后。
+  // 用 4 条（两种 kind 各一有一无）而不是 2 条：两条时 null 与日期串的
+  // < 比较恒为 false，配合 V8 小数组排序会"碰巧"给出正确顺序，
+  // 把两行 null 守卫删掉测试照样绿——那就不是守卫了。
   it('缺日期的条目排在最后，不抛错', () => {
-    const out = mergeTimeline([conv('无日期展会', null)], [work('有日期', '2025-01-01')])
-    expect(out.map((x) => x.title)).toEqual(['有日期', '无日期展会'])
+    const out = mergeTimeline(
+      [conv('无日期展会', null), conv('有日期展会', '2025-03-03')],
+      [work('无日期作品', null), work('有日期作品', '2025-06-06')],
+    )
+    expect(out.slice(0, 2).map((x) => x.title)).toEqual(['有日期作品', '有日期展会'])
+    expect(out.slice(2).map((x) => x.title).sort()).toEqual(['无日期作品', '无日期展会'])
   })
 
+  // 这条测试的鉴别力依赖 mergeTimeline 里"作品先入数组"的刻意安排：
+  // 插入顺序给出的是 work 在前，只有 tie-break 才能翻成 convention 在前。
+  // 把 tie-break 改成 return 0，这条会红。
   it('同日期时展会排在作品之前——那天先出展，才有后来的产出', () => {
     const out = mergeTimeline([conv('同日展会', '2025-05-05')], [work('同日作品', '2025-05-05')])
     expect(out.map((x) => x.kind)).toEqual(['convention', 'work'])
@@ -340,18 +351,10 @@ import { typeLabel } from './work'
 export const mergeTimeline = (conventions, works) => {
   const items = []
 
-  for (const c of Array.isArray(conventions) ? conventions : []) {
-    if (!c?.name) continue
-    items.push({
-      key: `convention-${c.id}`,
-      date: c.date ?? null,
-      kind: 'convention',
-      title: c.name,
-      label: '出展',
-      to: null,
-    })
-  }
-
+  // 作品先入数组、展会后入——刻意与最终期望的同日期顺序相反。
+  // Array.prototype.sort 是稳定的，若两者按"期望顺序"入数组，下面那条
+  // 同日期 tie-break 就成了不可达的死逻辑：删掉它输出也不变，守它的测试
+  // 会永远是绿的。反着放，tie-break 才真正承重、才测得出来。
   for (const w of Array.isArray(works) ? works : []) {
     if (!w?.title) continue
     items.push({
@@ -361,6 +364,18 @@ export const mergeTimeline = (conventions, works) => {
       title: w.title,
       label: typeLabel(w.workType),
       to: w.slug ? `/works/${w.slug}` : null,
+    })
+  }
+
+  for (const c of Array.isArray(conventions) ? conventions : []) {
+    if (!c?.name) continue
+    items.push({
+      key: `convention-${c.id}`,
+      date: c.date ?? null,
+      kind: 'convention',
+      title: c.name,
+      label: '出展',
+      to: null,
     })
   }
 
@@ -603,11 +618,21 @@ export const redirectRoutes = () =>
 export default redirectRoutes
 ```
 
-**vue-router 对同名动态段的重定向会自动带参数**——`/events/:slug` → `/news/:slug` 里的 `:slug` 会被填成实际值，不需要写重定向函数。Step 1 的那条用例就是验证这一点；如果它红了，改成函数形式：
+**带 `:slug` 的两条必须写成重定向函数，不能用字符串。** 我原本以为 vue-router 会自动把同名动态段的参数填进去——**实测是错的**：字符串形式的 `redirect: '/news/:slug'` 会原样落到字面量 `:slug` 上，`params.slug` 拿不到值。
+
+所以 `redirectRoutes()` 要区分两种情况：
 
 ```js
-{ path: '/events/:slug', redirect: (to) => `/news/${to.params.slug}` }
+export const redirectRoutes = () =>
+  Object.entries(LEGACY_REDIRECTS).map(([path, redirect]) =>
+    // 含动态段的必须用函数把参数填进去；字符串形式会落到字面量 ':slug'
+    redirect.includes(':')
+      ? { path, redirect: (to) => redirect.replace(/:(\w+)/g, (_, k) => to.params[k]) }
+      : { path, redirect },
+  )
 ```
+
+Step 1 里那条断言 `params.slug` 的用例就是守这个的——它必须真的通过，别只看地址栏对不对。
 
 - [ ] **Step 4: 建占位组件**
 
@@ -838,22 +863,30 @@ git commit -m "feat: :art: 一级导航收敛为四项，去掉作品下拉与�
 **这是本轮最容易做丑的一处。** 大图位落在排序第一的作品上，而按录入清单那是在制新游戏——它**没有封面**（预告态）。无封面模式不得退化成灰色占位块。
 
 ```vue
+<!-- 整张卡片不能包成一个 RouterLink：hero 有两个不同的去处——
+     封面与标题去作品详情页，招募 CTA 去 /join。包成一个链接的话 CTA
+     就成了假按钮（点它其实跳作品页），而把 CTA 写成嵌套的 <a> 又是非法 HTML。
+     所以用 <article> 做容器，各自给出真实的链接。 -->
 <template>
-  <RouterLink :to="`/works/${work.slug}`" class="work-hero" :class="{ 'has-cover': coverUrl }">
-    <div v-if="coverUrl" class="work-hero-media">
+  <article class="work-hero" :class="{ 'has-cover': coverUrl }">
+    <RouterLink v-if="coverUrl" :to="`/works/${work.slug}`" class="work-hero-media">
       <img :src="coverUrl" :alt="work.title" />
-    </div>
+    </RouterLink>
 
     <div class="work-hero-body">
       <div class="work-hero-meta">
         <span class="work-hero-type">{{ typeText }}</span>
         <StatusBadge :status="work.workStatus" :recruiting="Boolean(work.recruiting)" />
       </div>
-      <h2 class="work-hero-title">{{ work.title }}</h2>
+      <h2 class="work-hero-title">
+        <RouterLink :to="`/works/${work.slug}`">{{ work.title }}</RouterLink>
+      </h2>
       <p class="work-hero-summary">{{ work.summary }}</p>
-      <span v-if="work.recruiting" class="work-hero-cta">&gt;&gt; 我们在找人</span>
+      <RouterLink v-if="work.recruiting" to="/join" class="work-hero-cta">
+        &gt;&gt; 我们在找人
+      </RouterLink>
     </div>
-  </RouterLink>
+  </article>
 </template>
 
 <script setup>
@@ -882,8 +915,6 @@ const typeText = computed(() => typeLabel(props.work?.workType))
   margin: 2rem 0 3rem;
   background: var(--color-box-strong);
   border: 1px solid var(--color-border-soft);
-  color: inherit;
-  text-decoration: none;
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
@@ -920,7 +951,15 @@ const typeText = computed(() => typeLabel(props.work?.workType))
   margin: 0;
   font-size: 2rem;
   line-height: 1.3;
+}
+
+.work-hero-title a {
   color: var(--color-heading);
+  text-decoration: none;
+}
+
+.work-hero-title a:hover {
+  color: var(--color-accent);
 }
 
 .work-hero.has-cover .work-hero-title {
@@ -1459,7 +1498,13 @@ const { data: products, loading, error, isEmpty, refresh } = useProducts({ limit
 
    `storageId`（制品编号）**保留**。它是目录编号不是贩售功能，spec §3.6 的删除清单里也没有它，不要顺手删。
 
-4. **加停售标注**——在标题下方加一行：
+4. **删掉「当前状态」库存展示整块**。`ProductDetail.vue` 的 `.meta-data` 里有一段按 `product.available` 渲染「有库存 / 无库存 / 未知」的 `<p>`，带绿/红/黄的行内 `style`。**在一个已停止贩售的归档页上显示「有库存」是在误导读者以为还能买**，而且它就在下一步要加的「已停止贩售」标注下面几行，同一页自相矛盾。
+
+   库存状态只有在能买的时候才有意义，属于「购买引导」的一部分。整块删掉——归档页顶部与详情页的停售标注已经把真相说清楚了。`product.available` 字段本身保留在 Strapi 里不动。
+
+   顺带：这三处是行内 `style=""`，删掉它们也顺手清掉三个行内样式（本项目上一轮做颜色令牌迁移时，行内 `style` 属性正是被漏掉过的一类）。
+
+5. **加停售标注**——在标题下方加一行：
 
 ```vue
       <p class="archive-notice">&gt;&gt; 本制品已停止贩售，此页为历史存档。</p>
