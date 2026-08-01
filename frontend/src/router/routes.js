@@ -39,7 +39,7 @@ export const routes = [
   {
     path: '/archive/products',
     name: 'archiveProducts',
-    component: () => import('../views/PlaceholderView.vue'),
+    component: () => import('../views/ArchiveProductList.vue'),
   },
   {
     path: '/archive/products/:slug',

@@ -17,6 +17,7 @@
           <p class="subtitle">
             >> 制品编号: {{ product.storageId }} // 发布于: {{ product.releaseDate }}
           </p>
+          <p class="archive-notice">&gt;&gt; 本制品已停止贩售，此页为历史存档。</p>
         </section>
 
         <!-- Main layout: a two-column grid inside a tech-box -->
@@ -71,17 +72,6 @@
             </div>
           </aside>
         </div>
-        <section v-if="recommended.length > 0" class="recommendation-section">
-          <h2 class="section-title">其他社团制品推荐</h2>
-          <div class="product-grid">
-            <!-- 复用 ProductCard 组件来展示推荐制品 -->
-            <ProductCard
-              v-for="recProduct in recommended"
-              :key="recProduct.id"
-              :product="recProduct"
-            />
-          </div>
-        </section>
       </article>
     </AsyncBoundary>
   </div>
@@ -92,18 +82,11 @@ import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getStrapiMedia } from '@/composables/strapi.js'
 import { marked } from 'marked'
-import ProductCard from '@/components/ProductCard.vue'
 import AsyncBoundary from '@/components/AsyncBoundary.vue'
-import { useProduct, useRecommendedProducts } from '@/composables/useProducts'
+import { useProduct } from '@/composables/useProducts'
 
 const route = useRoute()
 const { data: product, loading, error, notFound, refresh } = useProduct(() => route.params.slug)
-
-// 推荐位：排除当前条目后随机取 4 条，与改造前的 fetchRecommendedProducts 行为一致
-const { data: recommended } = useRecommendedProducts(
-  computed(() => product.value?.id),
-  4,
-)
 
 const parsedDescription = computed(() => {
   return product.value && product.value.description ? marked(product.value.description) : ''
@@ -242,24 +225,9 @@ watch(
   color: var(--color-accent);
 }
 
-/* ↓↓↓ 新增：推荐栏位的样式 ↓↓↓ */
-.recommendation-section {
-  margin-top: 5rem;
-  padding-top: 3rem;
-  border-top: 1px solid var(--color-border);
-}
-
-.recommendation-section .section-title {
-  margin-bottom: 2rem;
-  text-align: center;
-  font-size: 1.8rem;
-  border-bottom: none; /* 推荐区标题不需要下划线 */
-}
-
-/* 复用 ProductList 的网格布局 */
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem;
+.archive-notice {
+  color: var(--color-text-subtle);
+  font-family: var(--font-family-mono);
+  font-size: 0.85rem;
 }
 </style>

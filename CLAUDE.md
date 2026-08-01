@@ -220,7 +220,7 @@ UI/styling stack: **Naive UI** (component library), **UnoCSS** (`uno.config.js`)
 Path alias: `@` → `frontend/src`.
 
 ### Backend (Strapi) structure
-Content types live under `strapi-backend/src/api/<name>/content-types/<name>/schema.json` with default controllers/routes/services. Current collection types: **convention, event, product, project, work**. `work` 是转型后的作品实体（游戏/工具/活动站/出版物），`project` 已停止使用但保留集合以免生产库迁移风险。
+Content types live under `strapi-backend/src/api/<name>/content-types/<name>/schema.json` with default controllers/routes/services. Current collection types: **convention, event, product, project, work, page**. `work` 是转型后的作品实体（游戏/工具/活动站/出版物），`project` 已停止使用但保留集合以免生产库迁移风险，`page` 承载 `/about` 与 `/join` 的策展文案（CMS 驱动，替代原先硬编码在组件里的正文）。
 
 Reusable components under `strapi-backend/src/components/` (e.g. `embedding.*` embeds, `content-block.content-block`, `staff.*`). The `event` type's `mainContent` is a **dynamic zone** composing these embed components — the frontend must handle each `__component` variant.
 

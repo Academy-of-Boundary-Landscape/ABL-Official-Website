@@ -162,6 +162,16 @@
 - [ ] 导航改版、首页重排、`/about`、归档化、`/join` —— 见 Spec 2
 - [ ] 中英双语 —— 见 Spec 3
 
+### 3.6 站点重构（2026-08-01 Spec 2）
+
+- [x] 一级导航收敛为四项：作品 / 动态 / 加入我们 / 关于
+- [x] 首页重写为三区块（在制游戏 hero + 作品网格 + 最新动态），ProjectsBar 轮播退役
+- [x] 新增 page 内容类型，/about 与 /join 的正文由 CMS 承载
+- [x] /about 时间线合并展会与作品两个来源
+- [x] 制品归档化：/archive/products，砍掉筛选/搜索/排序/推荐位
+- [x] 清掉 useProductByTitle、useRecommendedProducts、CategoryFilter
+- [ ] 中英双语 —— 见 Spec 3
+
 ---
 
 ## 🎭 阶段四：样式系统重构
