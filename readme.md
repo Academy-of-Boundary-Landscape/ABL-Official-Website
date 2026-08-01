@@ -146,10 +146,18 @@ cd /home/deploy/abl_website
 bash deploy.sh          # 构建前端 + 启动 Docker 服务
 docker compose restart frontend  # 仅重启前端
 
-# Strapi 管理（需要 root）
+# Strapi 更新（需要 root）—— 改了 strapi-backend/src/ 就用这个
+bash update-strapi.sh   # pull + npm run build + restart + 逐个验证 API 端点
+
+# 只在没有代码改动时用（换 .env、重连数据库等）
 pm2 restart strapi-main
 pm2 logs strapi-main
 ```
+
+> **⚠️ 改了后端代码不能只 `pm2 restart`。** PM2 跑的是 `strapi start`，它加载编译产物
+> `strapi-backend/dist/`，不读 `src/`；而 `dist/` 是 git-ignored 的，`git pull` 只更新了 `src/`。
+> 不重新 `npm run build`，新内容类型不会被注册（`/api/xxx` 返回 404），
+> **但 `pm2 restart` 会报成功、Strapi 会打印 `started successfully`，不会有任何报错。**
 
 ---
 

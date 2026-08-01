@@ -92,8 +92,12 @@ case "${1:-deploy}" in
     done
 
     # 3. 重启 Strapi（确保连上新数据库）
+    #
+    # 注意：这里只是重启，不做 build——本步的目的是让 Strapi 重连刚起来的
+    # PostgreSQL，不是发布后端代码改动。strapi start 加载的是编译产物 dist/，
+    # 所以 strapi-backend/src/ 的改动必须走 update-strapi.sh 才会生效。
     echo ""
-    echo "[3/3] 重启 Strapi (PM2)..."
+    echo "[3/3] 重启 Strapi (PM2)（仅重连数据库，不含 build）..."
     pm2 restart strapi-main 2>/dev/null || {
       echo "  strapi-main 未找到，创建新进程..."
       pm2 start npm --name strapi-main --cwd "$PWD/strapi-backend" -- run start

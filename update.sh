@@ -39,4 +39,7 @@ docker compose ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
 
 echo ""
 echo "如需更新 Strapi（内容类型变更等）:"
-echo "  ssh root@server 'pm2 restart strapi-main'"
+echo "  ssh root@server 'bash /home/deploy/abl_website/update-strapi.sh'"
+echo ""
+echo "  ⚠️ 不要只 pm2 restart —— strapi start 加载的是编译产物 dist/，"
+echo "     不重新 build 的话 src/ 的改动等于没发生，而且不会有任何报错。"

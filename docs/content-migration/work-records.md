@@ -3,7 +3,9 @@
 Strapi 的内容数据不随 git 同步。schema 由代码带过去，**下面 10 条记录需要在生产 Admin 手工建立**
 （或本地建好后 `npx strapi export` / `npx strapi import`）。
 
-前置：`pm2 restart strapi-main` 让新 schema 生效，并在 Settings → Roles → Public
+前置：`ssh root@server 'bash /home/deploy/abl_website/update-strapi.sh'` 让新 schema 生效
+（**不能只 `pm2 restart`**——`strapi start` 加载的是编译产物 `dist/`，不 build 等于没改），
+并在 Settings → Roles → Public
 为 **work** 勾选 `find` 与 `findOne`。
 
 ## `featured` / `order` / `startDate` 怎么填

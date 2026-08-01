@@ -44,8 +44,8 @@
 # 1. 推分支
 git push
 
-# 2. 先让新 schema 生效
-ssh root@server 'cd /home/deploy/abl_website/strapi-backend && git pull && pm2 restart strapi-main'
+# 2. 先让新 schema 生效（pull + build + restart + 验证端点）
+ssh root@server 'bash /home/deploy/abl_website/update-strapi.sh'
 
 # 3. 在生产 Admin 为 work 开放 Public 的 find / findOne
 #    （event / product 已经开着，不用动）
