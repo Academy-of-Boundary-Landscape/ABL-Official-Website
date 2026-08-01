@@ -1,6 +1,25 @@
 # work 记录录入清单
 
-Strapi 的内容数据不随 git 同步。schema 由代码带过去，**下面 11 条记录需要在生产 Admin 手工建立**
+> ## ✅ 2026-08-01：11 条记录已作为**草稿**建入生产
+>
+> 通过 API 批量录入，先在本地跑通并用 headless 浏览器验证过渲染，再打的生产。
+> **全部是草稿，公开接口看不到**（`/api/works` 对访客返回 0 条）。
+>
+> 你现在要做的**不是创建，而是审核 + 发布**：
+>
+> 1. 进 `https://api.abl.secret-sealing.club/admin` → Content Manager → Work
+> 2. 逐条过目（正文素材全部取自你自己写过的 project / event 正文与两份存档，不是新编的）
+> 3. **改掉两条占位文案**：`new-game` 与 `touhou-agent` 的标题和 `summary` 都带着 `【待填】`
+> 4. 裁定 `booth-manual` 归 `tool` 还是 `publication`
+> 5. 确认无误后逐条 **Publish**
+>
+> 媒体已上传：csd20 的封面、两张宣传图、8.15 MB 主题曲，以及朱元璋的两张配图。
+>
+> 用完记得去 Settings → API Tokens 把 `content-migration` 这个 token **revoke** 掉。
+>
+> 下面的原始清单保留作为字段依据与核对用。
+
+Strapi 的内容数据不随 git 同步。schema 由代码带过去，这 11 条记录原本需要在生产 Admin 手工建立
 （或本地建好后 `npx strapi export` / `npx strapi import`）。
 
 **每条的完整字段值（含必填的 `summary`）见文末「逐条录入稿」**——下面几张表只给排序键与要点。
