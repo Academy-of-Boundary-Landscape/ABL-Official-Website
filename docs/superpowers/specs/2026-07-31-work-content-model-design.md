@@ -9,6 +9,8 @@
 > **2026-07-31 修订 A**（编写实施计划时核对代码库发现）：字段名 `type` 改为 `workType`（§3.1）；`details` 的「至多一个组件」可由 schema 的 `max` 键强制而非仅靠约定（§3.2）；`body` 允许的嵌入块收窄到前端真正会渲染的几种（§3.1）。
 >
 > **2026-07-31 修订 B**（用户裁定）：**取消 `customView` 逃生舱，主站只保留统一形式。** 三个特制页（`zyzView.vue`、`csd20.vue`、`csd20music.vue`）全部退役，内容改由 `work` 记录 + `body` 嵌入块表达。新增 `embedding.audio-embed` 承载 csd20 的主题曲播放器。详见 §3.7。
+>
+> **2026-08-01 修订 C**（生产暴露的缺陷）：**字段 `status` 改名为 `workStatus`。** 原名与 Strapi 5 的文档状态（draft/published）撞车，导致 admin 面板**无法发布任何 work 记录**，报 `Validation error: Invalid status`。根因见 §3.1 的字段说明。这与修订 A 里 `type` → `workType` 是同一类问题——当时只想到了 `type`，没有把同样的推理应用到 `status` 上。
 
 ---
 
@@ -77,7 +79,7 @@
 | `title` | string | 是 | |
 | `slug` | uid（targetField: `title`） | 是 | 修掉 `project` 无 slug、只能硬编码路由的缺陷 |
 | `workType` | enumeration | 是 | `game` / `tool` / `site` / `publication`。**不叫 `type`**：该词同时是 Strapi 属性定义自身的键名，作为字段名有与内部 schema 词汇冲突的风险，`workType` 零成本规避 |
-| `status` | enumeration | 是 | `planned` / `in-development` / `released` / `maintained` / `ended` / `discontinued` |
+| `workStatus` | enumeration | 是 | `planned` / `in-development` / `released` / `maintained` / `ended` / `discontinued`。**不叫 `status`**：Strapi 5 的 `content-manager/controllers/validation/dimensions.mjs` 会从请求里解构 `status` 并校验它必须是 `draft` 或 `published`，字段同名会让 admin 面板**完全无法发布该内容类型的任何记录**（`Validation error: Invalid status`）。这个坑与 `type` 同类，但更隐蔽——API 层的创建、读取、甚至用 `?status=published` 发布都正常，只有 admin 面板会炸 |
 | `recruiting` | boolean（默认 `false`） | 否 | **与 `status` 正交**：新游戏 = `in-development` + `recruiting`；摊盒 = `maintained`；朱元璋 = `discontinued` |
 | `recruitingRoles` | component `work.recruiting-role`，repeatable | 否 | 供首页招募块与 Spec 2 的 `/join` 消费 |
 | `summary` | text | 是 | 一句话简介，列表卡片用 |
@@ -91,7 +93,7 @@
 
 `options.draftAndPublish` 设为 `true`，与现有四个内容类型一致。
 
-**为什么 `recruiting` 与 `status` 分开**：招募状态与开发进度正交。一个 `maintained` 的工具可能在招贡献者，一个 `in-development` 的游戏可能不缺人。合并成单一枚举会产生 `in-development-recruiting`、`maintained-recruiting` 这类组合爆炸值。
+**为什么 `recruiting` 与 `workStatus` 分开**：招募状态与开发进度正交。一个 `maintained` 的工具可能在招贡献者，一个 `in-development` 的游戏可能不缺人。合并成单一枚举会产生 `in-development-recruiting`、`maintained-recruiting` 这类组合爆炸值。
 
 ### 3.2 类型专属字段：`details` dynamic zone
 

@@ -43,8 +43,8 @@ describe('前后端枚举漂移守卫', () => {
     expect(WORK_TYPES).toEqual(workSchema.attributes.workType.enum)
   })
 
-  it('WORK_STATUSES 与 Strapi work.status 的 enum 一致——漂移了就去改 schema.json 或同步 utils/work.js', () => {
-    expect(WORK_STATUSES).toEqual(workSchema.attributes.status.enum)
+  it('WORK_STATUSES 与 Strapi work.workStatus 的 enum 一致——漂移了就去改 schema.json 或同步 utils/work.js', () => {
+    expect(WORK_STATUSES).toEqual(workSchema.attributes.workStatus.enum)
   })
 
   it('DETAIL_COMPONENT_BY_TYPE 的四个组件标识与 Strapi work.details 动态区的 components 一致——漂移了就去改 schema.json 或同步 utils/work.js', () => {

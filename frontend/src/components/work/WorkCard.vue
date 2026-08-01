@@ -11,7 +11,7 @@
     <div class="work-card-body">
       <div class="work-card-meta">
         <span class="work-card-type">{{ typeText }}</span>
-        <StatusBadge :status="work.status" :recruiting="Boolean(work.recruiting)" />
+        <StatusBadge :status="work.workStatus" :recruiting="Boolean(work.recruiting)" />
       </div>
       <h3 class="work-card-title">{{ work.title }}</h3>
       <p class="work-card-summary">{{ work.summary }}</p>

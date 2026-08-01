@@ -22,10 +22,15 @@
     },
     "workType": {
       "type": "enumeration",
-      "enum": ["game", "tool", "site", "publication"],
+      "enum": [
+        "game",
+        "tool",
+        "site",
+        "publication"
+      ],
       "required": true
     },
-    "status": {
+    "workStatus": {
       "type": "enumeration",
       "enum": [
         "planned",
@@ -53,7 +58,9 @@
     "coverImage": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "body": {
       "type": "dynamiczone",

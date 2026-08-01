@@ -73,8 +73,8 @@ const projects = computed(() =>
     content: item.summary || '',
     // work 一律有 slug，站内路径可以直接拼，不再需要额外的路径拼接辅助函数
     link: `/works/${item.slug}`,
-    nowStatus: item.status || '',
-    nowStatusLabel: statusLabel(item.status),
+    nowStatus: item.workStatus || '',
+    nowStatusLabel: statusLabel(item.workStatus),
     coverUrl: getStrapiMedia(item.coverImage),
   })),
 )

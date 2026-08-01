@@ -12,7 +12,7 @@
         <header class="page-header">
           <div class="work-detail-meta">
             <span class="work-detail-type">{{ typeText }}</span>
-            <StatusBadge :status="work.status" :recruiting="Boolean(work.recruiting)" />
+            <StatusBadge :status="work.workStatus" :recruiting="Boolean(work.recruiting)" />
           </div>
           <h1 class="section-title">{{ work.title }}</h1>
           <p class="work-detail-summary">{{ work.summary }}</p>
