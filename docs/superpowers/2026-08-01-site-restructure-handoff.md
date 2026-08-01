@@ -55,7 +55,7 @@ ssh deploy@server 'bash /home/deploy/abl_website/update.sh'
 ## 只能人工做的
 
 - **录入 `page:about` 与 `page:join`**，正文在 `docs/content-migration/pages.md`，从被删掉的两个组件逐字提取，未改写。
-- **两个邮箱不一致需要你裁决**：`contact@secret-sealing.club`（旧首页）与 `contact@abl.secret-sealing.club`（旧招募页）。它们本来就不一致，只是分散在两处没人注意；现在并排躺在同一份录入稿里。文档里两处都加了 ⚠️ 标注等确认，**没有替你选**。
+- ~~两个邮箱不一致需要裁决~~ **已解决（2026-08-01）**：旧首页写 `contact@secret-sealing.club`、旧招募页写 `contact@abl.secret-sealing.club`，本就不一致只是分散在两处没人注意。社团方裁决统一为 **`1471850534@qq.com`**，`pages.md` 两处与 `csd20.md` 一处均已改。
 - **`page:join` 的 QQ 群号**待填（录入稿里用 HTML 注释包着，不会被误当正文粘贴）。
 - 可选的第三条 `page:home`——定位陈述由你自己写，不写就整块不渲染。
 - 检查那条「社团线上通贩发布」动态，把失效的通贩链接从正文里去掉。
