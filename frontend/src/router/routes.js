@@ -29,12 +29,12 @@ export const routes = [
   {
     path: '/join',
     name: 'join',
-    component: () => import('../views/PlaceholderView.vue'),
+    component: () => import('../views/JoinView.vue'),
   },
   {
     path: '/about',
     name: 'about',
-    component: () => import('../views/PlaceholderView.vue'),
+    component: () => import('../views/AboutView.vue'),
   },
   {
     path: '/archive/products',
