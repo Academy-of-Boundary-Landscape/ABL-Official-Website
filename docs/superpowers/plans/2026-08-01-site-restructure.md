@@ -618,11 +618,21 @@ export const redirectRoutes = () =>
 export default redirectRoutes
 ```
 
-**vue-router 对同名动态段的重定向会自动带参数**——`/events/:slug` → `/news/:slug` 里的 `:slug` 会被填成实际值，不需要写重定向函数。Step 1 的那条用例就是验证这一点；如果它红了，改成函数形式：
+**带 `:slug` 的两条必须写成重定向函数，不能用字符串。** 我原本以为 vue-router 会自动把同名动态段的参数填进去——**实测是错的**：字符串形式的 `redirect: '/news/:slug'` 会原样落到字面量 `:slug` 上，`params.slug` 拿不到值。
+
+所以 `redirectRoutes()` 要区分两种情况：
 
 ```js
-{ path: '/events/:slug', redirect: (to) => `/news/${to.params.slug}` }
+export const redirectRoutes = () =>
+  Object.entries(LEGACY_REDIRECTS).map(([path, redirect]) =>
+    // 含动态段的必须用函数把参数填进去；字符串形式会落到字面量 ':slug'
+    redirect.includes(':')
+      ? { path, redirect: (to) => redirect.replace(/:(\w+)/g, (_, k) => to.params[k]) }
+      : { path, redirect },
+  )
 ```
+
+Step 1 里那条断言 `params.slug` 的用例就是守这个的——它必须真的通过，别只看地址栏对不对。
 
 - [ ] **Step 4: 建占位组件**
 
