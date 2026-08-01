@@ -131,11 +131,17 @@ const detailComponent = computed(() => DETAIL_COMPONENTS[work.value?.workType] ?
   max-width: 46rem;
 }
 
+/* 封面按自身比例缩放并限高，横竖版都成立。
+   原来是 width: 100% 无限高——csd20 的封面是 1131×1600 的竖版海报，
+   在 1400px 视口下会渲染成近 2000px 高，要滚三屏才看得到正文。
+   改成限高 + 宽度自适应 + 居中，横版封面照常占满宽度。 */
 .work-detail-cover {
-  width: 100%;
   display: block;
+  max-width: 100%;
+  max-height: 70vh;
+  width: auto;
+  margin: 0 auto 2rem;
   border: 1px solid var(--color-border-soft);
-  margin-bottom: 2rem;
 }
 
 /* 详情页的小标题比区块内的略大一号，覆盖共用文件里的 1rem */
