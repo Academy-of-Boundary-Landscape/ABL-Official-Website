@@ -85,8 +85,30 @@ npm --prefix strapi-backend run build
 echo ""
 echo "[5/5] 重启 Strapi..."
 pm2 restart strapi-main --update-env
-echo "  等待启动..."
-sleep 10
+
+# 轮询等就绪，不要用固定 sleep。
+# 刚 build 完的那次启动要跑 schema 迁移，实测可到 40 秒以上；
+# 固定 sleep 10 会让 nginx 还在 502 的时候就去验证，报出假故障
+# （2026-08-01 首次上线就是这么误报的——部署其实是成功的）。
+API=https://api.abl.secret-sealing.club/api
+echo "  等待 Strapi 就绪（最多 120 秒）..."
+READY=0
+for i in $(seq 1 40); do
+  code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "$API/works" 2>/dev/null || echo "000")
+  case "$code" in
+    # 200/403/404 都是 Strapi 自己在应答，说明进程已经起来了；
+    # 404 留给下面的逐项验证去判失败。
+    200|403|404) READY=1; echo "  就绪（${i}0 秒内，首个响应 $code）"; break ;;
+    # 502/504/000 = nginx 还够不到上游，继续等
+    *) sleep 3 ;;
+  esac
+done
+if [ "$READY" != "1" ]; then
+  echo ""
+  echo "  ✗ 120 秒内 Strapi 始终没有响应（一直是 502/超时）"
+  echo "    查日志: pm2 logs strapi-main --lines 50"
+  exit 1
+fi
 
 # 进程必须跑在 production 模式：development 下 Content-Type Builder 是开的，
 # 在生产后台改结构会写回服务器的 src/，下次 git pull 必然冲突。
@@ -102,7 +124,6 @@ fi
 
 echo ""
 echo "验证 API 端点："
-API=https://api.abl.secret-sealing.club/api
 FAILED=0
 for ep in works events products conventions; do
   code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "$API/$ep" || echo "000")
@@ -110,6 +131,7 @@ for ep in works events products conventions; do
     200) echo "  ✓ /api/$ep -> 200" ;;
     403) echo "  ✓ /api/$ep -> 403（路由已注册，Public 角色未授权——去 Admin 开 find/findOne）" ;;
     404) echo "  ✗ /api/$ep -> 404  内容类型未注册，构建没生效"; FAILED=1 ;;
+    502|504) echo "  ✗ /api/$ep -> $code  nginx 够不到 Strapi，进程可能已崩"; FAILED=1 ;;
     *)   echo "  ? /api/$ep -> $code"; FAILED=1 ;;
   esac
 done
