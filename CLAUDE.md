@@ -157,10 +157,28 @@ pm2 logs strapi-main
 
 Key config files for production:
 - `docker-compose.yml` — PostgreSQL + Frontend services
-- `strapi-backend/.env` — Strapi env (DATABASE_CLIENT=postgres, DATABASE_HOST=127.0.0.1, DATABASE_PORT=5433)
+- `ecosystem.config.js` — **PM2 进程定义（Strapi），含 `NODE_ENV=production`**。进程必须由它创建，不要再用命令行临时 `pm2 start npm ...`
+- `strapi-backend/.env` — Strapi env（`DATABASE_CLIENT=postgres`、`DATABASE_HOST=127.0.0.1`、`DATABASE_PORT=5433`）。**不写 `NODE_ENV`**，那个由 `ecosystem.config.js` 给
+- `strapi-backend/.env.dist` — 模板，**只放占位符**。这个仓库是公开的，写进去的真实密钥等于公开发布
 - `/etc/nginx/sites-available/abl_website.conf` — host nginx reverse proxy
 - `frontend/Dockerfile` — multi-stage build with npmmirror registry
-- `deploy.sh` — deployment helper script
+- `update-strapi.sh` — **改了 `strapi-backend/src/` 走这个**（pull + build + restart + 验证端点）
+- `deploy.sh` / `update.sh` — 前端与 Docker 服务
+
+### 为什么生产必须是 `NODE_ENV=production`
+
+development 模式下 Strapi 的 **Content-Type Builder 是开着的**——有人能直接在生产后台改数据结构，而那会写回服务器的 `strapi-backend/src/`，下次 `git pull` 必然冲突。数据结构只有一条合法路径：本地 `npm run develop` 改 → 提交 → `update-strapi.sh`。
+
+本项目没有 `config/env/production/` 目录，所有配置都来自 `.env`，所以切换 `NODE_ENV` **不会**改变数据库或服务器配置——它唯一的作用就是关掉 Content-Type Builder 与其他 dev 专用行为。
+
+首次切换（root）：
+
+```bash
+cd /home/deploy/abl_website
+pm2 delete strapi-main          # 删掉旧的、命令行临时创建的进程
+pm2 start ecosystem.config.js
+pm2 save
+```
 
 ## Architecture
 

@@ -24,6 +24,23 @@ echo "  ABL Website — Strapi 更新"
 echo "  $(date '+%Y-%m-%d %H:%M:%S')"
 echo "========================================="
 
+# ── 0. 启动前校验 ───────────────────────────────────────────────
+# 与其让 Strapi 在 production 模式下因为缺密钥而崩在启动里，不如现在就报错。
+echo ""
+echo "[0/5] 校验 .env..."
+ENV_FILE=strapi-backend/.env
+[ -f "$ENV_FILE" ] || { echo "  ✗ $ENV_FILE 不存在（从 .env.dist 复制并逐项生成密钥）"; exit 1; }
+
+if grep -q '__GENERATE_ME__' "$ENV_FILE"; then
+  echo "  ✗ .env 里还留着 __GENERATE_ME__ 占位符——密钥没生成完"
+  exit 1
+fi
+for k in APP_KEYS API_TOKEN_SALT ADMIN_JWT_SECRET ENCRYPTION_KEY JWT_SECRET \
+         DATABASE_CLIENT DATABASE_PASSWORD; do
+  grep -q "^$k=." "$ENV_FILE" || { echo "  ✗ .env 缺少 $k"; exit 1; }
+done
+echo "  ✓ .env 必需项齐全"
+
 # ── 1. 清掉运行时生成物的本地改动 ────────────────────────────────
 # openapi.json 与 full_documentation.json 被 git 跟踪，但 Strapi 一启动就重写。
 # 不先丢弃，git pull 会以 "Your local changes would be overwritten by merge" 失败。
@@ -67,9 +84,21 @@ npm --prefix strapi-backend run build
 # ── 5. 重启并验证 ───────────────────────────────────────────────
 echo ""
 echo "[5/5] 重启 Strapi..."
-pm2 restart strapi-main
+pm2 restart strapi-main --update-env
 echo "  等待启动..."
 sleep 10
+
+# 进程必须跑在 production 模式：development 下 Content-Type Builder 是开的，
+# 在生产后台改结构会写回服务器的 src/，下次 git pull 必然冲突。
+NODE_ENV_RUNNING=$(pm2 jlist 2>/dev/null \
+  | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const a=JSON.parse(s).find(x=>x.name==="strapi-main");console.log(a?.pm2_env?.NODE_ENV??"")}catch(e){console.log("")}})' )
+if [ "$NODE_ENV_RUNNING" != "production" ]; then
+  echo ""
+  echo "  ⚠️ strapi-main 的 NODE_ENV 是 '${NODE_ENV_RUNNING:-未设置}'，不是 production。"
+  echo "     生产应由 ecosystem.config.js 定义进程。修复："
+  echo "       cd /home/deploy/abl_website && pm2 delete strapi-main && \\"
+  echo "         pm2 start ecosystem.config.js && pm2 save"
+fi
 
 echo ""
 echo "验证 API 端点："
