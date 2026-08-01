@@ -1,19 +1,27 @@
 <template>
-  <RouterLink :to="`/works/${work.slug}`" class="work-hero" :class="{ 'has-cover': coverUrl }">
-    <div v-if="coverUrl" class="work-hero-media">
+  <!-- 整张卡片不能包成一个 RouterLink：hero 有两个不同的去处——
+       封面与标题去作品详情页，招募 CTA 去 /join。包成一个链接的话 CTA
+       就成了假按钮（点它其实跳作品页），而把 CTA 写成嵌套的 <a> 又是非法 HTML。
+       所以用 <article> 做容器，各自给出真实的链接。 -->
+  <article class="work-hero" :class="{ 'has-cover': coverUrl }">
+    <RouterLink v-if="coverUrl" :to="`/works/${work.slug}`" class="work-hero-media">
       <img :src="coverUrl" :alt="work.title" />
-    </div>
+    </RouterLink>
 
     <div class="work-hero-body">
       <div class="work-hero-meta">
         <span class="work-hero-type">{{ typeText }}</span>
         <StatusBadge :status="work.workStatus" :recruiting="Boolean(work.recruiting)" />
       </div>
-      <h2 class="work-hero-title">{{ work.title }}</h2>
+      <h2 class="work-hero-title">
+        <RouterLink :to="`/works/${work.slug}`">{{ work.title }}</RouterLink>
+      </h2>
       <p class="work-hero-summary">{{ work.summary }}</p>
-      <span v-if="work.recruiting" class="work-hero-cta">&gt;&gt; 我们在找人</span>
+      <RouterLink v-if="work.recruiting" to="/join" class="work-hero-cta">
+        &gt;&gt; 我们在找人
+      </RouterLink>
     </div>
-  </RouterLink>
+  </article>
 </template>
 
 <script setup>
@@ -42,8 +50,6 @@ const typeText = computed(() => typeLabel(props.work?.workType))
   margin: 2rem 0 3rem;
   background: var(--color-box-strong);
   border: 1px solid var(--color-border-soft);
-  color: inherit;
-  text-decoration: none;
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
@@ -80,7 +86,15 @@ const typeText = computed(() => typeLabel(props.work?.workType))
   margin: 0;
   font-size: 2rem;
   line-height: 1.3;
+}
+
+.work-hero-title a {
   color: var(--color-heading);
+  text-decoration: none;
+}
+
+.work-hero-title a:hover {
+  color: var(--color-accent);
 }
 
 .work-hero.has-cover .work-hero-title {
