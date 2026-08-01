@@ -280,11 +280,22 @@ describe('mergeTimeline', () => {
     expect(out[1]).toMatchObject({ kind: 'convention', label: '出展', to: null })
   })
 
+  // 缺日期的条目必须排在**全部**有日期的条目之后。
+  // 用 4 条（两种 kind 各一有一无）而不是 2 条：两条时 null 与日期串的
+  // < 比较恒为 false，配合 V8 小数组排序会"碰巧"给出正确顺序，
+  // 把两行 null 守卫删掉测试照样绿——那就不是守卫了。
   it('缺日期的条目排在最后，不抛错', () => {
-    const out = mergeTimeline([conv('无日期展会', null)], [work('有日期', '2025-01-01')])
-    expect(out.map((x) => x.title)).toEqual(['有日期', '无日期展会'])
+    const out = mergeTimeline(
+      [conv('无日期展会', null), conv('有日期展会', '2025-03-03')],
+      [work('无日期作品', null), work('有日期作品', '2025-06-06')],
+    )
+    expect(out.slice(0, 2).map((x) => x.title)).toEqual(['有日期作品', '有日期展会'])
+    expect(out.slice(2).map((x) => x.title).sort()).toEqual(['无日期作品', '无日期展会'])
   })
 
+  // 这条测试的鉴别力依赖 mergeTimeline 里"作品先入数组"的刻意安排：
+  // 插入顺序给出的是 work 在前，只有 tie-break 才能翻成 convention 在前。
+  // 把 tie-break 改成 return 0，这条会红。
   it('同日期时展会排在作品之前——那天先出展，才有后来的产出', () => {
     const out = mergeTimeline([conv('同日展会', '2025-05-05')], [work('同日作品', '2025-05-05')])
     expect(out.map((x) => x.kind)).toEqual(['convention', 'work'])
@@ -340,18 +351,10 @@ import { typeLabel } from './work'
 export const mergeTimeline = (conventions, works) => {
   const items = []
 
-  for (const c of Array.isArray(conventions) ? conventions : []) {
-    if (!c?.name) continue
-    items.push({
-      key: `convention-${c.id}`,
-      date: c.date ?? null,
-      kind: 'convention',
-      title: c.name,
-      label: '出展',
-      to: null,
-    })
-  }
-
+  // 作品先入数组、展会后入——刻意与最终期望的同日期顺序相反。
+  // Array.prototype.sort 是稳定的，若两者按"期望顺序"入数组，下面那条
+  // 同日期 tie-break 就成了不可达的死逻辑：删掉它输出也不变，守它的测试
+  // 会永远是绿的。反着放，tie-break 才真正承重、才测得出来。
   for (const w of Array.isArray(works) ? works : []) {
     if (!w?.title) continue
     items.push({
@@ -361,6 +364,18 @@ export const mergeTimeline = (conventions, works) => {
       title: w.title,
       label: typeLabel(w.workType),
       to: w.slug ? `/works/${w.slug}` : null,
+    })
+  }
+
+  for (const c of Array.isArray(conventions) ? conventions : []) {
+    if (!c?.name) continue
+    items.push({
+      key: `convention-${c.id}`,
+      date: c.date ?? null,
+      kind: 'convention',
+      title: c.name,
+      label: '出展',
+      to: null,
     })
   }
 
