@@ -79,6 +79,11 @@ ssh deploy@server 'bash /home/deploy/abl_website/update.sh'
 ## 遗留
 
 **行为**
+- **`iframe-embed` 全站是坏的（前置问题，非本轮引入）**：后端 schema 的字段是 `iframeTitle` / `iframeCode`，前端两处却都读 `block.iframeContent`——这个字段在整个后端不存在，渲染出来是 `<iframe src="undefined">`。两处：`frontend/src/components/work/ContentBlocks.vue:18`、`frontend/src/views/EventDetail.vue:67`（后者是 Spec 1 之前的旧代码，说明这个错位一直没被发现——大概从来没人真的用过 iframe 块）。
+
+  修之前要先裁决**存什么**：字段名叫 `Code` 说明原意是「粘贴整段 `<iframe>` 嵌入代码」，而前端当 `src` URL 用，是双重错位。存整段代码更灵活（B站/itch.io 给的就是整段），但要过 `v-html`；存 URL 更安全，但很多平台的嵌入代码带参数，得让录入的人自己拆。`iframeTitle` 目前前端完全没用上，无论哪种修法都该接上（无障碍）。
+
+  优先级不低：iframe 是「统一形式 + embed」方案里最主要的逃生舱——试玩嵌入、视频、外部展示都走它。少了它，遇到花活就只剩「改 Vue」一条路，而当初选这个方案就是为了不必每次改 Vue。
 - 首页作品网格取 `limit: 7`（hero 1 + 网格 6）；`/works` 与 `/archive/products` 均硬编码 `limit: 100`，条目数远小于上限，未做分页
 - `/archive` 无路由、全站无 404 catch-all——截断 `/archive/products` 到 `/archive` 会渲染出页头页脚加一片空白。既有模式，本轮未引入
 
