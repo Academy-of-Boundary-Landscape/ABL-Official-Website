@@ -39,6 +39,8 @@
         <RouterLink to="/news" class="section-more-link">&gt;&gt; 查看全部动态</RouterLink>
       </AsyncBoundary>
     </TechSection>
+
+    <FriendLinks />
   </div>
 </template>
 
@@ -47,6 +49,7 @@ import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import EventCard from '@/components/EventCard.vue'
 import TechSection from '@/components/TechSection.vue'
+import FriendLinks from '@/components/FriendLinks.vue'
 import AsyncBoundary from '@/components/AsyncBoundary.vue'
 import WorkCard from '@/components/work/WorkCard.vue'
 import WorkHero from '@/components/work/WorkHero.vue'
