@@ -10,6 +10,7 @@ RUN npm run build
 
 FROM node:22.23.4-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf1e844699914
 WORKDIR /app
+RUN chown node:node /app
 COPY --from=build --chown=node:node /app ./
 ENV NODE_ENV=production STRAPI_TELEMETRY_DISABLED=true
 USER node

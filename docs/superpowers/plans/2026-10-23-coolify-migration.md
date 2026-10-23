@@ -1,12 +1,12 @@
 # ABL 官网迁入 Coolify 实施计划
 
-> 执行者：按 `superpowers:executing-plans` 逐项执行并更新复选框。默认由主 agent 执行，不自动委派。当前仅制定计划，未授权执行生产切换。
+> 执行者：按 `superpowers:executing-plans` 逐项执行并更新复选框。默认由主 agent 执行，不自动委派。用户已授权开始实施；正式停机窗口仍按本计划确认。
 
 **目标：** 将前端 Nginx、Strapi、PostgreSQL 统一交给现有 Coolify 管理，保留网站内容、后台账号、媒体、域名与使用方式。
 
 **已确认路线：** 同一台 VPS 上使用 Git 来源的 Docker Compose，沿用 PostgreSQL 数据卷与上传目录；通过 Coolify 的 Traefik 提供正式入口。
 
-**自动部署：** 用户追加要求将 GitHub push 后的部署纳入 Coolify。迁移验收后启用正式 `main` 分支自动部署，使用现有 GitHub App webhook，不新增 GitHub Actions 或镜像仓库流程。迁移分支和前端改版分支不触发生产部署。
+**自动部署：** 用户追加要求将 GitHub push 后的部署纳入 Coolify。迁移验收后启用正式 `main` 分支自动部署，仓库由现有 GitHub App 来源读取，push 通知使用 Coolify 原生的仓库签名 webhook，不新增 GitHub Actions 或镜像仓库流程。迁移分支和前端改版分支不触发生产部署。
 
 ## 已确认的部署决策
 
@@ -73,7 +73,7 @@ Strapi 容器的重启策略和 Coolify 接替 PM2 的运行管理职责；旧 P
 | `strapi-backend/Dockerfile`（修改） | Node 22 构建、编译 Strapi 和后台、运行生产服务；验证原生依赖和上传写权限 |
 | `strapi-backend/.dockerignore`（按需修改） | 保证真实环境文件、数据库和媒体不进入镜像 |
 | `frontend/Dockerfile`（按需修改） | 支持 Coolify 专用 Nginx 配置，保留普通部署用途 |
-| `deploy/coolify/nginx/`（新增） | 前端、API、静态媒体规则；配置随镜像构建，避免平台单文件挂载问题 |
+| `frontend/nginx.coolify.conf`（新增） | 前端、API、静态媒体规则；配置随镜像构建，避免平台单文件挂载问题 |
 | `update.sh`、`update-strapi.sh`、`deploy.sh`（修改） | 切换后检测标记 `/home/deploy/abl_website/.coolify-managed`，拒绝旧发布路径 |
 | `docs/deployment/coolify.md`（新增） | 日常部署、变量、数据路径、验收、备份位置及人工回退说明 |
 
@@ -95,7 +95,7 @@ Strapi 容器的重启策略和 Coolify 接替 PM2 的运行管理职责；旧 P
 
 - [ ] 复核生产 Git、镜像、PM2 状态和数据库版本，记录时间与变更前状态；核对运行依赖与检出配置的差异。
 - [ ] 从生产提交 `4f54383` 建立独立迁移分支及 worktree；若远端生产已变更，先更新基线。不得从本地改版分支直接发布，也不改用户未提交文件。
-- [ ] 检查现有 GitHub App `renko6626` 是否已授权此组织仓库；未授权则记录需要用户在 GitHub 完成的授权，不新建 App。
+- [ ] 核对现有 GitHub App `renko6626` 对此公开仓库的读取能力；已实测 metadata 和 compose 内容均返回 200。push 通知使用原生仓库 webhook，不新增 App 或替换其他应用共用的 installation_id。
 - [ ] 记录五个域名的状态、跳转、关键响应头和证书；保存首页与公开 API 基线、媒体样本路径及各内容类型的数量，不保存私人内容到仓库。
 
 交付：明确的迁移分支、生产基线记录及仓库来源可用性结论。
@@ -126,7 +126,7 @@ Strapi 容器的重启策略和 Coolify 接替 PM2 的运行管理职责；旧 P
 
 - [ ] 在现有 Coolify 建立 ABL 项目 / production 环境 / Compose 应用，连接迁移分支；导入保密变量，首次保持自动部署、预览部署关闭。
 - [ ] 准备期间不启用五个正式域名的新路由，不让演练资源接收正式请求。Coolify 创建或部署可能自动生成路由，须核对其实际配置后再操作；正式域名绑定在切换步骤执行。
-- [ ] 核对现有 GitHub App 的 push webhook 可以送达 Coolify，并确认资源仅跟踪指定分支；准备迁移验收后将跟踪分支改为 `main` 并开启自动部署。
+- [ ] 核对此仓库的签名 push webhook 可以送达 Coolify，并确认资源仅跟踪指定分支；准备迁移验收后将跟踪分支改为 `main` 并开启自动部署。
 - [ ] 核对当前 Coolify 对已有 external 卷、绝对路径 bind mount、服务域名和构建命令的实际行为。不要直接运行带正式卷的首次部署来试平台行为。
 - [ ] 核对 ESA 图片域名的回源 Host、协议和路径；可取得控制台时读取配置，否则保留为切换前阻断项，先让用户提供配置说明。确认新入口可以维持相同回源方式。
 - [ ] 保存 `/etc/nginx/sites-available/abl_website.conf`、`/data/coolify/proxy/dynamic/legacy-routing.yaml` 及 ABL 专属 Certbot renewal 配置；规划只移除五个相关域名，不改其他站点。
