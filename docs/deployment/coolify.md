@@ -4,7 +4,7 @@
 
 `docker-compose.coolify.yml` 管理前端 Nginx、Strapi 和 PostgreSQL。Coolify 从 Git 在生产机构建镜像；Strapi 容器直接运行 `strapi start`，不使用 PM2。前端构建公开地址来自 `frontend/.env.production`，后端秘密只作为运行变量提供。
 
-Git 来源使用现有 GitHub App 读取公开仓库；push 通知通过仓库的 Coolify 原生签名 webhook，不需要组织额外安装 App。不要另开相同仓库的 App push 通知，避免重复触发。
+Git 来源使用本仓库专用的只读 SSH deploy key，私钥由 Coolify 保存；不使用个人账号 SSH 私钥。GitHub 组织部署密钥开关已获用户确认后启用。push 通知通过仓库的 Coolify 原生签名 webhook，不需要组织额外安装 App。不要另开重复的 push 通知。
 
 首次迁移使用独立分支，关闭自动部署。验收并合并正式 main 后开启 GitHub push 自动部署；其他开发分支不发布。部署针对整套 Compose 应用，不承诺仅更新前端。数据库镜像固定，发布命令不得强制重建所有服务。
 

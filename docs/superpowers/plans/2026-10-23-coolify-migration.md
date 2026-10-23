@@ -6,7 +6,7 @@
 
 **已确认路线：** 同一台 VPS 上使用 Git 来源的 Docker Compose，沿用 PostgreSQL 数据卷与上传目录；通过 Coolify 的 Traefik 提供正式入口。
 
-**自动部署：** 用户追加要求将 GitHub push 后的部署纳入 Coolify。迁移验收后启用正式 `main` 分支自动部署，仓库由现有 GitHub App 来源读取，push 通知使用 Coolify 原生的仓库签名 webhook，不新增 GitHub Actions 或镜像仓库流程。迁移分支和前端改版分支不触发生产部署。
+**自动部署：** 用户追加要求将 GitHub push 后的部署纳入 Coolify。迁移验收后启用正式 `main` 分支自动部署，仓库由专用只读 SSH 部署密钥读取，push 通知使用 Coolify 原生的仓库签名 webhook，不新增 GitHub Actions 或镜像仓库流程。迁移分支和前端改版分支不触发生产部署。
 
 ## 已确认的部署决策
 
@@ -95,7 +95,7 @@ Strapi 容器的重启策略和 Coolify 接替 PM2 的运行管理职责；旧 P
 
 - [ ] 复核生产 Git、镜像、PM2 状态和数据库版本，记录时间与变更前状态；核对运行依赖与检出配置的差异。
 - [ ] 从生产提交 `4f54383` 建立独立迁移分支及 worktree；若远端生产已变更，先更新基线。不得从本地改版分支直接发布，也不改用户未提交文件。
-- [ ] 核对现有 GitHub App `renko6626` 对此公开仓库的读取能力；已实测 metadata 和 compose 内容均返回 200。push 通知使用原生仓库 webhook，不新增 App 或替换其他应用共用的 installation_id。
+- [ ] 仓库 API 读取可用，但 VPS 到 github.com 的 HTTPS 连续超时；用户已确认改用专用只读 SSH deploy key，并确认启用组织部署密钥开关。只创建本仓库密钥，私钥由 Coolify 保存；push 通知使用原生仓库 webhook，不修改其他应用的来源。
 - [ ] 记录五个域名的状态、跳转、关键响应头和证书；保存首页与公开 API 基线、媒体样本路径及各内容类型的数量，不保存私人内容到仓库。
 
 交付：明确的迁移分支、生产基线记录及仓库来源可用性结论。
