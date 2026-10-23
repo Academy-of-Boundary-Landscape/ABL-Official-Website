@@ -14,7 +14,7 @@ Git 来源使用现有 GitHub App 读取公开仓库；push 通知通过仓库�
 
 PostgreSQL 的 external 卷为 `abl_website_pgdata`。Strapi 和 Nginx 共用宿主上传路径 `/home/deploy/abl_website/strapi-backend/public/uploads`，Strapi 读写、Nginx 只读。容器 node 用户为 UID/GID 1000，与原 deploy 用户匹配。
 
-Traefik 将五个前端/API 域名送至 frontend 服务的 80 端口，由 Nginx 按 Host 分流到静态前端或内部 Strapi。数据库和 Strapi 不发布宿主端口。frontend 接入 Coolify 代理网络，Nginx 仅信任 `coolify-proxy` 转发的客户端地址。API 的 404 保持 API 响应，不使用 SPA 回退。
+Traefik 将五个前端/API 域名送至 frontend 服务的 80 端口，由 Nginx 按 Host 分流到静态前端或内部 Strapi。数据库和 Strapi 不发布宿主端口。Strapi 的 `TZ=Asia/Shanghai` 必须与原宿主一致，否则 PostgreSQL 无时区时间戳在 JSON 中会偏移八小时。frontend 接入 Coolify 代理网络，Nginx 仅信任 `coolify-proxy` 转发的客户端地址。API 的 404 保持 API 响应，不使用 SPA 回退。
 
 ## 检查与演练
 

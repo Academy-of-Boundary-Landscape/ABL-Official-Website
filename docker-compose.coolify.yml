@@ -24,6 +24,7 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
+      TZ: Asia/Shanghai
       HOST: 0.0.0.0
       PORT: '1337'
       URL: https://api.abl.secret-sealing.club
