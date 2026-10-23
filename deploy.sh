@@ -17,6 +17,11 @@ set -e
 
 cd "$(dirname "$0")"
 
+if [ -f .coolify-managed ]; then
+  echo "此项目已由 Coolify 管理，请从 Coolify 发布。" >&2
+  exit 1
+fi
+
 status() {
   echo ""
   echo "========================================="

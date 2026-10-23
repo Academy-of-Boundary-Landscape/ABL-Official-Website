@@ -79,3 +79,6 @@ design_reference/
 
 # 备份文件 (含数据库导出)
 backups/
+# Local migration progress and work notes
+.superpowers/
+.coolify-managed
