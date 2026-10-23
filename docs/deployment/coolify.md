@@ -22,7 +22,7 @@ Traefik 将五个前端/API 域名送至 frontend 服务的 80 端口，由 Ngin
 
 使用占位变量运行 `docker compose -f docker-compose.coolify.yml config --quiet`。不要把携带秘密的完整配置输出到日志。前端运行已有 `npm ci`、`npm run test`；通过镜像构建验证 Vite 与 Strapi 编译。
 
-演练必须覆盖 ABL_PG_VOLUME、ABL_UPLOADS_PATH，使用独立数据库卷和上传副本。启动数据库、恢复 pg_dump 自定义格式备份，再启动 Strapi 和 Nginx。前端演练服务接入 coolify 网络以解析受信代理，但不配置公网路由，仅通过回环端口和显式 Host 检查。副本不运行生产写入或发邮件。
+演练必须覆盖 ABL_PG_VOLUME，并通过 Compose override 将 `/app/public/uploads` 和 `/srv/uploads` 两个挂载都替换为上传副本。Coolify 4.4.7 会把 bind source 中的 `${VAR:-default}` 固定成默认路径，不能依赖变量覆盖这些挂载。原生平台演练的自定义 start 命令需额外传 `-f` 指向副本 override，正式切换时移除此参数。启动数据库、恢复 pg_dump 自定义格式备份，再启动 Strapi 和 Nginx。前端演练服务接入 coolify 网络以解析受信代理，但不配置公网路由，仅通过回环端口和显式 Host 检查。副本不运行生产写入或发邮件。
 
 ## 正式切换与回退
 

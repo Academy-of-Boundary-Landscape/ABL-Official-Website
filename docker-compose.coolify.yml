@@ -43,7 +43,7 @@ services:
       DATABASE_PASSWORD: ${PG_PASSWORD:?PG_PASSWORD is required}
       DATABASE_SSL: 'false'
     volumes:
-      - ${ABL_UPLOADS_PATH:-/home/deploy/abl_website/strapi-backend/public/uploads}:/app/public/uploads
+      - /home/deploy/abl_website/strapi-backend/public/uploads:/app/public/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -62,7 +62,7 @@ services:
         NGINX_CONFIG: nginx.coolify.conf
     restart: unless-stopped
     volumes:
-      - ${ABL_UPLOADS_PATH:-/home/deploy/abl_website/strapi-backend/public/uploads}:/srv/uploads:ro
+      - /home/deploy/abl_website/strapi-backend/public/uploads:/srv/uploads:ro
     depends_on:
       strapi:
         condition: service_healthy
