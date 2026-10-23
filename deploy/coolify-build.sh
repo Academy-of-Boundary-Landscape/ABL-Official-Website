@@ -2,6 +2,8 @@
 # Compose validates runtime interpolation during build. Use placeholders here;
 # real secrets remain runtime-only in Coolify and never become build arguments.
 set -eu
+# Coolify adds env_file: .env before it writes the runtime file after building.
+touch .env
 export PG_PASSWORD=build-only-placeholder
 export APP_KEYS=build-only-placeholder
 export API_TOKEN_SALT=build-only-placeholder
