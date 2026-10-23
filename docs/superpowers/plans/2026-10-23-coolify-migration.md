@@ -130,7 +130,7 @@ Strapi 容器的重启策略和 Coolify 接替 PM2 的运行管理职责；旧 P
 - [ ] 核对当前 Coolify 对已有 external 卷、绝对路径 bind mount、服务域名和构建命令的实际行为。不要直接运行带正式卷的首次部署来试平台行为。
 - [ ] 核对 ESA 图片域名的回源 Host、协议和路径；可取得控制台时读取配置，否则保留为切换前阻断项，先让用户提供配置说明。确认新入口可以维持相同回源方式。
 - [ ] 保存 `/etc/nginx/sites-available/abl_website.conf`、`/data/coolify/proxy/dynamic/legacy-routing.yaml` 及 ABL 专属 Certbot renewal 配置；规划只移除五个相关域名，不改其他站点。
-- [ ] 确定 Traefik 正式证书签发及 HTTP/HTTPS challenge 路由。旧 HostSNI 路由优先于 HTTP 路由；不能仅创建 Coolify 域名就认为切换完成。若 ESA 影响验证，沿用服务器已验证的 challenge 方式；只在需要时临时导入有效旧证书。
+- [ ] 确定 Traefik 正式证书签发及 HTTP/HTTPS challenge 路由。旧 HostSNI 路由优先于 HTTP 路由；不能仅创建 Coolify 域名就认为切换完成。旧 TCP 透传仍在使用时，不提前添加同域的 HTTPS ACME 或证书申请 HTTP 路由：已实测这会让旧域名落到 Traefik 404。若 ESA 影响验证，待正式切换时再配置所需 challenge 路由；只在需要时临时导入有效旧证书。
 - [ ] 根据演练实测给出停机预计、恢复步骤和验收清单，向用户确认具体切换窗口。停机涵盖后台写入、最后备份、数据库重启及入口切换，不承诺零停机。
 - [ ] 在停机前准备任务 6 所述的人工回退命令、备份位置和兼容性结论；构建正式提交的镜像并记录版本。构建阶段不启动正式数据库，切换阶段复用已完成的构建。
 

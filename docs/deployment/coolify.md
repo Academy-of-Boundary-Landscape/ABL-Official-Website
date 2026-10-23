@@ -28,7 +28,7 @@ Traefik 将五个前端/API 域名送至 frontend 服务的 80 端口，由 Ngin
 
 按迁移计划先完成副本演练及镜像构建，再确认停机窗口。停止旧 Strapi 后执行最后 pg_dump 和上传备份，停止旧数据库，再启动新数据库；绝不让两个 PostgreSQL 同时使用正式卷。
 
-切换前保存旧 Nginx、Traefik legacy-routing、Certbot renewal、PM2 定义及容器状态。新服务验证就绪后绑定正式域名并移除其旧 HostSNI/ACME 匹配；TLS 由 Traefik 接管。确认新入口正常后停用旧前端和本项目旧证书续期。
+切换前保存旧 Nginx、Traefik legacy-routing、Certbot renewal、PM2 定义及容器状态。新服务验证就绪后绑定正式域名并移除其旧 HostSNI/ACME 匹配；TLS 由 Traefik 接管。旧 TCP 透传仍在使用时，不提前添加同域 HTTPS ACME/证书申请路由；已实测该组合可使正常页面落到 Traefik 404。任何入口准备变更后立即检查正式首页与真实 API。确认新入口正常后停用旧前端和本项目旧证书续期。
 
 创建 `/home/deploy/abl_website/.coolify-managed` 后，旧发布脚本拒绝运行。生产目录也须更新相应脚本，避免旧版本绕过检查。不要运行旧 compose，或重启旧 PM2 进程。
 
