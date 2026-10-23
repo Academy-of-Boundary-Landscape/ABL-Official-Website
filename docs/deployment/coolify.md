@@ -10,6 +10,8 @@ Git 来源使用现有 GitHub App 读取公开仓库；push 通知通过仓库�
 
 ## 配置
 
+Coolify 启用 Preserve Repository，关闭 Inject Build Arguments 和 Include Source Commit in Build。自定义构建命令为 `sh deploy/coolify-build.sh`，启动命令为 `docker compose up -d --wait --wait-timeout 180`。构建脚本仅用占位值满足 Compose 的运行变量校验，前后端串行构建；真实密钥仍为 runtime-only，不传入构建参数。
+
 按 `.env.coolify.example` 配置变量。密钥必须沿用原生产值，禁止把真实 `.env` 或上传文件提交到 Git。Coolify 环境变量关闭 build-time 注入，保留 runtime 注入。PG_PASSWORD 必须与现有数据库密码一致；容器初始化变量不会修改已有数据库账号密码。
 
 PostgreSQL 的 external 卷为 `abl_website_pgdata`。Strapi 和 Nginx 共用宿主上传路径 `/home/deploy/abl_website/strapi-backend/public/uploads`，Strapi 读写、Nginx 只读。容器 node 用户为 UID/GID 1000，与原 deploy 用户匹配。
