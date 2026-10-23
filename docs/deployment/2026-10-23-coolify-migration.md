@@ -43,4 +43,6 @@ Traefik 五域 SAN 证书有效至 2027-01-21 08:40:30 UTC。`/data/coolify/prox
 
 ## 自动发布验收
 
-本交付文档作为实际 main 提交，用于验证签名 push → Coolify SSH 拉取 → 构建 → 发布完整链路。最终部署结果记录在服务器私有目录 `auto-deploy-check.json`，并同步部署全局记忆。
+交付文档提交 `a7c3de829d37cbbc6d01d773aa244a586a03ff46` 已实测签名 push → Coolify SSH 拉取 → 构建 → 发布完整链路。GitHub 投递 HTTP200，部署 `mdfvgjw02jslmpqqmmj9kor0` 的 is_webhook=true、状态 finished；发布后所有容器健康，原数据卷唯一使用、表数量、文件哈希和公网验收再次通过。详细结果在服务器私有目录 `auto-deploy-check.json`。
+
+这次仅补充验收结果的后续文档提交使用 `[skip cd]`，由 Coolify 原生识别，不再重复重启服务。最后运行 SHA 为上述自动发布提交；之后未带跳过标记的 main push 会继续正常部署。当前发布会重启整套 Compose 服务，期间 API 可能短暂不可用。
